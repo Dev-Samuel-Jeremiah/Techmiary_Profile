@@ -3,46 +3,52 @@
 
 {% block content %}
 {% url 'company:industry_list' as industries_url %}
-{% include "components/page_banner.html" with eyebrow="Industry" crumb=industry.name parent_label="Industries" parent_url=industries_url heading=industry.name subheading=industry.tagline|default:industry.summary %}
+{% url 'contact:quote' as quote_url %}
+{% include "components/page_banner.html" with scene="wave" overlap=1 eyebrow="Industry" crumb=industry.name parent_label="Industries" parent_url=industries_url heading=industry.name subheading=industry.tagline|default:industry.summary primary_url=quote_url primary_label="Request a quote" %}
 
+<div class="container-page lx-lift">
+  <div class="lx-glass lx-glass--pad reveal reveal--rise">
+    <div class="row g-4 align-items-start">
+      <div class="{% if industry.challenge_list %}col-lg-7{% else %}col-12{% endif %}">
+        <span class="eyebrow">The sector</span>
+        <p class="lead mb-0 mt-2">{{ industry.summary }}</p>
+      </div>
+      {% if industry.challenge_list %}
+        <div class="col-lg-5">
+          <p class="panel__label">What this sector runs into</p>
+          <ul class="lx-checks">
+            {% for challenge in industry.challenge_list %}<li>{% icon "check" "sm" %}<span>{{ challenge }}</span></li>{% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% if industry.overview or industry.image %}
 <section class="section">
   <div class="container-page">
-    <div class="row g-5">
-      <div class="col-lg-7">
-        {% if industry.image %}
-          <figure class="figure mb-4 reveal"><img src="{{ industry.image.url }}" alt="{{ industry.image_alt|default:industry.name }}" loading="lazy" decoding="async"></figure>
-        {% endif %}
-        <div class="prose">
-          <p class="lead">{{ industry.summary }}</p>
-          {% if industry.overview %}{{ industry.overview|linebreaks }}{% endif %}
-        </div>
+    <div class="row g-5 align-items-center">
+      <div class="{% if industry.image %}col-lg-6{% else %}col-lg-8{% endif %}">
+        <span class="eyebrow">How we work here</span>
+        <h2 class="lx-split" style="font-size:clamp(1.7rem,3.2vw,2.4rem)">Software shaped around {{ industry.name|lower }}</h2>
+        <div class="prose reveal">{{ industry.overview|linebreaks }}</div>
       </div>
-      <div class="col-lg-5">
-        {% if industry.challenge_list %}
-          <div class="panel panel--pad reveal">
-            <p class="panel__label">What this sector runs into</p>
-            <ul style="list-style:none;padding:0;margin:0">
-              {% for challenge in industry.challenge_list %}
-                <li class="list-line mb-2"><span class="tick">{% icon "check" "sm" %}</span>{{ challenge }}</li>
-              {% endfor %}
-            </ul>
-          </div>
-        {% endif %}
-        <div class="panel panel--pad panel--primary mt-4">
-          <h3 style="font-size:1.1rem">Work with us in {{ industry.name|lower }}</h3>
-          <p style="font-size:.93rem;color:var(--muted)">Tell us how your organisation operates today and we will show you what a fit-for-purpose system looks like.</p>
-          <a class="btn btn-primary btn-block" href="{% url 'contact:quote' %}">Request a quote</a>
+      {% if industry.image %}
+        <div class="col-lg-6">
+          <figure class="figure lx-photo reveal reveal--zoom"><img src="{{ industry.image.url }}" alt="{{ industry.image_alt|default:industry.name }}" loading="lazy" decoding="async"></figure>
         </div>
-      </div>
+      {% endif %}
     </div>
   </div>
 </section>
+{% endif %}
 
 {% if industry.solutions.all %}
 <section class="section section--soft">
   <div class="container-page">
     {% include "components/section_heading.html" with eyebrow="Solutions" heading="What we deploy in this sector" %}
-    <div class="row g-4">
+    <div class="row g-4 lx-cards">
       {% for solution in industry.solutions.all %}
         <div class="col-md-6 col-lg-4 d-flex">{% include "components/solution_card.html" with solution=solution delay=forloop.counter0 %}</div>
       {% endfor %}
@@ -64,9 +70,9 @@
 <section class="section section--soft">
   <div class="container-page">
     {% include "components/section_heading.html" with eyebrow="Other sectors" heading="We also build for" %}
-    <div class="row g-4">
+    <div class="row g-4 lx-cards">
       {% for other in other_industries %}
-        <div class="col-sm-6 col-lg-3 d-flex">{% include "components/industry_card.html" with industry=other delay=forloop.counter0 %}</div>
+        <div class="col-sm-6 col-lg-4 d-flex">{% include "components/industry_card.html" with industry=other delay=forloop.counter0 %}</div>
       {% endfor %}
     </div>
   </div>

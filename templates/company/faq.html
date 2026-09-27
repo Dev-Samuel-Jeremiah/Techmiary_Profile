@@ -2,13 +2,13 @@
 {% load portfolio_tags %}
 
 {% block content %}
-{% include "components/page_banner.html" with eyebrow="Support" crumb="FAQ" heading="Frequently asked questions" subheading="How we scope work, what it costs, how long it takes, and what happens after launch." %}
+{% include "components/page_banner.html" with scene="helix" overlap=1 eyebrow="Support" crumb="FAQ" heading="Frequently asked questions" subheading="How we scope work, what it costs, how long it takes, and what happens after launch." %}
 
-<section class="section">
-  <div class="container-page">
+<section class="section pt-0">
+  <div class="container-page lx-lift">
     <div class="row g-5">
       <div class="col-lg-8">
-        <form role="search" method="get" class="d-flex gap-2 mb-4">
+        <form role="search" method="get" class="d-flex gap-2 mb-4 lx-glass lx-glass--pad lx-searchbar reveal reveal--rise">
           <label class="visually-hidden" for="faq-search">Search questions</label>
           <input class="form-control" id="faq-search" type="search" name="q" value="{{ query }}" placeholder="Search questions">
           <button class="btn btn-primary" type="submit">{% icon "search" "sm" %}<span class="visually-hidden">Search</span></button>
@@ -39,12 +39,12 @@
 
       <aside class="col-lg-4">
         <div class="sticky-panel">
-          <div class="panel panel--pad panel--primary reveal">
+          <div class="lx-panel-dark reveal">
             <span class="icon-tile">{% icon "message" %}</span>
-            <h2 style="font-size:1.15rem">Still have a question?</h2>
-            <p style="font-size:.93rem;color:var(--muted)">Ask us directly. We answer every enquiry ourselves — there is no ticket queue to get lost in.</p>
-            <a class="btn btn-primary btn-block" href="{% url 'contact:contact' %}">Contact us</a>
-            <a class="btn btn-outline btn-block mt-2" href="{% url 'contact:quote' %}">Request a quote</a>
+            <h2 class="mt-3">Still have a question?</h2>
+            <p>Ask us directly. We answer every enquiry ourselves — there is no ticket queue to get lost in.</p>
+            <a class="btn btn-light btn-block" href="{% url 'contact:contact' %}">Contact us</a>
+            <a class="btn btn-ghost-light btn-block mt-2" href="{% url 'contact:quote' %}">Request a quote</a>
           </div>
         </div>
       </aside>

@@ -2,12 +2,12 @@
 {% load portfolio_tags %}
 
 {% block content %}
-{% include "components/page_banner.html" with eyebrow="Technology" heading="The stack we build and run systems on" subheading="A tool appears here because it is part of how we deliver and operate software, not because it once appeared in a project." crumb="Technology" %}
+{% include "components/page_banner.html" with scene="cube" eyebrow="Technology" heading="The stack we build and run systems on" subheading="A tool appears here because it is part of how we deliver and operate software, not because it once appeared in a project." crumb="Technology" %}
 
 <section class="section">
   <div class="container-page">
     {% if categories %}
-      <div class="row g-4">
+      <div class="row g-4 lx-cards">
         {% for category in categories %}
           <div class="col-md-6 col-lg-4 d-flex">
             <div class="card reveal" data-delay="{{ forloop.counter0 }}">
@@ -29,8 +29,8 @@
 
     <div class="row g-4 mt-5">
       <div class="col-lg-6">
-        <div class="panel panel--pad h-100">
-          <p class="panel__label">Reference architecture</p>
+        <div class="lx-panel-dark lx-arch h-100 reveal reveal--zoom">
+          <p class="panel__label" style="color:#b9caff">Reference architecture</p>
           <div class="arch-flow">
             <div class="arch-node">Browser / mobile client</div>
             <div class="arch-arrow" aria-hidden="true">{% icon "chevron-down" "sm" %}</div>
@@ -45,15 +45,15 @@
         </div>
       </div>
       <div class="col-lg-6">
-        <div class="panel panel--pad h-100">
+        <div class="lx-glass lx-glass--pad h-100 reveal reveal--zoom" data-delay="1">
           <p class="panel__label">Engineering practices</p>
-          <ul style="list-style:none;padding:0;margin:0">
-            <li class="list-line mb-2"><span class="tick">{% icon "check" "sm" %}</span> Version control with reviewed changes</li>
-            <li class="list-line mb-2"><span class="tick">{% icon "check" "sm" %}</span> Automated test suites before deployment</li>
-            <li class="list-line mb-2"><span class="tick">{% icon "check" "sm" %}</span> Environment-based configuration, no secrets in code</li>
-            <li class="list-line mb-2"><span class="tick">{% icon "check" "sm" %}</span> HTTPS, security headers and least-privilege access</li>
-            <li class="list-line mb-2"><span class="tick">{% icon "check" "sm" %}</span> Scheduled backups and restore checks</li>
-            <li class="list-line"><span class="tick">{% icon "check" "sm" %}</span> Documented handover for every deployment</li>
+          <ul class="lx-checks">
+            <li>{% icon "check" "sm" %}<span>Version control with reviewed changes</span></li>
+            <li>{% icon "check" "sm" %}<span>Automated test suites before deployment</span></li>
+            <li>{% icon "check" "sm" %}<span>Environment-based configuration, no secrets in code</span></li>
+            <li>{% icon "check" "sm" %}<span>HTTPS, security headers and least-privilege access</span></li>
+            <li>{% icon "check" "sm" %}<span>Scheduled backups and restore checks</span></li>
+            <li>{% icon "check" "sm" %}<span>Documented handover for every deployment</span></li>
           </ul>
         </div>
       </div>

@@ -2,7 +2,7 @@
 {% load portfolio_tags %}
 
 {% block content %}
-{% include "components/page_banner.html" with eyebrow="Our work" crumb="Our Work" heading="Systems we have built and put into service" subheading="Each entry links to a case study covering the problem, the solution, the architecture and what was delivered." %}
+{% include "components/page_banner.html" with scene="globe" eyebrow="Our work" crumb="Our Work" heading="Systems we have built and put into service" subheading="Each entry links to a case study covering the problem, the solution, the architecture and what was delivered." %}
 
 <section class="section">
   <div class="container-page">
@@ -16,7 +16,7 @@
     {% endif %}
 
     {% if projects %}
-      <div class="row g-4">
+      <div class="row g-4 lx-cards">
         {% for project in projects %}
           <div class="col-md-6 col-lg-4 d-flex">{% include "components/project_card.html" with project=project delay=forloop.counter0 %}</div>
         {% endfor %}

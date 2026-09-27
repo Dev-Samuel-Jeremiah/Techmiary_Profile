@@ -2,13 +2,13 @@
 {% load portfolio_tags %}
 
 {% block content %}
-{% include "components/page_banner.html" with eyebrow="Our people" crumb="Leadership & Team" heading="The team behind the software" subheading="Small, senior and accountable. The people who scope your project are the people who build and support it." %}
+{% include "components/page_banner.html" with scene="ring" eyebrow="Our people" crumb="Leadership & Team" heading="The team behind the software" subheading="Small, senior and accountable. The people who scope your project are the people who build and support it." %}
 
 {% if leadership %}
 <section class="section">
   <div class="container-page">
     {% include "components/section_heading.html" with center=1 eyebrow="Leadership" heading="Leadership" %}
-    <div class="row g-4 justify-content-center">
+    <div class="row g-4 lx-cards justify-content-center">
       {% for member in leadership %}
         <div class="col-sm-6 col-lg-3 d-flex">{% include "components/person_card.html" with member=member delay=forloop.counter0 %}</div>
       {% endfor %}
@@ -21,7 +21,7 @@
 <section class="section {% if leadership %}section--soft{% endif %}">
   <div class="container-page">
     {% include "components/section_heading.html" with center=1 eyebrow="Team" heading="Engineering, delivery and support" %}
-    <div class="row g-4 justify-content-center">
+    <div class="row g-4 lx-cards justify-content-center">
       {% for member in team %}
         <div class="col-sm-6 col-lg-3 d-flex">{% include "components/person_card.html" with member=member delay=forloop.counter0 %}</div>
       {% endfor %}
@@ -40,12 +40,15 @@
 
 <section class="section {% if team and leadership %}{% else %}section--soft{% endif %}">
   <div class="container-page">
-    <div class="cta-band reveal">
+    <div class="lx-cta reveal reveal--zoom">
+      <canvas class="lx-cta__canvas" data-scene="ring" aria-hidden="true"></canvas>
+      <div class="lx-cta__content">
       <span class="eyebrow">Careers</span>
       <h2>Want to build with us?</h2>
       <p>We hire engineers who care about the people using the software, not only the code that runs it.</p>
       <div class="cta-band__actions">
-        <a class="btn btn-light btn-lg" href="{% url 'careers:list' %}">See open roles</a>
+        <a class="btn btn-light btn-lg" data-magnetic href="{% url 'careers:list' %}">See open roles</a>
+      </div>
       </div>
     </div>
   </div>

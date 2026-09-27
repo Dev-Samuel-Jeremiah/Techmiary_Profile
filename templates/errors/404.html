@@ -2,14 +2,17 @@
 {% block title %}Page not found — 404{% endblock %}
 {% block robots %}noindex, follow{% endblock %}
 {% block content %}
-<section class="error-page">
+<section class="lx-banner lx-error error-page" data-hero>
+  <div class="lx-hero__glow" aria-hidden="true"></div>
+  <div class="lx-hero__grid" aria-hidden="true"></div>
+  <canvas class="lx-banner__canvas" data-scene="globe" aria-hidden="true"></canvas>
   <div class="container-page">
-    <div class="error-code" aria-hidden="true">404</div>
-    <h1 style="font-size:clamp(1.6rem,4vw,2.4rem);margin-bottom:.75rem">This page doesn’t exist</h1>
-    <p class="text-muted-2" style="max-width:48ch;margin-inline:auto">The link may be out of date, or the page may have moved. Everything else is still here.</p>
-    <div class="hero__actions" style="justify-content:center">
-      <a class="btn btn-primary" href="{% url 'core:home' %}">Back to home</a>
-      <a class="btn btn-outline" href="{% url 'company:solution_list' %}">Browse solutions</a>
+    <div class="lx-error__code error-code" aria-hidden="true">404</div>
+    <h1>This page doesn’t exist</h1>
+    <p>The link may be out of date, or the page may have moved. Everything else is still here.</p>
+    <div class="lx-actions">
+      <a class="btn btn-lx btn-lg" data-magnetic href="{% url 'core:home' %}">Back to home</a>
+      <a class="btn btn-ghost-light btn-lg" data-magnetic href="{% url 'company:solution_list' %}">Browse solutions</a>
     </div>
   </div>
 </section>

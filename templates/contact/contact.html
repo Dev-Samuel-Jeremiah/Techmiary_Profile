@@ -2,14 +2,14 @@
 {% load portfolio_tags %}
 
 {% block content %}
-{% include "components/page_banner.html" with eyebrow="Contact" crumb="Contact" heading="Talk to our team" subheading="Ask a question, request a demonstration, or start a conversation about a system you need." %}
+{% include "components/page_banner.html" with scene="ring" overlap=1 eyebrow="Contact" crumb="Contact" heading="Talk to our team" subheading="Ask a question, request a demonstration, or start a conversation about a system you need." %}
 
-<section class="section">
-  <div class="container-page">
+<section class="section pt-0">
+  <div class="container-page lx-lift">
     <div class="row g-5">
       <div class="col-lg-5">
         {% if site %}
-          <div class="panel panel--pad">
+          <div class="lx-glass lx-glass--pad reveal reveal--rise">
             <p class="panel__label">Company details</p>
             {% if site.address %}
               <div class="contact-detail"><span class="ico">{% icon "pin" "sm" %}</span>
@@ -47,17 +47,17 @@
           </div>
         {% endif %}
 
-        <div class="panel panel--pad panel--primary mt-4">
-          <h2 style="font-size:1.1rem">Ready to scope a project?</h2>
-          <p style="font-size:.93rem;color:var(--muted)">The quote form gathers what we need to give you a realistic answer first time.</p>
-          <a class="btn btn-primary btn-block" href="{% url 'contact:quote' %}">Request a quote</a>
+        <div class="lx-panel-dark mt-4 reveal">
+          <h2>Ready to scope a project?</h2>
+          <p>The quote form gathers what we need to give you a realistic answer first time.</p>
+          <a class="btn btn-light btn-block" href="{% url 'contact:quote' %}">Request a quote</a>
         </div>
 
         {% if social_links %}<div class="social-row mt-4" style="--muted:var(--muted)">{% for link in social_links %}<a href="{{ link.url }}" target="_blank" rel="noopener noreferrer" aria-label="{{ link.name }}" style="border-color:var(--border);color:var(--muted)">{% icon link.icon "sm" %}</a>{% endfor %}</div>{% endif %}
       </div>
 
       <div class="col-lg-7">
-        <div class="panel panel--pad">
+        <div class="lx-glass lx-glass--pad reveal reveal--rise" data-delay="1">
           <h2 style="font-size:1.35rem;margin-bottom:.35rem">Send us a message</h2>
           <p class="text-muted-2" style="font-size:.94rem">We read every message and reply personally.</p>
 

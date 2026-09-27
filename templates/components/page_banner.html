@@ -1,19 +1,40 @@
 {% load portfolio_tags %}
-{% comment %}Interior page header. Breadcrumbs take up to one intermediate
-level: Home / parent_label / crumb.{% endcomment %}
-<section class="page-banner">
-  <div class="container-page">
-    {% if crumb %}
-      <nav class="breadcrumbs" aria-label="Breadcrumb">
-        <a href="{% url 'core:home' %}">Home</a>
-        {% if parent_label and parent_url %}
-          <span class="sep" aria-hidden="true">/</span><a href="{{ parent_url }}">{{ parent_label }}</a>
-        {% endif %}
-        <span class="sep" aria-hidden="true">/</span><span aria-current="page">{{ crumb }}</span>
-      </nav>
-    {% endif %}
-    {% if eyebrow %}<span class="eyebrow">{{ eyebrow }}</span>{% endif %}
-    <h1 class="page-title">{{ heading }}</h1>
-    {% if subheading %}<p class="lead measure">{{ subheading }}</p>{% endif %}
+{% comment %}Interior page header: the landing hero's deep field at page-header size.
+Breadcrumbs take up to one intermediate level: Home / parent_label / crumb.
+Optional: scene (globe, cube, wave, helix, ring), primary_url/primary_label,
+secondary_url/secondary_label, and overlap=1 when the next section lifts a
+panel over the banner's lower edge.{% endcomment %}
+<section class="lx-banner{% if overlap %} lx-banner--overlap{% endif %}" data-hero>
+  <div class="lx-hero__glow" aria-hidden="true"></div>
+  <div class="lx-hero__grid" aria-hidden="true"></div>
+  <canvas class="lx-banner__canvas" data-scene="{{ scene|default:'globe' }}" aria-hidden="true"></canvas>
+
+  <div class="container-page lx-banner__inner">
+    <div class="lx-banner__copy" data-hero-copy>
+      {% if crumb %}
+        <nav class="lx-crumbs" aria-label="Breadcrumb">
+          <a href="{% url 'core:home' %}">Home</a>
+          {% if parent_label and parent_url %}
+            <span class="sep" aria-hidden="true">/</span><a href="{{ parent_url }}">{{ parent_label }}</a>
+          {% endif %}
+          <span class="sep" aria-hidden="true">/</span><span aria-current="page">{{ crumb }}</span>
+        </nav>
+      {% endif %}
+
+      {% if eyebrow %}<span class="lx-chip"><span class="lx-chip__pulse" aria-hidden="true"></span>{{ eyebrow }}</span>{% endif %}
+
+      {% with words=heading.split %}
+        <h1 class="lx-title lx-title--page page-title" style="--n:{{ words|length }}">{% for word in words %}<span class="lx-word" style="--i:{{ forloop.counter0 }}"><span>{{ word }}</span></span> {% endfor %}</h1>
+      {% endwith %}
+
+      {% if subheading %}<p class="lx-lead">{{ subheading }}</p>{% endif %}
+
+      {% if primary_url or secondary_url %}
+        <div class="lx-actions">
+          {% if primary_url %}<a class="btn btn-lx btn-lg" data-magnetic href="{{ primary_url }}"{% if primary_external %} target="_blank" rel="noopener noreferrer"{% endif %}>{{ primary_label }} {% icon "arrow-right" "sm" %}</a>{% endif %}
+          {% if secondary_url %}<a class="btn btn-ghost-light btn-lg" data-magnetic href="{{ secondary_url }}">{{ secondary_label }}</a>{% endif %}
+        </div>
+      {% endif %}
+    </div>
   </div>
 </section>

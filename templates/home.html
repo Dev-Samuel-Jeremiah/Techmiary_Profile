@@ -2,69 +2,130 @@
 {% load static portfolio_tags %}
 
 {% block content %}
+<div class="landing">
 
 {# ------------------------------------------------------------------ Hero #}
-<section class="hero">
-  <div class="container-page">
-    <div class="row g-5 align-items-center">
-      <div class="col-lg-6">
-        <span class="badge-pill">
-          <span class="dot" aria-hidden="true">{% icon "check" "sm" %}</span>
-          {% if site and site.founded_year %}Building software since {{ site.founded_year }}{% else %}Enterprise software, built and maintained{% endif %}
-        </span>
+<section class="lx-hero" data-hero>
+  <div class="lx-hero__glow" aria-hidden="true"></div>
+  <div class="lx-hero__grid" aria-hidden="true"></div>
 
-        {% if site %}
-          <h1>{{ site.resolved_hero_headline }}</h1>
-          <p class="hero__text">{{ site.resolved_hero_subheadline }}</p>
-        {% else %}
-          <h1>Software that runs your organisation</h1>
-          <p class="hero__text">Add a Site Settings record in the Django admin to publish your company headline and description.</p>
-        {% endif %}
+  <div class="container-page lx-hero__inner">
+    <div class="lx-hero__copy" data-hero-copy>
+      <span class="lx-chip">
+        <span class="lx-chip__pulse" aria-hidden="true"></span>
+        {% if site and site.founded_year %}Building software since {{ site.founded_year }}{% else %}Designed, built, deployed and maintained{% endif %}
+      </span>
 
-        <div class="hero__actions">
-          <a class="btn btn-primary btn-lg" href="{% url 'contact:quote' %}">Request a Quote</a>
-          <a class="btn btn-outline btn-lg" href="{% url 'company:solution_list' %}">Explore Solutions</a>
-        </div>
+      {% if site %}
+        {% with words=site.resolved_hero_headline.split %}
+          <h1 class="lx-title" style="--n:{{ words|length }}">{% for word in words %}<span class="lx-word" style="--i:{{ forloop.counter0 }}"><span>{{ word }}</span></span> {% endfor %}</h1>
+        {% endwith %}
+        <p class="lx-lead">{{ site.resolved_hero_subheadline }}</p>
+      {% else %}
+        <h1 class="lx-title">Software that runs your organisation</h1>
+        <p class="lx-lead">Add a Site Settings record in the Django admin to publish your company headline and description.</p>
+      {% endif %}
 
-        <div class="hero__meta">
-          <span class="hero__meta-item">{% icon "check" "sm" %} End-to-end delivery</span>
-          <span class="hero__meta-item">{% icon "check" "sm" %} Hosted and maintained</span>
-          <span class="hero__meta-item">{% icon "check" "sm" %} Built on open standards</span>
-        </div>
+      <div class="lx-actions">
+        <a class="btn btn-lx btn-lg" data-magnetic href="{% url 'contact:quote' %}">Request a Quote {% icon "arrow-right" "sm" %}</a>
+        <a class="btn btn-ghost-light btn-lg" data-magnetic href="{% url 'projects:list' %}">See our work</a>
       </div>
 
-      <div class="col-lg-6">
-        <div class="position-relative">
-          <div class="hero-visual reveal" data-delay="1">
-            <div class="hero-visual__bar">
-              <span class="hero-visual__dot"></span><span class="hero-visual__dot"></span><span class="hero-visual__dot"></span>
-              <span class="hero-visual__addr">{% if site and site.website_url %}{{ site.website_url|cut:"https://"|cut:"http://" }}{% else %}techmiary.cloud{% endif %}/dashboard</span>
-            </div>
-            <div class="hero-visual__body">
-              <div class="metric-row">
-                <div class="metric-tile"><span class="k">Modules</span><span class="v">12</span></div>
-                <div class="metric-tile"><span class="k">Uptime</span><span class="v">24/7</span></div>
-                <div class="metric-tile"><span class="k">Roles</span><span class="v">RBAC</span></div>
-              </div>
-              <div class="bar-chart" role="img" aria-label="Illustrative chart in a product interface mock-up">
-                <span style="height:38%"></span><span style="height:62%"></span><span style="height:48%"></span>
-                <span style="height:78%"></span><span style="height:56%"></span><span style="height:88%"></span>
-                <span style="height:70%"></span>
-              </div>
-              <div class="list-line"><span class="tick">{% icon "check" "sm" %}</span> Multi-tenant data isolation</div>
-              <div class="list-line"><span class="tick">{% icon "check" "sm" %}</span> Role-based access control</div>
-              <div class="list-line"><span class="tick">{% icon "check" "sm" %}</span> Automated backups and reporting</div>
-            </div>
+      <ul class="lx-points">
+        <li>{% icon "check" "sm" %} End-to-end delivery</li>
+        <li>{% icon "check" "sm" %} Hosted and maintained</li>
+        <li>{% icon "check" "sm" %} Web, desktop and mobile</li>
+      </ul>
+    </div>
+
+    <div class="lx-stage" data-stage aria-hidden="true">
+      <canvas class="lx-canvas" data-scene="globe"></canvas>
+      <div class="lx-orbit lx-orbit--a"></div>
+      <div class="lx-orbit lx-orbit--b"></div>
+      {% for project in featured_projects|slice:":3" %}
+        <div class="lx-float lx-float--{{ forloop.counter }}" data-depth="{% cycle '0.9' '0.55' '1.2' %}">
+          <div class="lx-float__card">
+            <span class="lx-float__ico">{% cycle 'layers' 'school' 'cloud' as ico silent %}{% icon ico "sm" %}</span>
+            <span class="lx-float__text">
+              <strong>{{ project.title }}</strong>
+              <small>{{ project.category.name }}</small>
+            </span>
+            {% if project.status == "live" %}<span class="lx-float__live">Live</span>{% endif %}
           </div>
-          <div class="floating-card floating-card--tl"><span class="ico">{% icon "shield" "sm" %}</span> Secure by default</div>
-          <div class="floating-card floating-card--br"><span class="ico">{% icon "server" "sm" %}</span> Deployed &amp; monitored</div>
         </div>
-      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+</section>
+
+{# ---------------------------------------------------------------- Impact #}
+<section class="lx-impact" id="impact">
+  <div class="container-page">
+    <div class="lx-impact__panel reveal reveal--rise">
+      {% for stat in impact %}
+        <div class="lx-stat">
+          <span class="lx-stat__value">{{ stat.prefix }}<span data-count="{{ stat.value }}">{{ stat.value }}</span>{{ stat.suffix }}</span>
+          <span class="lx-stat__label">{{ stat.label }}</span>
+        </div>
+      {% endfor %}
+      {% if stack %}
+        <div class="lx-stat">
+          <span class="lx-stat__value"><span data-count="{{ stack|length }}">{{ stack|length }}</span></span>
+          <span class="lx-stat__label">Technologies in use across our systems</span>
+        </div>
+      {% endif %}
     </div>
   </div>
 </section>
 
-{# ------------------------------------------------------------------ Clients #}
+{# ---------------------------------------------------------------- Stack #}
+{% if stack %}
+<section class="lx-marquee" aria-label="Technologies we work with">
+  <div class="lx-marquee__tilt">
+    <div class="lx-marquee__row">
+      <ul class="lx-marquee__track">{% for name in stack %}<li>{{ name }}</li>{% endfor %}</ul>
+      <ul class="lx-marquee__track" aria-hidden="true">{% for name in stack %}<li>{{ name }}</li>{% endfor %}</ul>
+    </div>
+    <div class="lx-marquee__row lx-marquee__row--reverse" aria-hidden="true">
+      <ul class="lx-marquee__track">{% for name in stack reversed %}<li>{{ name }}</li>{% endfor %}</ul>
+      <ul class="lx-marquee__track">{% for name in stack reversed %}<li>{{ name }}</li>{% endfor %}</ul>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{# ------------------------------------------------------------ Platforms #}
+{% if platforms %}
+<section class="section lx-platforms">
+  <div class="container-page">
+    {% include "components/section_heading.html" with center=1 eyebrow="Where our software runs" heading="Web, desktop and mobile — online or offline" subheading="We build for the device and the connection your people actually have, and every claim below links to a system we delivered." %}
+    <div class="row g-4 lx-cards">
+      {% for platform in platforms %}
+        <div class="col-sm-6 col-xl-3 d-flex">
+          <article class="card lx-plat lx-plat--{{ platform.key }} reveal reveal--flip" data-delay="{{ forloop.counter0 }}">
+            <div class="lx-plat__visual" aria-hidden="true">
+              <span class="lx-plat__art"></span>
+              <span class="lx-plat__icon">{% icon platform.icon %}</span>
+            </div>
+            <div class="card__body">
+              <h3 class="card__title">{{ platform.title }}</h3>
+              <p class="card__text">{{ platform.text }}</p>
+              {% if platform.project %}
+                <div class="card__footer">
+                  <a class="link-arrow" href="{{ platform.project.get_absolute_url }}">See {{ platform.project.title }} {% icon "arrow-right" "sm" %}</a>
+                </div>
+              {% endif %}
+            </div>
+          </article>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{# ------------------------------------------------------------- Clients #}
 {% if clients %}
 <section class="section section--tight">
   <div class="container-page">
@@ -74,18 +135,19 @@
 </section>
 {% endif %}
 
-{# ----------------------------------------------------------------- Partners #}
+{# ------------------------------------------------------------ Partners #}
 {% if partners or trusted_by %}
   {% include "components/partners.html" %}
 {% endif %}
 
-{# ------------------------------------------------------------- Solutions #}
-<section class="section section--soft">
+{# ----------------------------------------------------------- Solutions #}
+<section class="section lx-section" data-tilt-scope>
+  <div class="lx-section__aura" aria-hidden="true"></div>
   <div class="container-page">
     {% include "components/section_heading.html" with center=1 eyebrow="Our solutions" heading="Platforms built for how organisations actually work" subheading="Each one is a working system we designed, built, deployed and continue to maintain — not a concept." %}
 
     {% if solutions %}
-      <div class="row g-4">
+      <div class="row g-4 lx-cards">
         {% for solution in solutions %}
           <div class="col-md-6 col-xl-3 d-flex">{% include "components/solution_card.html" with solution=solution delay=forloop.counter0 %}</div>
         {% endfor %}
@@ -97,20 +159,75 @@
   </div>
 </section>
 
-{# ------------------------------------------------------------- Industries #}
+{# ----------------------------------------------------------------- Work #}
+{% if featured_projects %}
+<section class="section lx-work">
+  <div class="container-page">
+    {% include "components/section_heading.html" with eyebrow="Our work" heading="Systems already in service" subheading="What was built, the problem behind it and how it is architected." %}
+
+    <div class="lx-stack" data-stack>
+      {% for project in featured_projects %}
+        <article class="lx-stack__item" style="--i:{{ forloop.counter0 }}">
+          <div class="lx-stack__card">
+            <div class="lx-stack__copy">
+              <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                <span class="lx-tag">{{ project.category.name }}</span>
+                {% if project.year %}<span class="lx-tag lx-tag--muted">{{ project.year }}</span>{% endif %}
+                <span class="status-pill" data-status="{{ project.status }}">{{ project.get_status_display }}</span>
+              </div>
+              <span class="lx-stack__num" aria-hidden="true">{{ forloop.counter|stringformat:"02d" }}</span>
+              <h3><a href="{{ project.get_absolute_url }}">{{ project.title }}</a></h3>
+              <p>{{ project.short_description }}</p>
+              {% if project.technologies.all %}
+                <ul class="lx-stack__tech">{% for tech in project.technologies.all|slice:":6" %}<li>{{ tech.name }}</li>{% endfor %}</ul>
+              {% endif %}
+              <div class="d-flex flex-wrap gap-2 mt-4">
+                <a class="btn btn-primary" href="{{ project.get_absolute_url }}">Read the case study</a>
+                {% if project.website_url %}<a class="btn btn-outline" href="{{ project.website_url }}" target="_blank" rel="noopener noreferrer">Visit site {% icon "arrow-up-right" "sm" %}</a>{% endif %}
+              </div>
+            </div>
+
+            <div class="lx-device" aria-hidden="true">
+              <div class="lx-device__screen">
+                <div class="lx-device__bar"><i></i><i></i><i></i><span>{% if project.website_url %}{{ project.website_url|cut:"https://"|cut:"http://"|cut:"www." }}{% else %}{{ project.slug }}{% endif %}</span></div>
+                {% if project.cover_image %}
+                  <img src="{{ project.cover_image.url }}" alt="" loading="lazy" decoding="async" width="800" height="450">
+                {% else %}
+                  <div class="lx-device__ui">
+                    <span class="lx-device__title">{{ project.title }}</span>
+                    {% for feature in project.features.all|slice:":4" %}
+                      <span class="lx-device__row" style="--r:{{ forloop.counter0 }}"><b></b>{{ feature.title }}</span>
+                    {% empty %}
+                      <span class="lx-device__row"><b></b>{{ project.category.name }}</span>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+
+    <div class="text-center mt-5"><a class="btn btn-outline" href="{% url 'projects:list' %}">See all case studies</a></div>
+  </div>
+</section>
+{% endif %}
+
+{# ----------------------------------------------------------- Industries #}
 {% if industries %}
-<section class="section">
+<section class="section section--soft" data-tilt-scope>
   <div class="container-page">
     <div class="row g-5 align-items-center mb-5">
       <div class="col-lg-6">
         <span class="eyebrow">Industries</span>
-        <h2 style="font-size:clamp(1.9rem,3.6vw,2.6rem)">Sectors we understand before we write code</h2>
+        <h2 class="lx-split" style="font-size:clamp(1.9rem,3.6vw,2.6rem)">Sectors we understand before we write code</h2>
       </div>
       <div class="col-lg-6">
         <p class="lead mb-0">Every sector carries its own rules, records and reporting duties. We learn those first, then design the system around them.</p>
       </div>
     </div>
-    <div class="row g-4">
+    <div class="row g-4 lx-cards">
       {% for industry in industries %}
         <div class="col-sm-6 col-lg-4 d-flex">{% include "components/industry_card.html" with industry=industry delay=forloop.counter0 %}</div>
       {% endfor %}
@@ -119,12 +236,26 @@
 </section>
 {% endif %}
 
-{# --------------------------------------------------------------- Services #}
+{# ------------------------------------------------------------- Process #}
+<section class="section lx-process" data-process>
+  <div class="container-page">
+    {% include "components/section_heading.html" with center=1 eyebrow="How we work" heading="A delivery process you can follow" subheading="No black boxes. You know what stage the work is at, what is next, and what is expected of you." %}
+    <ol class="lx-steps">
+      <li class="lx-step reveal reveal--flip"><span class="lx-step__num">1</span><h3>Discovery</h3><p>We map the workflow, the records and the people who touch them.</p></li>
+      <li class="lx-step reveal reveal--flip" data-delay="1"><span class="lx-step__num">2</span><h3>Architecture</h3><p>Data model, integrations and hosting decided before a line is written.</p></li>
+      <li class="lx-step reveal reveal--flip" data-delay="2"><span class="lx-step__num">3</span><h3>Build</h3><p>Short cycles with working software you can log into and try.</p></li>
+      <li class="lx-step reveal reveal--flip" data-delay="3"><span class="lx-step__num">4</span><h3>Deploy</h3><p>Provisioned, secured and put live on infrastructure we configure.</p></li>
+      <li class="lx-step reveal reveal--flip" data-delay="4"><span class="lx-step__num">5</span><h3>Support</h3><p>Monitoring, backups, fixes and the changes your operations need next.</p></li>
+    </ol>
+  </div>
+</section>
+
+{# ------------------------------------------------------------- Services #}
 {% if services %}
-<section class="section section--soft">
+<section class="section section--soft" data-tilt-scope>
   <div class="container-page">
     {% include "components/section_heading.html" with center=1 eyebrow="Services" heading="How we engage" subheading="From a single internal tool to a multi-tenant platform, the engagement covers the whole lifecycle." %}
-    <div class="row g-4">
+    <div class="row g-4 lx-cards">
       {% for service in services %}
         <div class="col-md-6 col-lg-4 d-flex">{% include "components/service_card.html" with service=service delay=forloop.counter0 %}</div>
       {% endfor %}
@@ -134,41 +265,12 @@
 </section>
 {% endif %}
 
-{# ------------------------------------------------------------- How we work #}
-<section class="section">
-  <div class="container-page">
-    {% include "components/section_heading.html" with center=1 eyebrow="How we work" heading="A delivery process you can follow" subheading="No black boxes. You know what stage the work is at, what is next, and what is expected of you." %}
-    <div class="process-grid">
-      <div class="process-node reveal"><span class="process-node__num">1</span><h3>Discovery</h3><p>We map the workflow, the records and the people who touch them.</p></div>
-      <div class="process-node reveal" data-delay="1"><span class="process-node__num">2</span><h3>Architecture</h3><p>Data model, integrations and hosting decided before a line is written.</p></div>
-      <div class="process-node reveal" data-delay="2"><span class="process-node__num">3</span><h3>Build</h3><p>Short cycles with working software you can log into and try.</p></div>
-      <div class="process-node reveal" data-delay="3"><span class="process-node__num">4</span><h3>Deploy</h3><p>Provisioned, secured and put live on infrastructure we configure.</p></div>
-      <div class="process-node reveal"><span class="process-node__num">5</span><h3>Support</h3><p>Monitoring, backups, fixes and the changes your operations need next.</p></div>
-    </div>
-  </div>
-</section>
-
-{# ----------------------------------------------------------------- Work #}
-{% if featured_projects %}
-<section class="section section--soft">
-  <div class="container-page">
-    {% include "components/section_heading.html" with eyebrow="Our work" heading="Systems already in service" subheading="Case studies of what was built, the problem behind it and how it is architected." %}
-    <div class="row g-4">
-      {% for project in featured_projects %}
-        <div class="col-md-6 col-lg-4 d-flex">{% include "components/project_card.html" with project=project delay=forloop.counter0 %}</div>
-      {% endfor %}
-    </div>
-    <div class="text-center mt-5"><a class="btn btn-outline" href="{% url 'projects:list' %}">See all case studies</a></div>
-  </div>
-</section>
-{% endif %}
-
 {# --------------------------------------------------------- Testimonials #}
 {% if testimonials %}
-<section class="section">
+<section class="section" data-tilt-scope>
   <div class="container-page">
     {% include "components/section_heading.html" with center=1 eyebrow="In their words" heading="What clients say" %}
-    <div class="row g-4">
+    <div class="row g-4 lx-cards">
       {% for testimonial in testimonials %}
         <div class="col-md-6 col-lg-4 d-flex">{% include "components/testimonial_card.html" with testimonial=testimonial delay=forloop.counter0 %}</div>
       {% endfor %}
@@ -177,12 +279,12 @@
 </section>
 {% endif %}
 
-{# ------------------------------------------------------------- Leadership #}
+{# ----------------------------------------------------------- Leadership #}
 {% if leadership %}
-<section class="section section--soft">
+<section class="section" data-tilt-scope>
   <div class="container-page">
     {% include "components/section_heading.html" with center=1 eyebrow="Leadership" heading="The people accountable for the work" %}
-    <div class="row g-4 justify-content-center">
+    <div class="row g-4 justify-content-center lx-cards">
       {% for member in leadership %}
         <div class="col-sm-6 col-lg-3 d-flex">{% include "components/person_card.html" with member=member delay=forloop.counter0 %}</div>
       {% endfor %}
@@ -192,20 +294,20 @@
 </section>
 {% endif %}
 
-{# ---------------------------------------------------- Careers + Insights #}
+{# --------------------------------------------------- Careers + Insights #}
 {% if open_roles or latest_posts %}
-<section class="section">
+<section class="section section--soft" data-tilt-scope>
   <div class="container-page">
     <div class="row g-5">
       {% if latest_posts %}
         <div class="{% if open_roles %}col-lg-7{% else %}col-12{% endif %}">
           <div class="section-heading" style="margin-bottom:1.75rem">
             <span class="eyebrow">Insights</span>
-            <h2 style="font-size:1.75rem">From our engineering desk</h2>
+            <h2 class="lx-split" style="font-size:1.75rem">From our engineering desk</h2>
           </div>
-          <div class="row g-4">
+          <div class="row g-4 lx-cards">
             {% for post in latest_posts %}
-              <div class="col-md-6 d-flex">{% include "components/blog_card.html" with post=post delay=forloop.counter0 %}</div>
+              <div class="{% if open_roles %}col-md-6{% else %}col-md-6 col-lg-4{% endif %} d-flex">{% include "components/blog_card.html" with post=post delay=forloop.counter0 %}</div>
             {% endfor %}
           </div>
           <a class="link-arrow mt-4 d-inline-flex" href="{% url 'blog:list' %}">All insights {% icon "arrow-right" "sm" %}</a>
@@ -230,4 +332,6 @@
 {% endif %}
 
 {% include "components/cta.html" %}
+</div>
 {% endblock %}
+

@@ -2,12 +2,12 @@
 {% load portfolio_tags %}
 
 {% block content %}
-{% include "components/page_banner.html" with eyebrow="Services" crumb="Services" heading="How we engage with your organisation" subheading="Whether the work is a new platform, an internal tool or taking an existing application to production, the engagement covers the full lifecycle." %}
+{% include "components/page_banner.html" with scene="helix" eyebrow="Services" crumb="Services" heading="How we engage with your organisation" subheading="Whether the work is a new platform, an internal tool or taking an existing application to production, the engagement covers the full lifecycle." %}
 
 <section class="section">
   <div class="container-page">
     {% if services %}
-      <div class="row g-4">
+      <div class="row g-4 lx-cards">
         {% for service in services %}
           <div class="col-md-6 col-lg-4 d-flex">{% include "components/service_card.html" with service=service delay=forloop.counter0 %}</div>
         {% endfor %}
@@ -21,7 +21,7 @@
 <section class="section section--soft">
   <div class="container-page">
     {% include "components/section_heading.html" with center=1 eyebrow="Engagement models" heading="Ways to work with us" %}
-    <div class="row g-4">
+    <div class="row g-4 lx-cards">
       <div class="col-md-4 d-flex">
         <div class="card step-card reveal">
           <span class="step-card__num">Fixed scope</span>

@@ -21,6 +21,39 @@ from .models import Partner, Skill, SkillCategory
 from .seo import SEOMixin, breadcrumb_schema, organization_schema, person_schema
 
 
+# Figures as stated in the founder's GitHub profile README. Change them here
+# only when there is a source for the new number.
+IMPACT = [
+    {"value": 10, "suffix": "", "label": "Client platforms developed and maintained", "prefix": "~"},
+    {"value": 15, "suffix": "", "label": "Websites and web applications delivered", "prefix": "~"},
+    {"value": 20, "suffix": "+", "label": "Final-year software projects supported", "prefix": ""},
+]
+
+
+# The kinds of software we ship. Each names a real project as its example, so
+# a claim here always points at the work behind it.
+PLATFORMS = [
+    {"key": "web", "icon": "globe", "title": "Web platforms",
+     "text": "Multi-tenant SaaS, school ERPs and information systems, hosted and maintained on our servers.",
+     "example": "techmiary-cloud"},
+    {"key": "desktop", "icon": "monitor", "title": "Desktop software",
+     "text": "Programs that install on your own Windows or Linux computers, with local data and backups.",
+     "example": "school-result-manager"},
+    {"key": "mobile", "icon": "smartphone", "title": "Android & iOS apps",
+     "text": "Phone apps built on your platform, so every update you deploy reaches users without a new release.",
+     "example": "diction-masters"},
+    {"key": "offline", "icon": "wifi-off", "title": "Online or offline",
+     "text": "Software that keeps working without the internet — scores entered and results printed on site.",
+     "example": "school-result-manager"},
+]
+
+
+def platforms_with_examples():
+    slugs = {p["example"] for p in PLATFORMS}
+    projects = {p.slug: p for p in Project.published.filter(slug__in=slugs)}
+    return [dict(p, project=projects.get(p["example"])) for p in PLATFORMS]
+
+
 class HomeView(SEOMixin, TemplateView):
     template_name = "home.html"
 
@@ -35,9 +68,9 @@ class HomeView(SEOMixin, TemplateView):
             Service.objects.filter(is_active=True, is_featured=True)[:6]
         ) or list(Service.objects.filter(is_active=True)[:6])
 
-        featured = list(Project.published.with_related().filter(featured=True)[:3])
+        featured = list(Project.published.with_related().prefetch_related("features").filter(featured=True)[:4])
         if not featured:
-            featured = list(Project.published.with_related()[:3])
+            featured = list(Project.published.with_related().prefetch_related("features")[:4])
         context["featured_projects"] = featured
 
         context["leadership"] = list(TeamMember.objects.active().filter(is_leadership=True)[:4])
@@ -54,6 +87,14 @@ class HomeView(SEOMixin, TemplateView):
         )
         context["partners"] = [p for p in partners if p.kind == Partner.KIND_PARTNER]
         context["trusted_by"] = [p for p in partners if p.kind == Partner.KIND_TRUSTED]
+
+        context["stack"] = list(
+            Skill.objects.filter(is_active=True)
+            .order_by("category__display_order", "display_order")
+            .values_list("name", flat=True)[:28]
+        )
+        context["impact"] = IMPACT
+        context["platforms"] = platforms_with_examples()
         return context
 
     def get_meta_title(self, context):
@@ -92,6 +133,7 @@ class AboutView(SEOMixin, TemplateView):
         context["industry_count"] = Industry.objects.active().count()
         context["service_count"] = Service.objects.filter(is_active=True).count()
         context["clients"] = list(Client.objects.active()[:12])
+        context["impact"] = IMPACT
         return context
 
     def get_meta_title(self, context):

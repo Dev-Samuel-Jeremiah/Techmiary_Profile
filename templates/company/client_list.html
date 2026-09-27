@@ -2,7 +2,7 @@
 {% load portfolio_tags %}
 
 {% block content %}
-{% include "components/page_banner.html" with eyebrow="Clients" crumb="Clients" heading="Organisations we deliver for" subheading="We name an organisation here only where they have agreed to it." %}
+{% include "components/page_banner.html" with scene="globe" eyebrow="Clients" crumb="Clients" heading="Organisations we deliver for" subheading="We name an organisation here only where they have agreed to it." %}
 
 <section class="section">
   <div class="container-page">
@@ -36,7 +36,7 @@
 <section class="section section--soft">
   <div class="container-page">
     {% include "components/section_heading.html" with center=1 eyebrow="In their words" heading="What clients say about working with us" %}
-    <div class="row g-4">
+    <div class="row g-4 lx-cards">
       {% for testimonial in testimonials %}
         <div class="col-md-6 col-lg-4 d-flex">{% include "components/testimonial_card.html" with testimonial=testimonial delay=forloop.counter0 %}</div>
       {% endfor %}

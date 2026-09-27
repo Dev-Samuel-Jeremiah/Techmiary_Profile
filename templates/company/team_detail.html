@@ -5,13 +5,14 @@
 
 {% block content %}
 {% url 'company:team_list' as team_url %}
-{% include "components/page_banner.html" with eyebrow=member.role crumb=member.name parent_label="Team" parent_url=team_url heading=member.name subheading=member.short_bio %}
+{% include "components/page_banner.html" with scene="ring" overlap=1 eyebrow=member.role crumb=member.name parent_label="Team" parent_url=team_url heading=member.name subheading=member.short_bio %}
 
-<section class="section">
-  <div class="container-page">
+<section class="section pt-0">
+  <div class="container-page lx-lift">
+    <div class="lx-glass lx-glass--pad reveal reveal--rise">
     <div class="row g-5">
       <div class="col-lg-4">
-        <div class="panel panel--pad text-center reveal">
+        <div class="lx-profile text-center">
           {% if member.photo %}
             <img class="person-card__photo" style="width:150px;height:150px" src="{{ member.photo.url }}" alt="{{ member.image_alt }}" loading="lazy" width="150" height="150">
           {% else %}
@@ -46,6 +47,7 @@
         {% endif %}
       </div>
     </div>
+    </div>
   </div>
 </section>
 
@@ -53,7 +55,7 @@
 <section class="section section--soft">
   <div class="container-page">
     {% include "components/section_heading.html" with eyebrow="Team" heading="More of the team" %}
-    <div class="row g-4">
+    <div class="row g-4 lx-cards">
       {% for colleague in colleagues %}
         <div class="col-sm-6 col-lg-4 d-flex">{% include "components/person_card.html" with member=colleague delay=forloop.counter0 %}</div>
       {% endfor %}

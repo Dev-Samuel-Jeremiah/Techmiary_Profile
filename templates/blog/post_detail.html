@@ -6,7 +6,7 @@
 
 {% block content %}
 {% url 'blog:list' as insights_url %}
-{% include "components/page_banner.html" with eyebrow=post.category.name|default:"Insights" crumb=post.title parent_label="Insights" parent_url=insights_url heading=post.title subheading=post.excerpt %}
+{% include "components/page_banner.html" with scene="wave" eyebrow=post.category.name|default:"Insights" crumb=post.title parent_label="Insights" parent_url=insights_url heading=post.title subheading=post.excerpt %}
 
 <article class="section">
   <div class="container-page" style="max-width:840px">
@@ -22,11 +22,11 @@
 
     <div class="prose">{{ post.content|linebreaks }}</div>
 
-    <div class="panel panel--pad panel--primary mt-5">
+    <div class="lx-panel-dark mt-5 reveal">
       <div class="row g-3 align-items-center">
         <div class="col-lg-7">
-          <h2 style="font-size:1.15rem;margin-bottom:.25rem">Get new articles by email</h2>
-          <p class="mb-0 text-muted-2" style="font-size:.92rem">Occasional notes on building and running business software.</p>
+          <h2 style="margin-bottom:.25rem">Get new articles by email</h2>
+          <p class="mb-0">Occasional notes on building and running business software.</p>
         </div>
         <div class="col-lg-5">
           <form class="newsletter-form" method="post" action="{% url 'contact:newsletter' %}">
@@ -35,7 +35,7 @@
             <input type="hidden" name="next" value="{{ request.path }}">
             <label class="visually-hidden" for="post-newsletter-email">Email address</label>
             <input class="form-control" id="post-newsletter-email" type="email" name="email" required placeholder="you@example.com" autocomplete="email">
-            <button class="btn btn-primary" type="submit">Subscribe</button>
+            <button class="btn btn-light" type="submit">Subscribe</button>
           </form>
         </div>
       </div>
@@ -44,7 +44,7 @@
     {% if related_posts %}
       <section class="mt-5 pt-4" style="border-top:1px solid var(--border)">
         <h2 style="font-size:1.25rem;margin-bottom:1.25rem">Related reading</h2>
-        <div class="row g-4">
+        <div class="row g-4 lx-cards">
           {% for related in related_posts %}
             <div class="col-md-4 d-flex">{% include "components/blog_card.html" with post=related %}</div>
           {% endfor %}

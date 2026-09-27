@@ -3,7 +3,22 @@
 
 {% block content %}
 {% url 'careers:list' as careers_url %}
-{% include "components/page_banner.html" with eyebrow=job.department.name crumb=job.title parent_label="Careers" parent_url=careers_url heading=job.title subheading=job.summary %}
+{% if job.is_accepting_applications %}
+  {% include "components/page_banner.html" with scene="helix" overlap=1 eyebrow=job.department.name crumb=job.title parent_label="Careers" parent_url=careers_url heading=job.title subheading=job.summary primary_url="#apply" primary_label="Apply for this role" %}
+{% else %}
+  {% include "components/page_banner.html" with scene="helix" overlap=1 eyebrow=job.department.name crumb=job.title parent_label="Careers" parent_url=careers_url heading=job.title subheading=job.summary %}
+{% endif %}
+
+<div class="container-page lx-lift">
+  <dl class="lx-glass lx-facts reveal reveal--rise mb-0">
+    <div><dt class="k">Team</dt><dd class="v mb-0">{{ job.department.name }}</dd></div>
+    <div><dt class="k">Type</dt><dd class="v mb-0">{{ job.get_employment_type_display }}</dd></div>
+    <div><dt class="k">Arrangement</dt><dd class="v mb-0">{{ job.get_location_type_display }}</dd></div>
+    {% if job.location %}<div><dt class="k">Location</dt><dd class="v mb-0">{{ job.location }}</dd></div>{% endif %}
+    <div><dt class="k">Level</dt><dd class="v mb-0">{{ job.get_experience_level_display }}</dd></div>
+    {% if job.salary_range %}<div><dt class="k">Compensation</dt><dd class="v mb-0">{{ job.salary_range }}</dd></div>{% endif %}
+  </dl>
+</div>
 
 <section class="section">
   <div class="container-page">
@@ -18,34 +33,34 @@
           {% if job.responsibility_list %}
             <div class="case-section reveal">
               <h2>What you will do</h2>
-              <ul>{% for item in job.responsibility_list %}<li>{{ item }}</li>{% endfor %}</ul>
+              <ul class="lx-checks">{% for item in job.responsibility_list %}<li>{% icon "check" "sm" %}<span>{{ item }}</span></li>{% endfor %}</ul>
             </div>
           {% endif %}
 
           {% if job.requirement_list %}
             <div class="case-section reveal">
               <h2>What we are looking for</h2>
-              <ul>{% for item in job.requirement_list %}<li>{{ item }}</li>{% endfor %}</ul>
+              <ul class="lx-checks">{% for item in job.requirement_list %}<li>{% icon "check" "sm" %}<span>{{ item }}</span></li>{% endfor %}</ul>
             </div>
           {% endif %}
 
           {% if job.nice_to_have_list %}
             <div class="case-section reveal">
               <h2>Nice to have</h2>
-              <ul>{% for item in job.nice_to_have_list %}<li>{{ item }}</li>{% endfor %}</ul>
+              <ul class="lx-checks">{% for item in job.nice_to_have_list %}<li>{% icon "check" "sm" %}<span>{{ item }}</span></li>{% endfor %}</ul>
             </div>
           {% endif %}
 
           {% if job.benefit_list %}
             <div class="case-section reveal">
               <h2>What we offer</h2>
-              <ul>{% for item in job.benefit_list %}<li>{{ item }}</li>{% endfor %}</ul>
+              <ul class="lx-checks">{% for item in job.benefit_list %}<li>{% icon "check" "sm" %}<span>{{ item }}</span></li>{% endfor %}</ul>
             </div>
           {% endif %}
         </div>
 
         {# ---------------------------------------------------- Application #}
-        <div class="panel panel--pad mt-5" id="apply">
+        <div class="lx-glass lx-glass--pad mt-5" id="apply" style="scroll-margin-top:calc(var(--nav-h, 76px) + 1.5rem)">
           <h2 style="font-size:1.35rem;margin-bottom:.35rem">Apply for this role</h2>
           {% if job.is_accepting_applications %}
             <p class="text-muted-2" style="font-size:.94rem">Attach your CV and tell us why this role fits. We reply to every applicant.</p>
@@ -114,21 +129,10 @@
 
       <aside class="col-lg-4">
         <div class="sticky-panel">
-          <div class="panel panel--pad reveal">
-            <p class="panel__label">Role details</p>
-            <ul class="fact-list">
-              <li><span class="k">Team</span><span class="v">{{ job.department.name }}</span></li>
-              <li><span class="k">Type</span><span class="v">{{ job.get_employment_type_display }}</span></li>
-              <li><span class="k">Arrangement</span><span class="v">{{ job.get_location_type_display }}</span></li>
-              {% if job.location %}<li><span class="k">Location</span><span class="v">{{ job.location }}</span></li>{% endif %}
-              <li><span class="k">Level</span><span class="v">{{ job.get_experience_level_display }}</span></li>
-              {% if job.salary_range %}<li><span class="k">Compensation</span><span class="v">{{ job.salary_range }}</span></li>{% endif %}
-              {% if job.posted_at %}<li><span class="k">Posted</span><span class="v">{{ job.posted_at|date:"j M Y" }}</span></li>{% endif %}
-              {% if job.closes_at %}<li><span class="k">Closes</span><span class="v">{{ job.closes_at|date:"j M Y" }}</span></li>{% endif %}
-            </ul>
-            {% if job.is_accepting_applications %}
-              <a class="btn btn-primary btn-block mt-3" href="#apply">Apply now</a>
-            {% endif %}
+          <div class="lx-panel-dark reveal">
+            <h3>Interested?</h3>
+            <p>{% if job.posted_at %}Posted {{ job.posted_at|date:"j M Y" }}.{% endif %}{% if job.closes_at %} Applications close {{ job.closes_at|date:"j M Y" }}.{% endif %} We reply to every applicant.</p>
+            {% if job.is_accepting_applications %}<a class="btn btn-light btn-block" href="#apply">Apply now</a>{% else %}<a class="btn btn-light btn-block" href="{% url 'careers:list' %}">See open roles</a>{% endif %}
           </div>
 
           {% if other_jobs %}

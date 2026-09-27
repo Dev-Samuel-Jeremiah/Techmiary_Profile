@@ -6,33 +6,76 @@
 
 {% block content %}
 {% url 'projects:list' as work_url %}
-{% include "components/page_banner.html" with eyebrow=project.category.name crumb=project.title parent_label="Our Work" parent_url=work_url heading=project.title subheading=project.short_description %}
+{% url 'contact:quote' as quote_url %}
+{% if project.website_url %}
+  {% include "components/page_banner.html" with scene="cube" overlap=1 eyebrow=project.category.name crumb=project.title parent_label="Our Work" parent_url=work_url heading=project.title subheading=project.short_description primary_url=project.website_url primary_label="Visit the product" primary_external=1 secondary_url=quote_url secondary_label="Build something similar" %}
+{% else %}
+  {% include "components/page_banner.html" with scene="cube" overlap=1 eyebrow=project.category.name crumb=project.title parent_label="Our Work" parent_url=work_url heading=project.title subheading=project.short_description primary_url=quote_url primary_label="Build something similar" secondary_url=work_url secondary_label="All case studies" %}
+{% endif %}
 
-<article class="section">
+<div class="container-page lx-lift">
+  <dl class="lx-glass lx-facts reveal reveal--rise mb-0">
+    <div><dt class="k">Category</dt><dd class="v mb-0">{{ project.category.name }}</dd></div>
+    {% if project.year %}<div><dt class="k">Year</dt><dd class="v mb-0">{{ project.year }}</dd></div>{% endif %}
+    <div><dt class="k">Status</dt><dd class="v mb-0"><span class="status-pill" data-status="{{ project.status }}">{{ project.get_status_display }}</span></dd></div>
+    {% if project.client %}<div><dt class="k">Client</dt><dd class="v mb-0">{{ project.client }}</dd></div>{% endif %}
+    {% if project.website_url %}<div><dt class="k">Website</dt><dd class="v mb-0"><a href="{{ project.website_url }}" target="_blank" rel="noopener noreferrer">{{ project.website_url|cut:"https://"|cut:"http://"|cut:"www." }}</a></dd></div>{% endif %}
+    {% if project.github_url %}<div><dt class="k">Source</dt><dd class="v mb-0"><a href="{{ project.github_url }}" target="_blank" rel="noopener noreferrer">GitHub</a></dd></div>{% endif %}
+  </dl>
+</div>
+
+{% if project.description or project.cover_image or project.features.all %}
+<section class="section">
   <div class="container-page">
-    {% if project.cover_image %}
-      <figure class="figure mb-5 reveal">
-        <img src="{{ project.cover_image.url }}" alt="{{ project.cover_alt_text }}" loading="lazy" decoding="async">
-      </figure>
-    {% endif %}
+    <div class="lx-showcase">
+      <div class="reveal">
+        <span class="eyebrow">Overview</span>
+        <h2 class="lx-split" style="font-size:clamp(1.7rem,3.2vw,2.4rem)">What {{ project.title }} does</h2>
+        {% if project.description %}<div class="prose">{{ project.description|linebreaks }}</div>{% endif %}
+        {% if project.technologies.all %}
+          <ul class="lx-stack__tech">{% for tech in project.technologies.all %}<li>{{ tech.name }}</li>{% endfor %}</ul>
+        {% endif %}
+      </div>
 
+      <div class="lx-device lx-device--lg reveal reveal--zoom" aria-hidden="true">
+        <div class="lx-device__screen">
+          <div class="lx-device__bar"><i></i><i></i><i></i><span>{% if project.website_url %}{{ project.website_url|cut:"https://"|cut:"http://"|cut:"www." }}{% else %}{{ project.slug }}{% endif %}</span></div>
+          {% if project.cover_image %}
+            <img src="{{ project.cover_image.url }}" alt="" loading="lazy" decoding="async" width="800" height="450">
+          {% else %}
+            <div class="lx-device__ui">
+              <span class="lx-device__title">{{ project.title }}</span>
+              {% for feature in project.features.all|slice:":5" %}
+                <span class="lx-device__row" style="--r:{{ forloop.counter0 }}"><b></b>{{ feature.title }}</span>
+              {% empty %}
+                <span class="lx-device__row"><b></b>{{ project.category.name }}</span>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<article class="section section--soft">
+  <div class="container-page">
     <div class="row g-5">
       <div class="col-lg-8">
         <div class="prose">
-          {% if project.description %}<div class="case-section reveal"><h2>Overview</h2>{{ project.description|linebreaks }}</div>{% endif %}
           {% if project.problem %}<div class="case-section reveal"><h2>The problem</h2>{{ project.problem|linebreaks }}</div>{% endif %}
           {% if project.solution %}<div class="case-section reveal"><h2>What we built</h2>{{ project.solution|linebreaks }}</div>{% endif %}
 
           {% if project.features.all %}
-            <div class="case-section reveal">
-              <h2>Key features</h2>
-              <div class="row g-3">
+            <div class="case-section">
+              <h2 class="reveal">Key features</h2>
+              <div class="lx-features">
                 {% for feature in project.features.all %}
-                  <div class="col-md-6 d-flex">
-                    <div class="card"><div class="card__body" style="padding:1.25rem">
-                      <h3 class="card__title" style="font-size:1rem">{{ feature.title }}</h3>
-                      {% if feature.description %}<p class="card__text" style="margin-bottom:0">{{ feature.description }}</p>{% endif %}
-                    </div></div>
+                  <div class="lx-feature reveal reveal--flip" data-delay="{{ forloop.counter0|divisibleby:2|yesno:'0,1' }}">
+                    <span class="lx-feature__n">{{ forloop.counter|stringformat:"02d" }}</span>
+                    <h3>{{ feature.title }}</h3>
+                    {% if feature.description %}<p>{{ feature.description }}</p>{% endif %}
                   </div>
                 {% endfor %}
               </div>
@@ -40,16 +83,14 @@
           {% endif %}
 
           {% if project.challenges.all %}
-            <div class="case-section reveal">
-              <h2>Engineering challenges</h2>
-              <div class="row g-3">
+            <div class="case-section">
+              <h2 class="reveal">Engineering challenges</h2>
+              <div class="lx-features">
                 {% for challenge in project.challenges.all %}
-                  <div class="col-md-6 d-flex">
-                    <div class="card"><div class="card__body" style="padding:1.25rem">
-                      <span class="icon-tile icon-tile--sm">{% icon "settings" "sm" %}</span>
-                      <h3 class="card__title" style="font-size:1rem">{{ challenge.title }}</h3>
-                      {% if challenge.description %}<p class="card__text" style="margin-bottom:0">{{ challenge.description }}</p>{% endif %}
-                    </div></div>
+                  <div class="lx-feature lx-feature--accent reveal reveal--flip">
+                    <span class="lx-feature__n">{% icon "settings" "sm" %}</span>
+                    <h3>{{ challenge.title }}</h3>
+                    {% if challenge.description %}<p>{{ challenge.description }}</p>{% endif %}
                   </div>
                 {% endfor %}
               </div>
@@ -82,38 +123,25 @@
 
       <aside class="col-lg-4">
         <div class="sticky-panel">
-          <div class="panel panel--pad reveal">
-            <p class="panel__label">Project details</p>
-            <ul class="fact-list">
-              <li><span class="k">Category</span><span class="v">{{ project.category.name }}</span></li>
-              {% if project.year %}<li><span class="k">Year</span><span class="v">{{ project.year }}</span></li>{% endif %}
-              <li><span class="k">Status</span><span class="v"><span class="status-pill" data-status="{{ project.status }}">{{ project.get_status_display }}</span></span></li>
-              {% if project.client %}<li><span class="k">Client</span><span class="v">{{ project.client }}</span></li>{% endif %}
-              {% if project.website_url %}<li><span class="k">Website</span><span class="v"><a href="{{ project.website_url }}" target="_blank" rel="noopener noreferrer">{{ project.website_url|cut:"https://"|cut:"http://" }}</a></span></li>{% endif %}
-              {% if project.github_url %}<li><span class="k">Source</span><span class="v"><a href="{{ project.github_url }}" target="_blank" rel="noopener noreferrer">GitHub</a></span></li>{% endif %}
-            </ul>
-            {% if project.technologies.all %}
-              <p class="panel__label mt-4">Built with</p>
-              <div class="tag-row">{% for tech in project.technologies.all %}<span class="tag tag--primary">{{ tech.name }}</span>{% endfor %}</div>
-            {% endif %}
-            {% if project.website_url %}
-              <a class="btn btn-primary btn-block mt-4" href="{{ project.website_url }}" target="_blank" rel="noopener noreferrer">Visit the product {% icon "arrow-up-right" "sm" %}</a>
-            {% endif %}
-          </div>
-
           {% if project.architecture_description or project.architecture_diagram %}
-            <div class="panel panel--pad mt-4 reveal">
-              <p class="panel__label">Architecture</p>
+            <div class="lx-panel-dark lx-arch reveal">
+              <p class="panel__label" style="color:#b9caff">Architecture</p>
               {% if project.architecture_diagram %}
                 <img src="{{ project.architecture_diagram.url }}" alt="Architecture diagram for {{ project.title }}" class="w-100 mb-3" style="border-radius:var(--radius-sm)" loading="lazy" decoding="async">
               {% endif %}
               {% if project.architecture_description %}
-                <div class="arch-flow">
-                  {% for node in project.architecture_description|split_lines %}
-                    {% if not forloop.first %}<div class="arch-arrow" aria-hidden="true">{% icon "chevron-down" "sm" %}</div>{% endif %}
-                    <div class="arch-node {% if forloop.counter == 3 %}arch-node--accent{% endif %}">{{ node }}</div>
-                  {% endfor %}
-                </div>
+                {% with nodes=project.architecture_description|split_lines %}
+                  {% if nodes|length > 1 %}
+                    <div class="arch-flow">
+                      {% for node in nodes %}
+                        {% if not forloop.first %}<div class="arch-arrow" aria-hidden="true">{% icon "chevron-down" "sm" %}</div>{% endif %}
+                        <div class="arch-node {% if forloop.counter == 3 %}arch-node--accent{% endif %}">{{ node }}</div>
+                      {% endfor %}
+                    </div>
+                  {% else %}
+                    <p class="mb-0" style="font-size:.92rem;line-height:1.65">{{ project.architecture_description }}</p>
+                  {% endif %}
+                {% endwith %}
               {% endif %}
             </div>
           {% endif %}
@@ -129,14 +157,16 @@
             </div>
           {% endif %}
 
-          <div class="panel panel--pad panel--primary mt-4">
-            <h3 style="font-size:1.05rem">Need something similar?</h3>
-            <p style="font-size:.92rem;color:var(--muted)">We can adapt this system for your organisation or build to your own requirements.</p>
-            <a class="btn btn-primary btn-block" href="{% url 'contact:quote' %}">Request a quote</a>
+          <div class="lx-panel-dark mt-4 reveal">
+            <h3>Need something similar?</h3>
+            <p>We can adapt this system for your organisation or build to your own requirements.</p>
+            <a class="btn btn-light btn-block" href="{% url 'contact:quote' %}">Request a quote</a>
           </div>
         </div>
       </aside>
     </div>
   </div>
 </article>
+
+{% include "components/cta.html" %}
 {% endblock %}

@@ -6,18 +6,31 @@
 
 {% block content %}
 {% url 'company:solution_list' as solutions_url %}
-{% include "components/page_banner.html" with eyebrow=solution.tagline crumb=solution.name parent_label="Solutions" parent_url=solutions_url heading=solution.name subheading=solution.summary %}
+{% url 'contact:contact' as contact_url %}
+{% url 'contact:quote' as quote_base %}
+{% with quote_url=quote_base|add:"?solution="|add:solution.slug %}
+  {% include "components/page_banner.html" with scene="cube" overlap=1 eyebrow=solution.tagline crumb=solution.name parent_label="Solutions" parent_url=solutions_url heading=solution.name subheading=solution.summary primary_url=quote_url primary_label="Request a quote" secondary_url=contact_url secondary_label="Ask a question" %}
+{% endwith %}
+
+<div class="container-page lx-lift">
+  <dl class="lx-glass lx-facts reveal reveal--rise mb-0">
+    <div><dt class="k">Solution</dt><dd class="v mb-0">{{ solution.name }}</dd></div>
+    {% if solution.industries.all %}
+      <div><dt class="k">Industries</dt><dd class="v mb-0">{% for i in solution.industries.all %}{{ i.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</dd></div>
+    {% endif %}
+    {% if solution.related_project %}
+      <div><dt class="k">Case study</dt><dd class="v mb-0"><a href="{{ solution.related_project.get_absolute_url }}">{{ solution.related_project.title }}</a></dd></div>
+      {% if solution.related_project.website_url %}
+        <div><dt class="k">Live product</dt><dd class="v mb-0"><a href="{{ solution.related_project.website_url }}" target="_blank" rel="noopener noreferrer">Visit site</a></dd></div>
+      {% endif %}
+    {% endif %}
+  </dl>
+</div>
 
 <section class="section">
   <div class="container-page">
-    <div class="row g-5">
-      <div class="col-lg-8">
-        {% if solution.hero_image %}
-          <figure class="figure mb-5 reveal">
-            <img src="{{ solution.hero_image.url }}" alt="{{ solution.image_alt }}" loading="lazy" decoding="async">
-          </figure>
-        {% endif %}
-
+    <div class="row g-5 align-items-center">
+      <div class="{% if solution.hero_image %}col-lg-6{% else %}col-lg-8{% endif %}">
         <div class="prose">
           {% if solution.overview %}
             <div class="case-section reveal"><h2>Overview</h2>{{ solution.overview|linebreaks }}</div>
@@ -25,69 +38,63 @@
           {% if solution.who_its_for %}
             <div class="case-section reveal"><h2>Who it is for</h2>{{ solution.who_its_for|linebreaks }}</div>
           {% endif %}
-
-          {% if solution.capabilities.all %}
-            <div class="case-section reveal">
-              <h2>What it does</h2>
-              <div class="row g-3">
-                {% for capability in solution.capabilities.all %}
-                  <div class="col-md-6 d-flex">
-                    <div class="card"><div class="card__body" style="padding:1.25rem">
-                      <span class="icon-tile icon-tile--sm">{% icon capability.icon "sm" %}</span>
-                      <h3 class="card__title" style="font-size:1rem">{{ capability.title }}</h3>
-                      {% if capability.description %}<p class="card__text" style="margin-bottom:0">{{ capability.description }}</p>{% endif %}
-                    </div></div>
-                  </div>
-                {% endfor %}
-              </div>
-            </div>
-          {% endif %}
-
-          {% if solution.outcome %}
-            <div class="case-section reveal"><h2>What you get</h2>{{ solution.outcome|linebreaks }}</div>
-          {% endif %}
-
           {% if not solution.overview and not solution.capabilities.all %}
             {% include "components/empty_state.html" with icon="file-text" title="Detail coming shortly" body="The full write-up for this solution has not been published yet. Get in touch and we will walk you through it." action_url="/contact/" action_label="Talk to us" %}
           {% endif %}
         </div>
       </div>
-
-      <aside class="col-lg-4">
-        <div class="sticky-panel">
-          <div class="panel panel--pad reveal">
-            <p class="panel__label">Solution details</p>
-            <ul class="fact-list">
-              <li><span class="k">Category</span><span class="v">{{ solution.tagline }}</span></li>
-              {% if solution.industries.all %}
-                <li><span class="k">Industries</span><span class="v">{% for i in solution.industries.all %}{{ i.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</span></li>
-              {% endif %}
-              {% if solution.related_project %}
-                <li><span class="k">Case study</span><span class="v"><a href="{{ solution.related_project.get_absolute_url }}">{{ solution.related_project.title }}</a></span></li>
-              {% endif %}
-              {% if solution.related_project and solution.related_project.website_url %}
-                <li><span class="k">Live product</span><span class="v"><a href="{{ solution.related_project.website_url }}" target="_blank" rel="noopener noreferrer">Visit site</a></span></li>
-              {% endif %}
-            </ul>
-            <a class="btn btn-primary btn-block mt-3" href="{% url 'contact:quote' %}?solution={{ solution.slug }}">Request a quote</a>
-            <a class="btn btn-outline btn-block mt-2" href="{% url 'contact:contact' %}">Ask a question</a>
-          </div>
-
-          {% if other_solutions %}
-            <div class="panel panel--pad mt-4 reveal">
-              <p class="panel__label">Other solutions</p>
-              <ul class="fact-list">
-                {% for other in other_solutions %}
-                  <li><span class="v" style="text-align:left"><a href="{{ other.get_absolute_url }}">{{ other.name }}</a></span></li>
-                {% endfor %}
-              </ul>
-            </div>
-          {% endif %}
+      {% if solution.hero_image %}
+        <div class="col-lg-6">
+          <figure class="figure lx-photo reveal reveal--zoom"><img src="{{ solution.hero_image.url }}" alt="{{ solution.image_alt }}" loading="lazy" decoding="async"></figure>
         </div>
-      </aside>
+      {% endif %}
     </div>
   </div>
 </section>
+
+{% if solution.capabilities.all %}
+<section class="section section--soft">
+  <div class="container-page">
+    {% include "components/section_heading.html" with center=1 eyebrow="Capabilities" heading="What it does" %}
+    <div class="lx-features">
+      {% for capability in solution.capabilities.all %}
+        <div class="lx-feature reveal reveal--flip" data-delay="{{ forloop.counter0 }}">
+          <span class="lx-feature__n">{% icon capability.icon "sm" %}</span>
+          <h3>{{ capability.title }}</h3>
+          {% if capability.description %}<p>{{ capability.description }}</p>{% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% if solution.outcome %}
+<section class="section">
+  <div class="container-page">
+    <div class="lx-panel-dark lx-outcome reveal reveal--zoom">
+      <span class="eyebrow">What you get</span>
+      <div class="lx-outcome__text">{{ solution.outcome|linebreaks }}</div>
+      {% if solution.related_project %}
+        <a class="btn btn-light mt-2" href="{{ solution.related_project.get_absolute_url }}">See it in {{ solution.related_project.title }} {% icon "arrow-right" "sm" %}</a>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% if other_solutions %}
+<section class="section section--soft">
+  <div class="container-page">
+    {% include "components/section_heading.html" with eyebrow="Other solutions" heading="Also built and maintained by us" %}
+    <div class="row g-4 lx-cards">
+      {% for other in other_solutions %}
+        <div class="col-md-6 col-lg-4 d-flex">{% include "components/solution_card.html" with solution=other delay=forloop.counter0 %}</div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
 
 {% include "components/cta.html" %}
 {% endblock %}

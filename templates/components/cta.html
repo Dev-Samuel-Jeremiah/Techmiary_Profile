@@ -1,12 +1,16 @@
+{% load portfolio_tags %}
 <section class="section">
   <div class="container-page">
-    <div class="cta-band reveal">
-      <span class="eyebrow">Start a project</span>
-      <h2>{% if cta_heading %}{{ cta_heading }}{% else %}Let&rsquo;s build the system your organisation needs{% endif %}</h2>
-      <p>{% if cta_text %}{{ cta_text }}{% else %}Tell us what the software has to do and who will use it. You get a scoped approach, a realistic timeline and a clear price — not a sales call.{% endif %}</p>
-      <div class="cta-band__actions">
-        <a class="btn btn-light btn-lg" href="{% url 'contact:quote' %}">Request a Quote</a>
-        <a class="btn btn-ghost-light btn-lg" href="{% url 'contact:contact' %}">Talk to our team</a>
+    <div class="lx-cta reveal reveal--zoom">
+      <canvas class="lx-cta__canvas" data-scene="ring" aria-hidden="true"></canvas>
+      <div class="lx-cta__content">
+        <span class="eyebrow">Start a project</span>
+        <h2>{% if cta_heading %}{{ cta_heading }}{% else %}Let&rsquo;s build the system your organisation needs{% endif %}</h2>
+        <p>{% if cta_text %}{{ cta_text }}{% else %}Tell us what the software has to do and who will use it. You get a scoped approach, a realistic timeline and a clear price — not a sales call.{% endif %}</p>
+        <div class="cta-band__actions">
+          <a class="btn btn-light btn-lg" data-magnetic href="{% url 'contact:quote' %}">Request a Quote</a>
+          <a class="btn btn-ghost-light btn-lg" data-magnetic href="{% url 'contact:contact' %}">Talk to our team</a>
+        </div>
       </div>
     </div>
   </div>

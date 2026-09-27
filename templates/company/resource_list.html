@@ -2,7 +2,7 @@
 {% load portfolio_tags %}
 
 {% block content %}
-{% include "components/page_banner.html" with eyebrow="Resources" crumb="Guides & downloads" heading="Guides, checklists and documents" subheading="Practical material on planning, procuring, building and running business software. Free to download." %}
+{% include "components/page_banner.html" with scene="wave" eyebrow="Resources" crumb="Guides & downloads" heading="Guides, checklists and documents" subheading="Practical material on planning, procuring, building and running business software. Free to download." %}
 
 <section class="section">
   <div class="container-page">
@@ -16,7 +16,7 @@
     {% endif %}
 
     {% if resources %}
-      <div class="row g-4">
+      <div class="row g-4 lx-cards">
         {% for resource in resources %}
           <div class="col-md-6 col-lg-4 d-flex">
             <article class="card card--hover reveal" id="{{ resource.slug }}" data-delay="{{ forloop.counter0 }}">

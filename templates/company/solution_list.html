@@ -2,12 +2,12 @@
 {% load portfolio_tags %}
 
 {% block content %}
-{% include "components/page_banner.html" with eyebrow="Solutions" crumb="Solutions" heading="Platforms we build, deploy and maintain" subheading="Each solution is a complete system — data model, interface, integrations and hosting — that we configure for your organisation." %}
+{% include "components/page_banner.html" with scene="cube" eyebrow="Solutions" crumb="Solutions" heading="Platforms we build, deploy and maintain" subheading="Each solution is a complete system — data model, interface, integrations and hosting — that we configure for your organisation." %}
 
 <section class="section">
   <div class="container-page">
     {% if solutions %}
-      <div class="row g-4">
+      <div class="row g-4 lx-cards">
         {% for solution in solutions %}
           <div class="col-md-6 col-lg-4 d-flex">{% include "components/solution_card.html" with solution=solution delay=forloop.counter0 %}</div>
         {% endfor %}
@@ -22,7 +22,7 @@
 <section class="section section--soft">
   <div class="container-page">
     {% include "components/section_heading.html" with center=1 eyebrow="Industries" heading="Built for specific sectors" %}
-    <div class="row g-4">
+    <div class="row g-4 lx-cards">
       {% for industry in industries %}
         <div class="col-sm-6 col-lg-4 d-flex">{% include "components/industry_card.html" with industry=industry delay=forloop.counter0 %}</div>
       {% endfor %}

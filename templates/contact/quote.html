@@ -2,10 +2,10 @@
 {% load portfolio_tags %}
 
 {% block content %}
-{% include "components/page_banner.html" with eyebrow="Request a quote" crumb="Request a Quote" heading="Tell us what you need built" subheading="Three short steps. You get a scoped response with an approach, a timeline and a price — not a sales call." %}
+{% include "components/page_banner.html" with scene="ring" overlap=1 eyebrow="Request a quote" crumb="Request a Quote" heading="Tell us what you need built" subheading="Three short steps. You get a scoped response with an approach, a timeline and a price — not a sales call." %}
 
-<section class="section">
-  <div class="container-page">
+<section class="section pt-0">
+  <div class="container-page lx-lift">
     <div class="row g-5">
       <div class="col-lg-8">
         <form method="post" novalidate data-stepped-form>
@@ -14,7 +14,7 @@
           <div class="hp-wrap" aria-hidden="true">{{ form.website }}</div>
 
           {# --------------------------------------------------- Step one #}
-          <fieldset class="panel panel--pad form-step">
+          <fieldset class="lx-glass lx-glass--pad form-step">
             <legend class="visually-hidden">Step 1: what you need</legend>
             <div class="step-head">
               <span class="step-head__num" aria-hidden="true">1</span>
@@ -45,7 +45,7 @@
           </fieldset>
 
           {# --------------------------------------------------- Step two #}
-          <fieldset class="panel panel--pad form-step">
+          <fieldset class="lx-glass lx-glass--pad form-step">
             <legend class="visually-hidden">Step 2: scope</legend>
             <div class="step-head">
               <span class="step-head__num" aria-hidden="true">2</span>
@@ -71,7 +71,7 @@
           </fieldset>
 
           {# ------------------------------------------------- Step three #}
-          <fieldset class="panel panel--pad form-step">
+          <fieldset class="lx-glass lx-glass--pad form-step">
             <legend class="visually-hidden">Step 3: contact details</legend>
             <div class="step-head">
               <span class="step-head__num" aria-hidden="true">3</span>
@@ -115,9 +115,9 @@
 
       <aside class="col-lg-4">
         <div class="sticky-panel">
-          <div class="panel panel--pad reveal">
-            <p class="panel__label">What happens next</p>
-            <ol style="padding-left:1.1rem;margin:0;color:var(--muted);font-size:.93rem">
+          <div class="lx-panel-dark reveal">
+            <p class="panel__label" style="color:#b9caff">What happens next</p>
+            <ol style="padding-left:1.1rem;margin:0;color:#c0cde9;font-size:.93rem">
               <li style="margin-bottom:.6rem">We read your request and check what is missing.</li>
               <li style="margin-bottom:.6rem">We come back with questions, or straight to an approach.</li>
               <li style="margin-bottom:.6rem">You get a written scope, a timeline and a price.</li>

@@ -61,7 +61,7 @@ class SolutionDetailView(SEOMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["other_solutions"] = (
-            Solution.objects.active().exclude(pk=self.object.pk)[:3]
+            Solution.objects.active().exclude(pk=self.object.pk).prefetch_related("industries")[:3]
         )
         return context
 

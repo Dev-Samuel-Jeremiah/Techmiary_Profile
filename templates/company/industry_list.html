@@ -2,12 +2,12 @@
 {% load portfolio_tags %}
 
 {% block content %}
-{% include "components/page_banner.html" with eyebrow="Industries" crumb="Industries" heading="Sectors we build for" subheading="We learn the rules, records and reporting duties of a sector before designing a system for it." %}
+{% include "components/page_banner.html" with scene="wave" eyebrow="Industries" crumb="Industries" heading="Sectors we build for" subheading="We learn the rules, records and reporting duties of a sector before designing a system for it." %}
 
 <section class="section">
   <div class="container-page">
     {% if industries %}
-      <div class="row g-4">
+      <div class="row g-4 lx-cards">
         {% for industry in industries %}
           <div class="col-md-6 col-lg-4 d-flex">
             <article class="card card--hover reveal" data-delay="{{ forloop.counter0 }}">
