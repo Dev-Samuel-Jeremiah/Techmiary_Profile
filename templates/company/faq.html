@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load portfolio_tags %}
+
+{% block content %}
+{% include "components/page_banner.html" with eyebrow="Support" crumb="FAQ" heading="Frequently asked questions" subheading="How we scope work, what it costs, how long it takes, and what happens after launch." %}
+
+<section class="section">
+  <div class="container-page">
+    <div class="row g-5">
+      <div class="col-lg-8">
+        <form role="search" method="get" class="d-flex gap-2 mb-4">
+          <label class="visually-hidden" for="faq-search">Search questions</label>
+          <input class="form-control" id="faq-search" type="search" name="q" value="{{ query }}" placeholder="Search questions">
+          <button class="btn btn-primary" type="submit">{% icon "search" "sm" %}<span class="visually-hidden">Search</span></button>
+        </form>
+
+        {% if query %}
+          <p class="text-muted-2">{{ faq_total }} result{{ faq_total|pluralize }} for &ldquo;{{ query }}&rdquo;. <a href="{% url 'company:faq' %}">Clear</a></p>
+        {% endif %}
+
+        {% if grouped_faqs %}
+          {% for category, items in grouped_faqs %}
+            <h2 style="font-size:1.2rem;margin:2rem 0 1rem">{% if category %}{{ category.name }}{% else %}General{% endif %}</h2>
+            {% for faq in items %}
+              <details class="faq-item reveal" {% if forloop.parentloop.first and forloop.first %}open{% endif %}>
+                <summary>{{ faq.question }} {% icon "chevron-down" "sm" "chev" %}</summary>
+                <div class="faq-item__body">{{ faq.answer|linebreaks }}</div>
+              </details>
+            {% endfor %}
+          {% endfor %}
+        {% else %}
+          {% if query %}
+            {% include "components/empty_state.html" with icon="search" title="No matching questions" body="Try a different search term, or ask us directly." action_url="/contact/" action_label="Ask a question" %}
+          {% else %}
+            {% include "components/empty_state.html" with icon="life-buoy" title="No questions published yet" body="FAQ entries added in the Django admin will appear here." %}
+          {% endif %}
+        {% endif %}
+      </div>
+
+      <aside class="col-lg-4">
+        <div class="sticky-panel">
+          <div class="panel panel--pad panel--primary reveal">
+            <span class="icon-tile">{% icon "message" %}</span>
+            <h2 style="font-size:1.15rem">Still have a question?</h2>
+            <p style="font-size:.93rem;color:var(--muted)">Ask us directly. We answer every enquiry ourselves — there is no ticket queue to get lost in.</p>
+            <a class="btn btn-primary btn-block" href="{% url 'contact:contact' %}">Contact us</a>
+            <a class="btn btn-outline btn-block mt-2" href="{% url 'contact:quote' %}">Request a quote</a>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+{% endblock %}

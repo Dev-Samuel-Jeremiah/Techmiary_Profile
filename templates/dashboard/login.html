@@ -1,0 +1,51 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign in · {{ site.brand_name|default:"Techmiary" }}</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+</head>
+<body class="dash dash-login">
+  <div class="dash-login__panel">
+    <a class="dash-brand dash-brand--login" href="/">
+      <span class="dash-brand__mark">T</span>
+      <span>
+        <strong>{{ site.brand_name|default:"TECHMIARY" }}</strong>
+        <small>{{ site.company_name|default:"Control panel" }}</small>
+      </span>
+    </a>
+
+    <h1>Sign in</h1>
+    <p class="dash-login__hint">Staff access to proposals, quotes and enquiries.</p>
+
+    {% if form.non_field_errors %}
+      <div class="dash-msg dash-msg--error">
+        {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+      </div>
+    {% endif %}
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+      <label class="dash-label" for="{{ form.username.id_for_label }}">Username</label>
+      {{ form.username }}
+      {% if form.username.errors %}<p class="dash-field-error">{{ form.username.errors|first }}</p>{% endif %}
+
+      <label class="dash-label" for="{{ form.password.id_for_label }}">Password</label>
+      {{ form.password }}
+      {% if form.password.errors %}<p class="dash-field-error">{{ form.password.errors|first }}</p>{% endif %}
+
+      <input type="hidden" name="next" value="{{ next }}">
+      <button class="dash-btn dash-btn--primary dash-btn--block" type="submit">Sign in</button>
+    </form>
+
+    <p class="dash-login__foot">
+      Lost your password? An administrator can reset it for you.
+    </p>
+  </div>
+</body>
+</html>

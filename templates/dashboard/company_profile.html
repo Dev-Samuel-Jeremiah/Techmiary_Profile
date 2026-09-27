@@ -1,0 +1,128 @@
+{% extends "dashboard/base.html" %}
+{% load dashboard_tags %}
+{% block title %}Company profile{% endblock %}
+{% block heading %}Company profile{% endblock %}
+{% block subheading %}
+  <p class="dash-sub">Your details as they appear on the website and on every proposal letterhead.</p>
+{% endblock %}
+{% block actions %}
+  <a class="dash-btn" href="/" target="_blank" rel="noopener">View website &#8599;</a>
+{% endblock %}
+
+{% block content %}
+<div class="dash-note">
+  <strong>Changes take effect immediately.</strong>
+  Saving updates the public site and the letterhead used by every proposal PDF
+  from the next page load — nothing needs restarting.
+</div>
+
+{% comment %}
+  enctype is required: without it the browser posts filenames rather than
+  files, and the logo and favicon uploads would silently do nothing.
+{% endcomment %}
+<form method="post" enctype="multipart/form-data" novalidate>
+  {% csrf_token %}
+
+  <section class="dash-card">
+    <h2>Identity</h2>
+    <div class="dash-form-grid">
+      {% for field in form %}
+        {% if field|in_group:"company_name legal_name brand_name registration_number founded_year" %}
+          <div class="dash-field">
+            <label class="dash-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.help_text %}<p class="dash-help">{{ field.help_text }}</p>{% endif %}
+            {% if field.errors %}<p class="dash-field-error">{{ field.errors|first }}</p>{% endif %}
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+    {% for field in form %}
+      {% if field|in_group:"tagline" %}
+        <div class="dash-field">
+          <label class="dash-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% if field.errors %}<p class="dash-field-error">{{ field.errors|first }}</p>{% endif %}
+        </div>
+      {% endif %}
+    {% endfor %}
+  </section>
+
+  <section class="dash-card">
+    <h2>Contact details</h2>
+    <p class="dash-help">The address, phone and sales email print on the proposal letterhead.</p>
+    <div class="dash-form-grid">
+      {% for field in form %}
+        {% if field|in_group:"email sales_email support_email phone secondary_phone location office_hours website_url" %}
+          <div class="dash-field">
+            <label class="dash-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.help_text %}<p class="dash-help">{{ field.help_text }}</p>{% endif %}
+            {% if field.errors %}<p class="dash-field-error">{{ field.errors|first }}</p>{% endif %}
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+    {% for field in form %}
+      {% if field|in_group:"address" %}
+        <div class="dash-field">
+          <label class="dash-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% if field.help_text %}<p class="dash-help">{{ field.help_text }}</p>{% endif %}
+          {% if field.errors %}<p class="dash-field-error">{{ field.errors|first }}</p>{% endif %}
+        </div>
+      {% endif %}
+    {% endfor %}
+  </section>
+
+  <section class="dash-card">
+    <h2>Brand assets</h2>
+    <div class="dash-assets">
+      {% for field in form %}
+        {% if field|in_group:"logo favicon og_image" %}
+          <div class="dash-asset">
+            <span class="dash-label">{{ field.label }}</span>
+            <div class="dash-asset__preview">
+              {% if field.name == "logo" and site_settings.logo %}
+                <img src="{{ site_settings.logo.url }}" alt="Current logo">
+              {% elif field.name == "favicon" and site_settings.favicon %}
+                <img src="{{ site_settings.favicon.url }}" alt="Current favicon" class="is-small">
+              {% elif field.name == "og_image" and site_settings.og_image %}
+                <img src="{{ site_settings.og_image.url }}" alt="Current share image">
+              {% else %}
+                <span class="dash-asset__none">None uploaded</span>
+              {% endif %}
+            </div>
+            {{ field }}
+            {% if field.help_text %}<p class="dash-help">{{ field.help_text }}</p>{% endif %}
+            {% if field.errors %}<p class="dash-field-error">{{ field.errors|first }}</p>{% endif %}
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+    <p class="dash-help">
+      Leaving a file field empty keeps the current image. Use the clear checkbox to remove one.
+    </p>
+  </section>
+
+  <section class="dash-card">
+    <h2>Social profiles</h2>
+    <div class="dash-form-grid">
+      {% for field in form %}
+        {% if field|in_group:"linkedin_url twitter_url github_url whatsapp_url" %}
+          <div class="dash-field">
+            <label class="dash-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}<p class="dash-field-error">{{ field.errors|first }}</p>{% endif %}
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </section>
+
+  <div class="dash-sticky-actions">
+    <button class="dash-btn dash-btn--primary" type="submit">Save company profile</button>
+    <a class="dash-link" href="{% url 'dashboard:home' %}">Back to overview</a>
+  </div>
+</form>
+{% endblock %}

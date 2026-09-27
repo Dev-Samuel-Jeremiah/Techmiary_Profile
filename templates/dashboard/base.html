@@ -1,0 +1,75 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Dashboard{% endblock %} · {{ site.brand_name|default:"Techmiary" }}</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+</head>
+<body class="dash">
+<div class="dash-shell">
+
+  <aside class="dash-side">
+    <a class="dash-brand" href="{% url 'dashboard:home' %}">
+      <span class="dash-brand__mark">T</span>
+      <span>
+        <strong>{{ site.brand_name|default:"TECHMIARY" }}</strong>
+        <small>Control panel</small>
+      </span>
+    </a>
+
+    <nav class="dash-nav" aria-label="Dashboard sections">
+      <a href="{% url 'dashboard:home' %}" class="{% if section == 'home' %}is-active{% endif %}">Overview</a>
+
+      <span class="dash-nav__label">Sales</span>
+      <a href="{% url 'dashboard:proposal_list' %}" class="{% if section == 'proposals' %}is-active{% endif %}">Proposals</a>
+      <a href="{% url 'dashboard:quote_list' %}" class="{% if section == 'quotes' %}is-active{% endif %}">Quote requests</a>
+      <a href="{% url 'dashboard:enquiry_list' %}" class="{% if section == 'enquiries' %}is-active{% endif %}">Enquiries</a>
+
+      <span class="dash-nav__label">Company</span>
+      <a href="{% url 'dashboard:company_profile' %}" class="{% if section == 'company' %}is-active{% endif %}">Company profile</a>
+      <a href="/{{ admin_url }}" target="_blank" rel="noopener">Site content &#8599;</a>
+      <a href="/" target="_blank" rel="noopener">View website &#8599;</a>
+    </nav>
+
+    <div class="dash-side__foot">
+      <div class="dash-user">
+        <span class="dash-user__avatar">{{ request.user.get_username|slice:":1"|upper }}</span>
+        <span>
+          <strong>{{ request.user.get_full_name|default:request.user.get_username }}</strong>
+          <small>{% if request.user.is_superuser %}Administrator{% else %}Company admin{% endif %}</small>
+        </span>
+      </div>
+      <form method="post" action="{% url 'dashboard:logout' %}">
+        {% csrf_token %}
+        <button class="dash-btn dash-btn--quiet dash-btn--block" type="submit">Sign out</button>
+      </form>
+    </div>
+  </aside>
+
+  <main class="dash-main">
+    <header class="dash-top">
+      <div>
+        <h1>{% block heading %}Overview{% endblock %}</h1>
+        {% block subheading %}{% endblock %}
+      </div>
+      <div class="dash-top__actions">{% block actions %}{% endblock %}</div>
+    </header>
+
+    {% if messages %}
+      <div class="dash-messages">
+        {% for message in messages %}
+          <div class="dash-msg dash-msg--{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+  </main>
+</div>
+</body>
+</html>

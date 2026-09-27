@@ -1,0 +1,1 @@
+{% load portfolio_tags %}{% for link in social_links %}<a href="{{ link.url }}" target="_blank" rel="noopener noreferrer" aria-label="{{ link.name }}" title="{{ link.name }}">{% icon link.icon "sm" %}</a>{% endfor %}

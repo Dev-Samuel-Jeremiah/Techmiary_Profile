@@ -1,0 +1,165 @@
+{% extends "dashboard/base.html" %}
+{% load humanize %}
+{% load dashboard_tags %}
+{% block title %}{{ proposal.reference }}{% endblock %}
+{% block heading %}{{ proposal.reference }}{% endblock %}
+{% block subheading %}
+  <p class="dash-sub">{{ proposal.client_organisation }} · <span class="dash-badge dash-badge--{{ proposal.status }}">{{ proposal.get_status_display }}</span></p>
+{% endblock %}
+{% block actions %}
+  <a class="dash-btn" href="{% url 'proposals:pdf' proposal.pk %}" target="_blank" rel="noopener">Preview PDF</a>
+  <form method="post" action="{% url 'dashboard:proposal_status' proposal.pk %}" class="dash-inline-form">
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ request.path }}">
+    <select class="dash-select dash-select--sm" name="status" onchange="this.form.submit()">
+      {% for value, label in proposal.STATUS_CHOICES %}
+        <option value="{{ value }}" {% if proposal.status == value %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+    <noscript><button class="dash-btn dash-btn--sm" type="submit">Set</button></noscript>
+  </form>
+{% endblock %}
+
+{% block content %}
+<form method="post" novalidate>
+  {% csrf_token %}
+
+  {# Live totals, so the figures are visible without opening the PDF. #}
+  <section class="dash-card dash-totals-card">
+    <h2>Totals</h2>
+    <dl class="dash-kv dash-kv--totals">
+      <dt>Subtotal</dt><dd>{{ proposal.currency_symbol }}{{ proposal.subtotal|floatformat:2|intcomma }}</dd>
+      <dt>Discount ({{ proposal.discount_percent|floatformat:"-2" }}%)</dt><dd>−{{ proposal.currency_symbol }}{{ proposal.discount_amount|floatformat:2|intcomma }}</dd>
+      <dt>Tax ({{ proposal.tax_percent|floatformat:"-2" }}%)</dt><dd>{{ proposal.currency_symbol }}{{ proposal.tax_amount|floatformat:2|intcomma }}</dd>
+      <dt class="is-total">Total</dt><dd class="is-total">{{ proposal.currency_symbol }}{{ proposal.total|floatformat:2|intcomma }}</dd>
+      <dt>Deposit ({{ proposal.deposit_percent|floatformat:"-2" }}%)</dt><dd>{{ proposal.currency_symbol }}{{ proposal.deposit_amount|floatformat:2|intcomma }}</dd>
+      <dt>Balance</dt><dd>{{ proposal.currency_symbol }}{{ proposal.balance_amount|floatformat:2|intcomma }}</dd>
+    </dl>
+    <p class="dash-help">Totals refresh when you save.</p>
+  </section>
+
+  <section class="dash-card">
+    <h2>Client</h2>
+    <div class="dash-form-grid">
+      {% for field in form %}
+        {% if field|in_group:"client_organisation client_contact_name client_role client_email client_phone client_address" %}
+          <div class="dash-field {% if field.name == 'client_address' %}dash-field--wide{% endif %}">
+            <label class="dash-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}<p class="dash-field-error">{{ field.errors|first }}</p>{% endif %}
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="dash-card">
+    <h2>The engagement</h2>
+    <div class="dash-form-grid">
+      {% for field in form %}
+        {% if field|in_group:"template status title summary" %}
+          <div class="dash-field {% if field.name == 'summary' %}dash-field--wide{% endif %}">
+            <label class="dash-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.help_text %}<p class="dash-help">{{ field.help_text }}</p>{% endif %}
+            {% if field.errors %}<p class="dash-field-error">{{ field.errors|first }}</p>{% endif %}
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+    {% for field in form %}
+      {% if field|in_group:"background approach" %}
+        <div class="dash-field">
+          <label class="dash-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% if field.errors %}<p class="dash-field-error">{{ field.errors|first }}</p>{% endif %}
+        </div>
+      {% endif %}
+    {% endfor %}
+  </section>
+
+  <section class="dash-card">
+    <h2>Line items</h2>
+    <p class="dash-help">These become the priced table in the PDF. Tick Delete to remove a row.</p>
+    {{ items.management_form }}
+    <table class="dash-table dash-table--form">
+      <thead><tr><th>Title</th><th>Description</th><th>Qty</th><th>Unit</th><th>Unit price</th><th>Order</th><th>Del</th></tr></thead>
+      <tbody>
+        {% for f in items %}
+          <tr>
+            {{ f.id }}
+            <td>{{ f.title }}</td>
+            <td>{{ f.description }}</td>
+            <td class="dash-cell-sm">{{ f.quantity }}</td>
+            <td class="dash-cell-sm">{{ f.unit }}</td>
+            <td class="dash-cell-sm">{{ f.unit_price }}</td>
+            <td class="dash-cell-xs">{{ f.display_order }}</td>
+            <td class="dash-cell-xs">{% if f.instance.pk %}{{ f.DELETE }}{% endif %}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+
+  <section class="dash-card">
+    <h2>Delivery schedule</h2>
+    <p class="dash-help">Optional. Percentages are of the final total.</p>
+    {{ milestones.management_form }}
+    <table class="dash-table dash-table--form">
+      <thead><tr><th>Phase</th><th>Description</th><th>From wk</th><th>To wk</th><th>% of fee</th><th>Order</th><th>Del</th></tr></thead>
+      <tbody>
+        {% for f in milestones %}
+          <tr>
+            {{ f.id }}
+            <td>{{ f.name }}</td>
+            <td>{{ f.description }}</td>
+            <td class="dash-cell-xs">{{ f.week_from }}</td>
+            <td class="dash-cell-xs">{{ f.week_to }}</td>
+            <td class="dash-cell-sm">{{ f.percent_of_fee }}</td>
+            <td class="dash-cell-xs">{{ f.display_order }}</td>
+            <td class="dash-cell-xs">{% if f.instance.pk %}{{ f.DELETE }}{% endif %}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+
+  <section class="dash-card">
+    <h2>Commercials &amp; timing</h2>
+    <div class="dash-form-grid">
+      {% for field in form %}
+        {% if field|in_group:"currency discount_percent tax_percent deposit_percent timeline_weeks start_estimate valid_until" %}
+          <div class="dash-field">
+            <label class="dash-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}<p class="dash-field-error">{{ field.errors|first }}</p>{% endif %}
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+    {% for field in form %}
+      {% if field|in_group:"payment_terms assumptions exclusions" %}
+        <div class="dash-field">
+          <label class="dash-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% if field.help_text %}<p class="dash-help">{{ field.help_text }}</p>{% endif %}
+        </div>
+      {% endif %}
+    {% endfor %}
+  </section>
+
+  <section class="dash-card">
+    <h2>Internal notes</h2>
+    <p class="dash-help">Never appears in the PDF.</p>
+    {% for field in form %}
+      {% if field|in_group:"notes" %}{{ field }}{% endif %}
+    {% endfor %}
+  </section>
+
+  <div class="dash-sticky-actions">
+    <button class="dash-btn dash-btn--primary" type="submit">Save</button>
+    <button class="dash-btn" type="submit" name="_download" value="1">Save &amp; download PDF</button>
+    <a class="dash-link" href="{% url 'dashboard:proposal_list' %}">Back to proposals</a>
+  </div>
+</form>
+{% endblock %}

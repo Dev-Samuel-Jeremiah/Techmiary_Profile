@@ -1,0 +1,15 @@
+<figure class="card quote-card reveal" {% if delay %}data-delay="{{ delay }}"{% endif %} style="margin:0">
+  <span class="quote-card__mark" aria-hidden="true">&ldquo;</span>
+  <blockquote>{{ testimonial.quote }}</blockquote>
+  <figcaption class="quote-card__author">
+    {% if testimonial.author_photo %}
+      <img class="avatar" src="{{ testimonial.author_photo.url }}" alt="{{ testimonial.author_name }}" loading="lazy" width="46" height="46">
+    {% else %}
+      <span class="avatar" aria-hidden="true">{{ testimonial.author_name|slice:":1" }}</span>
+    {% endif %}
+    <span>
+      <strong style="color:var(--navy);display:block;font-size:.95rem">{{ testimonial.author_name }}</strong>
+      {% if testimonial.attribution %}<span style="font-size:.85rem;color:var(--muted)">{{ testimonial.attribution }}</span>{% endif %}
+    </span>
+  </figcaption>
+</figure>

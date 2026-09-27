@@ -1,0 +1,24 @@
+{% extends "dashboard/base.html" %}
+{% block title %}New proposal{% endblock %}
+{% block heading %}New proposal{% endblock %}
+{% block subheading %}<p class="dash-sub">Pick a template and the scope, wording and pricing are filled in for you.</p>{% endblock %}
+
+{% block content %}
+<section class="dash-card dash-card--narrow">
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {% for field in form %}
+      <div class="dash-field">
+        <label class="dash-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        {% if field.help_text %}<p class="dash-help">{{ field.help_text }}</p>{% endif %}
+        {% if field.errors %}<p class="dash-field-error">{{ field.errors|first }}</p>{% endif %}
+      </div>
+    {% endfor %}
+    <div class="dash-actions">
+      <button class="dash-btn dash-btn--primary" type="submit">Create and edit</button>
+      <a class="dash-link" href="{% url 'dashboard:proposal_list' %}">Cancel</a>
+    </div>
+  </form>
+</section>
+{% endblock %}

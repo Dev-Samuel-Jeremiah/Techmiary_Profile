@@ -1,0 +1,29 @@
+{% extends "dashboard/base.html" %}
+{% block title %}{{ enquiry.subject }}{% endblock %}
+{% block heading %}{{ enquiry.subject }}{% endblock %}
+{% block subheading %}<p class="dash-sub">{{ enquiry.created_at|date:"j F Y, H:i" }}</p>{% endblock %}
+{% block content %}
+<div class="dash-grid dash-grid--sidebar">
+  <section class="dash-card">
+    <h2>Message</h2>
+    <p class="dash-prose">{{ enquiry.message|linebreaks }}</p>
+    <p><a class="dash-btn dash-btn--primary" href="mailto:{{ enquiry.email }}?subject=Re: {{ enquiry.subject|urlencode }}">Reply by email</a></p>
+  </section>
+  <aside class="dash-card">
+    <h2>Sender</h2>
+    <dl class="dash-kv">
+      <dt>Name</dt><dd>{{ enquiry.name }}</dd>
+      <dt>Email</dt><dd><a href="mailto:{{ enquiry.email }}">{{ enquiry.email }}</a></dd>
+      {% if enquiry.phone %}<dt>Phone</dt><dd>{{ enquiry.phone }}</dd>{% endif %}
+      {% if enquiry.company %}<dt>Organisation</dt><dd>{{ enquiry.company }}</dd>{% endif %}
+    </dl>
+    <form method="post">
+      {% csrf_token %}
+      <label class="dash-label" for="{{ form.status.id_for_label }}">Status</label>
+      {{ form.status }}
+      <button class="dash-btn dash-btn--block" type="submit">Update</button>
+    </form>
+    <a class="dash-link" href="{% url 'dashboard:enquiry_list' %}">Back to enquiries</a>
+  </aside>
+</div>
+{% endblock %}

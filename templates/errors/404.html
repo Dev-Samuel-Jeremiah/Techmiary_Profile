@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Page not found — 404{% endblock %}
+{% block robots %}noindex, follow{% endblock %}
+{% block content %}
+<section class="error-page">
+  <div class="container-page">
+    <div class="error-code" aria-hidden="true">404</div>
+    <h1 style="font-size:clamp(1.6rem,4vw,2.4rem);margin-bottom:.75rem">This page doesn’t exist</h1>
+    <p class="text-muted-2" style="max-width:48ch;margin-inline:auto">The link may be out of date, or the page may have moved. Everything else is still here.</p>
+    <div class="hero__actions" style="justify-content:center">
+      <a class="btn btn-primary" href="{% url 'core:home' %}">Back to home</a>
+      <a class="btn btn-outline" href="{% url 'company:solution_list' %}">Browse solutions</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

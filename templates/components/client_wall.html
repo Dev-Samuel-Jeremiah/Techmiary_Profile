@@ -1,0 +1,11 @@
+<div class="logo-wall reveal">
+  {% for client in clients %}
+    <div class="logo-cell">
+      {% if client.logo %}
+        <img src="{{ client.logo.url }}" alt="{{ client.image_alt }}" loading="lazy" decoding="async">
+      {% else %}
+        <span class="logo-cell__word">{{ client.name }}{% if client.engagement %}<span class="logo-cell__sub">{{ client.engagement }}</span>{% endif %}</span>
+      {% endif %}
+    </div>
+  {% endfor %}
+</div>

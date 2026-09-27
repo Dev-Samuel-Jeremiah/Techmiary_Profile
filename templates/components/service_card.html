@@ -1,0 +1,20 @@
+{% load portfolio_tags %}
+<article class="card card--hover reveal" {% if delay %}data-delay="{{ delay }}"{% endif %}>
+  <div class="card__body">
+    <span class="icon-tile">{% icon service.icon %}</span>
+    <h3 class="card__title">{{ service.title }}</h3>
+    <p class="card__text">{{ service.summary }}</p>
+    {% if service.deliverable_list %}
+      <ul style="list-style:none;padding:0;margin:0 0 1rem">
+        {% for item in service.deliverable_list|slice:":4" %}
+          <li style="display:flex;gap:.5rem;align-items:flex-start;font-size:.88rem;color:var(--muted);margin-bottom:.35rem">
+            <span style="color:var(--accent);flex-shrink:0;margin-top:.15rem">{% icon "check" "sm" %}</span>{{ item }}
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+    <div class="card__footer">
+      <a class="link-arrow" href="{% url 'contact:quote' %}?service={{ service.slug }}">Request this service {% icon "arrow-right" "sm" %}</a>
+    </div>
+  </div>
+</article>

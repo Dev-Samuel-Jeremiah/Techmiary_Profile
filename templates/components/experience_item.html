@@ -1,0 +1,17 @@
+<article class="timeline-item {% if experience.is_current %}is-current{% endif %} reveal">
+  <span class="timeline-item__period">{{ experience.period }}</span>
+  <h3 class="timeline-item__role">{{ experience.position }}</h3>
+  <p class="timeline-item__org">
+    {% if experience.organization_url %}
+      <a href="{{ experience.organization_url }}" target="_blank" rel="noopener noreferrer">{{ experience.organization }}</a>
+    {% else %}{{ experience.organization }}{% endif %}
+    {% if experience.location %}<span aria-hidden="true"> · </span>{{ experience.location }}{% endif %}
+  </p>
+  {% if experience.description %}<p>{{ experience.description|linebreaksbr }}</p>{% endif %}
+  {% if experience.responsibilities.all %}
+    <ul>{% for item in experience.responsibilities.all %}<li>{{ item.text }}</li>{% endfor %}</ul>
+  {% endif %}
+  {% if experience.technology_list %}
+    <div class="tag-row">{% for tech in experience.technology_list %}<span class="tag">{{ tech }}</span>{% endfor %}</div>
+  {% endif %}
+</article>

@@ -1,0 +1,9 @@
+{% load portfolio_tags %}
+<div class="empty-state reveal">
+  <span class="empty-state__icon">{% icon icon|default:"clipboard" %}</span>
+  <h3>{{ title }}</h3>
+  <p>{{ body }}</p>
+  {% if action_url and action_label %}
+    <a class="btn btn-outline btn-sm mt-3" href="{{ action_url }}">{{ action_label }}</a>
+  {% endif %}
+</div>

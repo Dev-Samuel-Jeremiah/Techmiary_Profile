@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% load portfolio_tags %}
+
+{% block og_type %}profile{% endblock %}
+
+{% block content %}
+{% url 'company:team_list' as team_url %}
+{% include "components/page_banner.html" with eyebrow=member.role crumb=member.name parent_label="Team" parent_url=team_url heading=member.name subheading=member.short_bio %}
+
+<section class="section">
+  <div class="container-page">
+    <div class="row g-5">
+      <div class="col-lg-4">
+        <div class="panel panel--pad text-center reveal">
+          {% if member.photo %}
+            <img class="person-card__photo" style="width:150px;height:150px" src="{{ member.photo.url }}" alt="{{ member.image_alt }}" loading="lazy" width="150" height="150">
+          {% else %}
+            <span class="person-card__photo" style="width:150px;height:150px;font-size:2.2rem" aria-hidden="true">{{ member.initials }}</span>
+          {% endif %}
+          <h2 style="font-size:1.25rem;margin-bottom:.2rem">{{ member.name }}</h2>
+          <p style="color:var(--primary);font-weight:600;font-size:.92rem">{{ member.role }}</p>
+          {% if member.department %}<p class="text-muted-2" style="font-size:.88rem">{{ member.department }}</p>{% endif %}
+          {% if member.has_social %}
+            <div class="person-links">
+              {% if member.linkedin_url %}<a href="{{ member.linkedin_url }}" target="_blank" rel="noopener noreferrer" aria-label="{{ member.name }} on LinkedIn">{% icon "linkedin" "sm" %}</a>{% endif %}
+              {% if member.github_url %}<a href="{{ member.github_url }}" target="_blank" rel="noopener noreferrer" aria-label="{{ member.name }} on GitHub">{% icon "github" "sm" %}</a>{% endif %}
+              {% if member.twitter_url %}<a href="{{ member.twitter_url }}" target="_blank" rel="noopener noreferrer" aria-label="{{ member.name }} on X">{% icon "x" "sm" %}</a>{% endif %}
+              {% if member.email %}<a href="mailto:{{ member.email }}" aria-label="Email {{ member.name }}">{% icon "mail" "sm" %}</a>{% endif %}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="col-lg-8">
+        <div class="prose">
+          {% if member.bio %}{{ member.bio|linebreaks }}{% elif member.short_bio %}<p>{{ member.short_bio }}</p>{% endif %}
+        </div>
+
+        {% if experiences %}
+          <div class="case-section mt-5">
+            <h2 style="font-size:1.4rem">Professional background</h2>
+            <div class="timeline mt-4">
+              {% for experience in experiences %}{% include "components/experience_item.html" with experience=experience %}{% endfor %}
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% if colleagues %}
+<section class="section section--soft">
+  <div class="container-page">
+    {% include "components/section_heading.html" with eyebrow="Team" heading="More of the team" %}
+    <div class="row g-4">
+      {% for colleague in colleagues %}
+        <div class="col-sm-6 col-lg-4 d-flex">{% include "components/person_card.html" with member=colleague delay=forloop.counter0 %}</div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% include "components/cta.html" %}
+{% endblock %}

@@ -1,0 +1,12 @@
+/* Totals panel shown on the proposal change form. */
+.proposal-totals { border-collapse: collapse; min-width: 320px; }
+.proposal-totals th {
+  text-align: left; font-weight: 400; color: #64748b;
+  padding: 4px 18px 4px 0; white-space: nowrap;
+}
+.proposal-totals td { text-align: right; padding: 4px 0; font-variant-numeric: tabular-nums; }
+.proposal-totals tr:nth-child(5) th,
+.proposal-totals tr:nth-child(5) td {
+  border-top: 1px solid #cfd9e8; border-bottom: 2px double #0a2540;
+  padding-top: 7px; padding-bottom: 7px; font-size: 1.05em;
+}

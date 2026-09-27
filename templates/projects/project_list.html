@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load portfolio_tags %}
+
+{% block content %}
+{% include "components/page_banner.html" with eyebrow="Our work" crumb="Our Work" heading="Systems we have built and put into service" subheading="Each entry links to a case study covering the problem, the solution, the architecture and what was delivered." %}
+
+<section class="section">
+  <div class="container-page">
+    {% if categories %}
+      <div class="filter-row mb-4">
+        <a class="chip {% if not active_category %}is-active{% endif %}" href="{% url 'projects:list' %}">All work</a>
+        {% for category in categories %}
+          <a class="chip {% if active_category and active_category.pk == category.pk %}is-active{% endif %}" href="?category={{ category.slug }}">{{ category.name }}</a>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% if projects %}
+      <div class="row g-4">
+        {% for project in projects %}
+          <div class="col-md-6 col-lg-4 d-flex">{% include "components/project_card.html" with project=project delay=forloop.counter0 %}</div>
+        {% endfor %}
+      </div>
+      {% include "components/pagination.html" %}
+    {% else %}
+      {% if active_category %}
+        {% include "components/empty_state.html" with icon="layers" title="Nothing in this category yet" body="There are no published case studies filed under this category." action_url="/projects/" action_label="View all work" %}
+      {% else %}
+        {% include "components/empty_state.html" with icon="layers" title="No case studies published yet" body="Projects created in the Django admin and marked as published will be listed here." %}
+      {% endif %}
+    {% endif %}
+  </div>
+</section>
+
+{% include "components/cta.html" %}
+{% endblock %}

@@ -1,0 +1,13 @@
+{% comment %}Partner and trusted-by rosters. Each group only renders when it
+has entries, so an empty roster never leaves a stranded heading.{% endcomment %}
+<section class="section section--tight">
+  <div class="container-page">
+    <p class="text-center text-faint mb-4" style="font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;font-weight:700">Partners and trusted by</p>
+    {% if partners %}
+      {% include "components/partner_group.html" with label="Partners" entries=partners %}
+    {% endif %}
+    {% if trusted_by %}
+      {% include "components/partner_group.html" with label="Trusted by" entries=trusted_by %}
+    {% endif %}
+  </div>
+</section>

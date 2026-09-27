@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% load portfolio_tags %}
+
+{% block og_type %}product{% endblock %}
+{% block og_image %}{% if solution.hero_image %}<meta property="og:image" content="{{ site_url }}{{ solution.hero_image.url }}"><meta property="og:image:alt" content="{{ solution.image_alt }}">{% else %}{{ block.super }}{% endif %}{% endblock %}
+
+{% block content %}
+{% url 'company:solution_list' as solutions_url %}
+{% include "components/page_banner.html" with eyebrow=solution.tagline crumb=solution.name parent_label="Solutions" parent_url=solutions_url heading=solution.name subheading=solution.summary %}
+
+<section class="section">
+  <div class="container-page">
+    <div class="row g-5">
+      <div class="col-lg-8">
+        {% if solution.hero_image %}
+          <figure class="figure mb-5 reveal">
+            <img src="{{ solution.hero_image.url }}" alt="{{ solution.image_alt }}" loading="lazy" decoding="async">
+          </figure>
+        {% endif %}
+
+        <div class="prose">
+          {% if solution.overview %}
+            <div class="case-section reveal"><h2>Overview</h2>{{ solution.overview|linebreaks }}</div>
+          {% endif %}
+          {% if solution.who_its_for %}
+            <div class="case-section reveal"><h2>Who it is for</h2>{{ solution.who_its_for|linebreaks }}</div>
+          {% endif %}
+
+          {% if solution.capabilities.all %}
+            <div class="case-section reveal">
+              <h2>What it does</h2>
+              <div class="row g-3">
+                {% for capability in solution.capabilities.all %}
+                  <div class="col-md-6 d-flex">
+                    <div class="card"><div class="card__body" style="padding:1.25rem">
+                      <span class="icon-tile icon-tile--sm">{% icon capability.icon "sm" %}</span>
+                      <h3 class="card__title" style="font-size:1rem">{{ capability.title }}</h3>
+                      {% if capability.description %}<p class="card__text" style="margin-bottom:0">{{ capability.description }}</p>{% endif %}
+                    </div></div>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          {% endif %}
+
+          {% if solution.outcome %}
+            <div class="case-section reveal"><h2>What you get</h2>{{ solution.outcome|linebreaks }}</div>
+          {% endif %}
+
+          {% if not solution.overview and not solution.capabilities.all %}
+            {% include "components/empty_state.html" with icon="file-text" title="Detail coming shortly" body="The full write-up for this solution has not been published yet. Get in touch and we will walk you through it." action_url="/contact/" action_label="Talk to us" %}
+          {% endif %}
+        </div>
+      </div>
+
+      <aside class="col-lg-4">
+        <div class="sticky-panel">
+          <div class="panel panel--pad reveal">
+            <p class="panel__label">Solution details</p>
+            <ul class="fact-list">
+              <li><span class="k">Category</span><span class="v">{{ solution.tagline }}</span></li>
+              {% if solution.industries.all %}
+                <li><span class="k">Industries</span><span class="v">{% for i in solution.industries.all %}{{ i.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</span></li>
+              {% endif %}
+              {% if solution.related_project %}
+                <li><span class="k">Case study</span><span class="v"><a href="{{ solution.related_project.get_absolute_url }}">{{ solution.related_project.title }}</a></span></li>
+              {% endif %}
+              {% if solution.related_project and solution.related_project.website_url %}
+                <li><span class="k">Live product</span><span class="v"><a href="{{ solution.related_project.website_url }}" target="_blank" rel="noopener noreferrer">Visit site</a></span></li>
+              {% endif %}
+            </ul>
+            <a class="btn btn-primary btn-block mt-3" href="{% url 'contact:quote' %}?solution={{ solution.slug }}">Request a quote</a>
+            <a class="btn btn-outline btn-block mt-2" href="{% url 'contact:contact' %}">Ask a question</a>
+          </div>
+
+          {% if other_solutions %}
+            <div class="panel panel--pad mt-4 reveal">
+              <p class="panel__label">Other solutions</p>
+              <ul class="fact-list">
+                {% for other in other_solutions %}
+                  <li><span class="v" style="text-align:left"><a href="{{ other.get_absolute_url }}">{{ other.name }}</a></span></li>
+                {% endfor %}
+              </ul>
+            </div>
+          {% endif %}
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+{% include "components/cta.html" %}
+{% endblock %}

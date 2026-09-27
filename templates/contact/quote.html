@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% load portfolio_tags %}
+
+{% block content %}
+{% include "components/page_banner.html" with eyebrow="Request a quote" crumb="Request a Quote" heading="Tell us what you need built" subheading="Three short steps. You get a scoped response with an approach, a timeline and a price — not a sales call." %}
+
+<section class="section">
+  <div class="container-page">
+    <div class="row g-5">
+      <div class="col-lg-8">
+        <form method="post" novalidate data-stepped-form>
+          {% csrf_token %}
+          {% if form.non_field_errors %}<div class="alert alert-danger" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+          <div class="hp-wrap" aria-hidden="true">{{ form.website }}</div>
+
+          {# --------------------------------------------------- Step one #}
+          <fieldset class="panel panel--pad form-step">
+            <legend class="visually-hidden">Step 1: what you need</legend>
+            <div class="step-head">
+              <span class="step-head__num" aria-hidden="true">1</span>
+              <div><h2>What do you need built?</h2><p>Describe the system in your own words.</p></div>
+            </div>
+
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label" for="{{ form.solution.id_for_label }}">{{ form.solution.label }}</label>
+                {{ form.solution }}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="{{ form.service.id_for_label }}">{{ form.service.label }}</label>
+                {{ form.service }}
+              </div>
+              <div class="col-12">
+                <label class="form-label" for="{{ form.project_title.id_for_label }}">Project title<span class="req">*</span></label>
+                {{ form.project_title }}
+                {% for error in form.project_title.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+              </div>
+              <div class="col-12">
+                <label class="form-label" for="{{ form.description.id_for_label }}">Project description<span class="req">*</span></label>
+                {{ form.description }}
+                <p class="form-text">The more you tell us about the workflow and the people using it, the more accurate the quote.</p>
+                {% for error in form.description.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+              </div>
+            </div>
+          </fieldset>
+
+          {# --------------------------------------------------- Step two #}
+          <fieldset class="panel panel--pad form-step">
+            <legend class="visually-hidden">Step 2: scope</legend>
+            <div class="step-head">
+              <span class="step-head__num" aria-hidden="true">2</span>
+              <div><h2>Budget and timeline</h2><p>A range is fine — it helps us propose something realistic.</p></div>
+            </div>
+
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label" for="{{ form.budget_range.id_for_label }}">Budget range</label>
+                {{ form.budget_range }}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="{{ form.timeline.id_for_label }}">When do you need it?</label>
+                {{ form.timeline }}
+              </div>
+              <div class="col-12">
+                <div class="form-check">
+                  {{ form.existing_system }}
+                  <label for="{{ form.existing_system.id_for_label }}">{{ form.existing_system.label }}</label>
+                </div>
+              </div>
+            </div>
+          </fieldset>
+
+          {# ------------------------------------------------- Step three #}
+          <fieldset class="panel panel--pad form-step">
+            <legend class="visually-hidden">Step 3: contact details</legend>
+            <div class="step-head">
+              <span class="step-head__num" aria-hidden="true">3</span>
+              <div><h2>Who should we reply to?</h2><p>We use these details only to respond to this request.</p></div>
+            </div>
+
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label" for="{{ form.contact_name.id_for_label }}">Full name<span class="req">*</span></label>
+                {{ form.contact_name }}
+                {% for error in form.contact_name.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="{{ form.email.id_for_label }}">Email<span class="req">*</span></label>
+                {{ form.email }}
+                {% for error in form.email.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="{{ form.phone.id_for_label }}">Phone</label>
+                {{ form.phone }}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="{{ form.organisation.id_for_label }}">Organisation</label>
+                {{ form.organisation }}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="{{ form.organisation_type.id_for_label }}">Organisation type</label>
+                {{ form.organisation_type }}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="{{ form.country.id_for_label }}">Country</label>
+                {{ form.country }}
+              </div>
+            </div>
+          </fieldset>
+
+          <button class="btn btn-primary btn-lg" type="submit">Send request {% icon "arrow-right" "sm" %}</button>
+          <p class="form-text mt-3">We reply within two business days. Your details are never shared with anyone else.</p>
+        </form>
+      </div>
+
+      <aside class="col-lg-4">
+        <div class="sticky-panel">
+          <div class="panel panel--pad reveal">
+            <p class="panel__label">What happens next</p>
+            <ol style="padding-left:1.1rem;margin:0;color:var(--muted);font-size:.93rem">
+              <li style="margin-bottom:.6rem">We read your request and check what is missing.</li>
+              <li style="margin-bottom:.6rem">We come back with questions, or straight to an approach.</li>
+              <li style="margin-bottom:.6rem">You get a written scope, a timeline and a price.</li>
+              <li>If it fits, we start with a discovery session.</li>
+            </ol>
+          </div>
+
+          {% if site %}
+            <div class="panel panel--pad mt-4">
+              <p class="panel__label">Prefer to talk?</p>
+              {% if site.phone %}
+                <div class="contact-detail"><span class="ico">{% icon "phone" "sm" %}</span>
+                  <span><span class="k">Phone</span><a class="v" href="tel:{{ site.phone }}">{{ site.phone }}</a></span></div>
+              {% endif %}
+              {% if site.primary_contact_email and site.show_email_publicly %}
+                <div class="contact-detail"><span class="ico">{% icon "mail" "sm" %}</span>
+                  <span><span class="k">Email</span><a class="v" href="mailto:{{ site.primary_contact_email }}">{{ site.primary_contact_email }}</a></span></div>
+              {% endif %}
+              {% if site.office_hours %}
+                <div class="contact-detail"><span class="ico">{% icon "clock" "sm" %}</span>
+                  <span><span class="k">Office hours</span><span class="v">{{ site.office_hours }}</span></span></div>
+              {% endif %}
+              <a class="btn btn-outline btn-block mt-3" href="{% url 'contact:contact' %}">Send a message instead</a>
+            </div>
+          {% endif %}
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+{% endblock %}

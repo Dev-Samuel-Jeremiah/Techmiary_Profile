@@ -1,0 +1,358 @@
+{% load static humanize %}<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>{{ proposal.reference }} — {{ proposal.title }}</title>
+<style>
+  /* Letterhead geometry. The running header and footer are @page margin
+     boxes, so they repeat on every sheet without being part of the flow. */
+  @page {
+    size: A4;
+    margin: 30mm 18mm 24mm 18mm;
+    @top-left {
+      content: element(letterhead);
+    }
+    @bottom-left {
+      content: "{{ site.legal_name|default:site.company_name|default:site.brand_name }}"
+               {% if site.registration_number %} " · Reg. No. {{ site.registration_number }}"{% endif %};
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 7.5pt;
+      color: #8b95a5;
+    }
+    @bottom-right {
+      content: "{{ proposal.reference }} · Page " counter(page) " of " counter(pages);
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 7.5pt;
+      color: #8b95a5;
+    }
+  }
+  /* Page one carries the full masthead, so the running header would repeat
+     the same information. Drop it there and reclaim the space. */
+  @page :first {
+    margin-top: 18mm;
+    @top-left { content: none; }
+  }
+
+  :root { --ink:#0a2540; --body:#33425b; --muted:#64748b; --line:#dfe6f1; --brand:#1b4dff; }
+
+  * { box-sizing: border-box; }
+  body {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 9.5pt;
+    line-height: 1.55;
+    color: #33425b;
+    margin: 0;
+  }
+  h1, h2, h3 { color: #0a2540; margin: 0; font-weight: bold; }
+
+  /* -- Running letterhead, repeated on every page after the first -------- */
+  #letterhead {
+    position: running(letterhead);
+    width: 100%;
+    border-bottom: 0.6pt solid #dfe6f1;
+    padding-bottom: 3mm;
+    font-size: 7.5pt;
+    color: #8b95a5;
+  }
+  #letterhead .lh-name { color: #0a2540; font-weight: bold; font-size: 9pt; letter-spacing: .04em; }
+
+  /* -- First-page masthead ------------------------------------------------ */
+  .masthead {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 2.4pt solid #1b4dff;
+    padding-bottom: 5mm;
+    margin-bottom: 7mm;
+  }
+  .masthead__logo { max-height: 15mm; max-width: 62mm; }
+  .masthead__wordmark { font-size: 17pt; font-weight: bold; color: #0a2540; letter-spacing: .06em; }
+  .masthead__sub { font-size: 8pt; color: #64748b; margin-top: 1mm; }
+  .masthead__contact { text-align: right; font-size: 7.8pt; color: #64748b; line-height: 1.5; }
+  .masthead__contact strong { color: #0a2540; display: block; margin-bottom: 1mm; font-size: 8.4pt; }
+
+  /* -- Document title ----------------------------------------------------- */
+  .doc-kicker {
+    font-size: 7.6pt; letter-spacing: .18em; text-transform: uppercase;
+    color: #1b4dff; font-weight: bold; margin-bottom: 2mm;
+  }
+  .doc-title { font-size: 19pt; line-height: 1.2; margin-bottom: 2mm; }
+  .doc-summary { color: #64748b; font-size: 10pt; margin-bottom: 6mm; }
+
+  /* -- Meta / client panel ------------------------------------------------ */
+  .panels { display: flex; gap: 6mm; margin-bottom: 7mm; }
+  .panel {
+    flex: 1;
+    border: 0.6pt solid #dfe6f1;
+    border-radius: 2mm;
+    padding: 4mm 4.5mm;
+    background: #fbfcfe;
+  }
+  .panel h3 {
+    font-size: 7.4pt; letter-spacing: .14em; text-transform: uppercase;
+    color: #8b95a5; margin-bottom: 2.5mm;
+  }
+  .panel .line { margin-bottom: 1mm; }
+  .panel .org { font-weight: bold; color: #0a2540; font-size: 10pt; }
+  .kv { width: 100%; }
+  .kv td { padding: 0.6mm 0; vertical-align: top; font-size: 8.4pt; }
+  .kv td:first-child { color: #8b95a5; width: 32%; }
+  .kv td:last-child { color: #0a2540; }
+
+  /* -- Sections ------------------------------------------------------------ */
+  section { margin-bottom: 6.5mm; }
+  section h2 {
+    font-size: 11pt;
+    padding-bottom: 1.6mm;
+    margin-bottom: 3mm;
+    border-bottom: 0.6pt solid #dfe6f1;
+  }
+  section p { margin: 0 0 2.6mm; }
+  ul.clean { margin: 0; padding-left: 4.5mm; }
+  ul.clean li { margin-bottom: 1.4mm; }
+
+  /* -- Pricing table -------------------------------------------------------- */
+  table.items { width: 100%; border-collapse: collapse; }
+  table.items thead th {
+    font-size: 7.4pt; letter-spacing: .1em; text-transform: uppercase;
+    color: #8b95a5; text-align: left; font-weight: bold;
+    border-bottom: 0.9pt solid #cfd9e8; padding: 0 2mm 2mm 0;
+  }
+  table.items tbody td {
+    padding: 2.6mm 2mm 2.6mm 0;
+    border-bottom: 0.5pt solid #eef2f8;
+    vertical-align: top;
+  }
+  table.items .num { text-align: right; white-space: nowrap; }
+  table.items .item-title { color: #0a2540; font-weight: bold; }
+  table.items .item-desc { color: #64748b; font-size: 8.4pt; margin-top: 0.8mm; }
+
+  table.totals { width: 62mm; margin-left: auto; margin-top: 4mm; border-collapse: collapse; }
+  table.totals td { padding: 1.5mm 0; font-size: 9pt; }
+  table.totals td:last-child { text-align: right; white-space: nowrap; }
+  table.totals tr.grand td {
+    border-top: 0.9pt solid #0a2540;
+    border-bottom: 2pt double #0a2540;
+    font-weight: bold; font-size: 11pt; color: #0a2540;
+    padding: 2.2mm 0;
+  }
+  table.totals tr.muted td { color: #64748b; }
+
+  /* -- Milestones ----------------------------------------------------------- */
+  table.milestones { width: 100%; border-collapse: collapse; }
+  table.milestones th {
+    font-size: 7.4pt; letter-spacing: .1em; text-transform: uppercase; color: #8b95a5;
+    text-align: left; border-bottom: 0.9pt solid #cfd9e8; padding: 0 2mm 2mm 0;
+  }
+  table.milestones td { padding: 2.2mm 2mm 2.2mm 0; border-bottom: 0.5pt solid #eef2f8; vertical-align: top; }
+  table.milestones .week { white-space: nowrap; color: #1b4dff; font-weight: bold; font-size: 8.4pt; }
+
+  /* -- Acceptance ------------------------------------------------------------ */
+  .accept { border: 0.6pt solid #dfe6f1; border-radius: 2mm; padding: 5mm; background: #fbfcfe; }
+  .sig { display: flex; gap: 10mm; margin-top: 7mm; }
+  .sig div { flex: 1; }
+  .sig .rule { border-bottom: 0.6pt solid #8b95a5; height: 9mm; }
+  .sig .lbl { font-size: 7.6pt; color: #8b95a5; margin-top: 1.5mm; }
+
+  .note { font-size: 8pt; color: #8b95a5; }
+  .avoid-break { break-inside: avoid; }
+</style>
+</head>
+<body>
+
+{# Repeated on pages 2+ via the @page top-left margin box. #}
+<div id="letterhead">
+  <span class="lh-name">{{ site.company_name|default:site.brand_name|default:"Techmiary" }}</span>
+  &nbsp;·&nbsp; {{ proposal.title }}
+</div>
+
+{# ---------------------------------------------------------- Masthead #}
+<div class="masthead">
+  <div>
+    {# logo_src is a file:// URI so WeasyPrint reads it from disk, not over HTTP. #}
+    {% if logo_src %}
+      <img class="masthead__logo" src="{{ logo_src }}" alt="{{ site.brand_name }}">
+    {% else %}
+      <div class="masthead__wordmark">{{ site.brand_name|default:"TECHMIARY" }}</div>
+    {% endif %}
+    {% if site.company_name %}<div class="masthead__sub">{{ site.company_name }}</div>{% endif %}
+  </div>
+  <div class="masthead__contact">
+    <strong>{{ site.legal_name|default:site.company_name }}</strong>
+    {% if site.address %}{{ site.address|linebreaksbr }}<br>{% endif %}
+    {% if site.phone %}{{ site.phone }}{% if site.secondary_phone %} · {{ site.secondary_phone }}{% endif %}<br>{% endif %}
+    {% if site.sales_email %}{{ site.sales_email }}<br>{% elif site.email %}{{ site.email }}<br>{% endif %}
+    {% if site.website_url %}{{ site.website_url|cut:"https://"|cut:"http://" }}{% endif %}
+  </div>
+</div>
+
+{# ------------------------------------------------------------- Title #}
+<div class="doc-kicker">Proposal · {{ proposal.reference }}</div>
+<h1 class="doc-title">{{ proposal.title }}</h1>
+{% if proposal.summary %}<p class="doc-summary">{{ proposal.summary }}</p>{% endif %}
+
+{# -------------------------------------------------- Client / meta #}
+<div class="panels">
+  <div class="panel">
+    <h3>Prepared for</h3>
+    <div class="line org">{{ proposal.client_organisation }}</div>
+    <div class="line">{{ proposal.client_contact_name }}{% if proposal.client_role %}, {{ proposal.client_role }}{% endif %}</div>
+    {% if proposal.client_email %}<div class="line">{{ proposal.client_email }}</div>{% endif %}
+    {% if proposal.client_phone %}<div class="line">{{ proposal.client_phone }}</div>{% endif %}
+    {% if proposal.client_address %}<div class="line">{{ proposal.client_address|linebreaksbr }}</div>{% endif %}
+  </div>
+  <div class="panel">
+    <h3>Proposal details</h3>
+    <table class="kv">
+      <tr><td>Reference</td><td>{{ proposal.reference }}</td></tr>
+      <tr><td>Date</td><td>{{ proposal.created_at|date:"j F Y" }}</td></tr>
+      {% if proposal.valid_until %}<tr><td>Valid until</td><td>{{ proposal.valid_until|date:"j F Y" }}</td></tr>{% endif %}
+      <tr><td>Timeline</td><td>{{ proposal.timeline_weeks }} week{{ proposal.timeline_weeks|pluralize }}</td></tr>
+      {% if proposal.start_estimate %}<tr><td>Start</td><td>{{ proposal.start_estimate }}</td></tr>{% endif %}
+      {% if proposal.prepared_by %}<tr><td>Prepared by</td><td>{{ proposal.prepared_by.get_full_name|default:proposal.prepared_by.get_username }}</td></tr>{% endif %}
+    </table>
+  </div>
+</div>
+
+{% if proposal.background %}
+<section>
+  <h2>Background</h2>
+  {{ proposal.background|linebreaks }}
+</section>
+{% endif %}
+
+{% if proposal.approach %}
+<section>
+  <h2>Our approach</h2>
+  {{ proposal.approach|linebreaks }}
+</section>
+{% endif %}
+
+{# --------------------------------------------------------- Pricing #}
+{% if items %}
+<section>
+  <h2>Scope and investment</h2>
+  <table class="items">
+    <thead>
+      <tr>
+        <th style="width:52%">Item</th>
+        <th class="num" style="width:10%">Qty</th>
+        <th class="num" style="width:19%">Unit price</th>
+        <th class="num" style="width:19%">Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in items %}
+        <tr class="avoid-break">
+          <td>
+            <div class="item-title">{{ item.title }}</div>
+            {% if item.description %}<div class="item-desc">{{ item.description }}</div>{% endif %}
+          </td>
+          <td class="num">{{ item.quantity|floatformat:"-2" }}{% if item.unit %} {{ item.unit }}{{ item.quantity|floatformat:0|pluralize }}{% endif %}</td>
+          <td class="num">{{ proposal.currency_symbol }}{{ item.unit_price|floatformat:2|intcomma }}</td>
+          <td class="num">{{ proposal.currency_symbol }}{{ item.line_total|floatformat:2|intcomma }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <table class="totals avoid-break">
+    <tr><td>Subtotal</td><td>{{ proposal.currency_symbol }}{{ proposal.subtotal|floatformat:2|intcomma }}</td></tr>
+    {% if proposal.discount_percent %}
+      <tr class="muted"><td>Discount ({{ proposal.discount_percent|floatformat:"-2" }}%)</td>
+          <td>−{{ proposal.currency_symbol }}{{ proposal.discount_amount|floatformat:2|intcomma }}</td></tr>
+    {% endif %}
+    {% if proposal.tax_percent %}
+      <tr class="muted"><td>Tax ({{ proposal.tax_percent|floatformat:"-2" }}%)</td>
+          <td>{{ proposal.currency_symbol }}{{ proposal.tax_amount|floatformat:2|intcomma }}</td></tr>
+    {% endif %}
+    <tr class="grand"><td>Total</td><td>{{ proposal.currency_symbol }}{{ proposal.total|floatformat:2|intcomma }}</td></tr>
+    {% if proposal.deposit_percent %}
+      <tr class="muted"><td>Deposit ({{ proposal.deposit_percent|floatformat:"-2" }}%)</td>
+          <td>{{ proposal.currency_symbol }}{{ proposal.deposit_amount|floatformat:2|intcomma }}</td></tr>
+      <tr class="muted"><td>Balance on delivery</td>
+          <td>{{ proposal.currency_symbol }}{{ proposal.balance_amount|floatformat:2|intcomma }}</td></tr>
+    {% endif %}
+  </table>
+</section>
+{% endif %}
+
+{% if milestones %}
+<section>
+  <h2>Delivery schedule</h2>
+  <table class="milestones">
+    <thead>
+      <tr><th style="width:18%">When</th><th style="width:54%">Phase</th><th class="num" style="width:28%">Payment</th></tr>
+    </thead>
+    <tbody>
+      {% for m in milestones %}
+        <tr class="avoid-break">
+          <td class="week">{{ m.week_label }}</td>
+          <td>
+            <div class="item-title">{{ m.name }}</div>
+            {% if m.description %}<div class="item-desc">{{ m.description }}</div>{% endif %}
+          </td>
+          <td class="num">
+            {% if m.percent_of_fee %}{{ proposal.currency_symbol }}{{ m.amount|floatformat:2|intcomma }}
+              <div class="item-desc">{{ m.percent_of_fee|floatformat:"-2" }}% of fee</div>
+            {% else %}—{% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endif %}
+
+{% if proposal.assumption_list or proposal.exclusion_list %}
+<section class="avoid-break">
+  <h2>Scope boundaries</h2>
+  {% if proposal.assumption_list %}
+    <p><strong>This proposal assumes:</strong></p>
+    <ul class="clean">{% for a in proposal.assumption_list %}<li>{{ a }}</li>{% endfor %}</ul>
+  {% endif %}
+  {% if proposal.exclusion_list %}
+    <p style="margin-top:3mm"><strong>Not included:</strong></p>
+    <ul class="clean">{% for e in proposal.exclusion_list %}<li>{{ e }}</li>{% endfor %}</ul>
+  {% endif %}
+</section>
+{% endif %}
+
+{% if proposal.payment_terms %}
+<section class="avoid-break">
+  <h2>Payment terms</h2>
+  {{ proposal.payment_terms|linebreaks }}
+</section>
+{% endif %}
+
+{# ------------------------------------------------------- Acceptance #}
+<section class="avoid-break">
+  <h2>Acceptance</h2>
+  <div class="accept">
+    <p style="margin:0">
+      To proceed, sign below and return a copy to
+      {% if site.sales_email %}{{ site.sales_email }}{% elif site.email %}{{ site.email }}{% else %}us{% endif %}.
+      {% if proposal.valid_until %}
+        This proposal is valid until <strong>{{ proposal.valid_until|date:"j F Y" }}</strong>.
+      {% endif %}
+    </p>
+    <div class="sig">
+      <div>
+        <div class="rule"></div>
+        <div class="lbl">Signed for and on behalf of {{ proposal.client_organisation }}</div>
+      </div>
+      <div>
+        <div class="rule"></div>
+        <div class="lbl">Date</div>
+      </div>
+    </div>
+  </div>
+  <p class="note" style="margin-top:3mm">
+    Prepared by {{ site.legal_name|default:site.company_name|default:site.brand_name }}.
+    {% if site.registration_number %}Business name registration No. {{ site.registration_number }}.{% endif %}
+    Figures are quoted in {{ proposal.get_currency_display }}.
+  </p>
+</section>
+
+</body>
+</html>

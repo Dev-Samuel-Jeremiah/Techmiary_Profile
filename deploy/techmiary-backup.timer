@@ -1,0 +1,16 @@
+# /etc/systemd/system/techmiary-backup.timer
+#
+#   sudo systemctl enable --now techmiary-backup.timer
+#   systemctl list-timers techmiary-backup.timer
+#
+[Unit]
+Description=Daily backup of the Techmiary SQLite database
+
+[Timer]
+OnCalendar=*-*-* 02:30:00
+# Run on the next boot if the machine was off when the timer was due.
+Persistent=true
+RandomizedDelaySec=15m
+
+[Install]
+WantedBy=timers.target

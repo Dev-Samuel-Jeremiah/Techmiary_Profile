@@ -1,0 +1,184 @@
+{% load portfolio_tags %}
+<header class="site-nav">
+  <nav class="container-page site-nav__inner" aria-label="Primary">
+
+    <a class="brand" href="{% url 'core:home' %}" aria-label="{{ site.display_company|default:'Techmiary' }} — home">
+      {% include "components/brand.html" %}
+    </a>
+
+    <ul class="nav-list">
+      <li class="nav-item">
+        <a class="nav-link {% nav_active 'core:home' %}" href="{% url 'core:home' %}">Home</a>
+      </li>
+
+      <li class="nav-item nav-item--has-panel">
+        <button class="nav-link {% nav_active 'company:solution_list' %}" type="button" aria-expanded="false" aria-haspopup="true">
+          Solutions {% icon "chevron-down" "sm" "chev" %}
+        </button>
+        <div class="nav-panel nav-panel--wide" role="menu">
+          {% for item in nav_solutions %}
+            <a class="nav-panel__link" href="{{ item.get_absolute_url }}" role="menuitem">
+              <span class="nav-panel__icon">{% icon item.icon "sm" %}</span>
+              <span>
+                <span class="nav-panel__title">{{ item.name }}</span>
+                <span class="nav-panel__desc">{{ item.tagline|truncatechars:64 }}</span>
+              </span>
+            </a>
+          {% empty %}
+            <a class="nav-panel__link" href="{% url 'company:solution_list' %}" role="menuitem">
+              <span class="nav-panel__icon">{% icon "layers" "sm" %}</span>
+              <span><span class="nav-panel__title">Our solutions</span><span class="nav-panel__desc">Platforms we build and deploy</span></span>
+            </a>
+          {% endfor %}
+          <div class="nav-panel__footer">
+            <a class="link-arrow" href="{% url 'company:solution_list' %}">All solutions {% icon "arrow-right" "sm" %}</a>
+            <a class="btn btn-soft btn-sm" href="{% url 'contact:quote' %}">Request a quote</a>
+          </div>
+        </div>
+      </li>
+
+      <li class="nav-item nav-item--has-panel">
+        <button class="nav-link {% nav_active 'company:industry_list' %}" type="button" aria-expanded="false" aria-haspopup="true">
+          Industries {% icon "chevron-down" "sm" "chev" %}
+        </button>
+        <div class="nav-panel" role="menu">
+          {% for item in nav_industries %}
+            <a class="nav-panel__link" href="{{ item.get_absolute_url }}" role="menuitem">
+              <span class="nav-panel__icon">{% icon item.icon "sm" %}</span>
+              <span><span class="nav-panel__title">{{ item.name }}</span></span>
+            </a>
+          {% empty %}
+            <a class="nav-panel__link" href="{% url 'company:industry_list' %}" role="menuitem">
+              <span class="nav-panel__icon">{% icon "globe" "sm" %}</span>
+              <span><span class="nav-panel__title">Sectors we serve</span></span>
+            </a>
+          {% endfor %}
+        </div>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link {% nav_active 'services:list' %}" href="{% url 'services:list' %}">Services</a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link {% nav_active 'projects:list' %}" href="{% url 'projects:list' %}">Our Work</a>
+      </li>
+
+      <li class="nav-item nav-item--has-panel">
+        <button class="nav-link" type="button" aria-expanded="false" aria-haspopup="true">
+          Company {% icon "chevron-down" "sm" "chev" %}
+        </button>
+        <div class="nav-panel nav-panel--wide" role="menu">
+          <a class="nav-panel__link" href="{% url 'core:about' %}" role="menuitem">
+            <span class="nav-panel__icon">{% icon "building" "sm" %}</span>
+            <span><span class="nav-panel__title">About us</span><span class="nav-panel__desc">Who we are and how we work</span></span>
+          </a>
+          <a class="nav-panel__link" href="{% url 'company:team_list' %}" role="menuitem">
+            <span class="nav-panel__icon">{% icon "users" "sm" %}</span>
+            <span><span class="nav-panel__title">Leadership &amp; team</span><span class="nav-panel__desc">The people behind the work</span></span>
+          </a>
+          <a class="nav-panel__link" href="{% url 'company:client_list' %}" role="menuitem">
+            <span class="nav-panel__icon">{% icon "handshake" "sm" %}</span>
+            <span><span class="nav-panel__title">Clients</span><span class="nav-panel__desc">Organisations we deliver for</span></span>
+          </a>
+          <a class="nav-panel__link" href="{% url 'careers:list' %}" role="menuitem">
+            <span class="nav-panel__icon">{% icon "briefcase" "sm" %}</span>
+            <span><span class="nav-panel__title">Careers{% if open_role_count %} <span class="tag tag--primary">{{ open_role_count }} open</span>{% endif %}</span><span class="nav-panel__desc">Join the team</span></span>
+          </a>
+          <a class="nav-panel__link" href="{% url 'core:skills' %}" role="menuitem">
+            <span class="nav-panel__icon">{% icon "code" "sm" %}</span>
+            <span><span class="nav-panel__title">Technology</span><span class="nav-panel__desc">The stack we build on</span></span>
+          </a>
+          <a class="nav-panel__link" href="{% url 'contact:contact' %}" role="menuitem">
+            <span class="nav-panel__icon">{% icon "message" "sm" %}</span>
+            <span><span class="nav-panel__title">Contact</span><span class="nav-panel__desc">Talk to the team</span></span>
+          </a>
+        </div>
+      </li>
+
+      <li class="nav-item nav-item--has-panel">
+        <button class="nav-link" type="button" aria-expanded="false" aria-haspopup="true">
+          Resources {% icon "chevron-down" "sm" "chev" %}
+        </button>
+        <div class="nav-panel nav-panel--right" role="menu">
+          <a class="nav-panel__link" href="{% url 'blog:list' %}" role="menuitem">
+            <span class="nav-panel__icon">{% icon "book" "sm" %}</span>
+            <span><span class="nav-panel__title">Insights</span><span class="nav-panel__desc">Articles from the team</span></span>
+          </a>
+          <a class="nav-panel__link" href="{% url 'company:resource_list' %}" role="menuitem">
+            <span class="nav-panel__icon">{% icon "file-text" "sm" %}</span>
+            <span><span class="nav-panel__title">Guides &amp; downloads</span><span class="nav-panel__desc">Documents you can take away</span></span>
+          </a>
+          <a class="nav-panel__link" href="{% url 'company:faq' %}" role="menuitem">
+            <span class="nav-panel__icon">{% icon "life-buoy" "sm" %}</span>
+            <span><span class="nav-panel__title">FAQ</span><span class="nav-panel__desc">How we scope, price and support</span></span>
+          </a>
+        </div>
+      </li>
+    </ul>
+
+    <div class="nav-actions">
+      <a class="btn btn-primary btn-sm" href="{% url 'contact:quote' %}">Request a Quote</a>
+      <button class="nav-toggle" type="button" data-drawer-open aria-expanded="false" aria-controls="site-drawer" aria-label="Open navigation menu">
+        {% icon "menu" %}
+      </button>
+    </div>
+  </nav>
+</header>
+
+<div class="backdrop" data-backdrop></div>
+
+<div class="drawer" id="site-drawer" aria-hidden="true" aria-label="Site navigation">
+  <div class="drawer__head">
+    <span class="brand">{% include "components/brand.html" %}</span>
+    <button class="nav-toggle" type="button" data-drawer-close aria-label="Close navigation menu">{% icon "close" %}</button>
+  </div>
+
+  <nav aria-label="Mobile navigation">
+    <a class="drawer__link {% nav_active 'core:home' %}" href="{% url 'core:home' %}">Home</a>
+
+    <div class="drawer__section">
+      <button class="drawer__toggle" type="button" data-drawer-toggle aria-expanded="false">Solutions {% icon "chevron-down" "sm" "chev" %}</button>
+      <div class="drawer__panel">
+        {% for item in nav_solutions %}<a href="{{ item.get_absolute_url }}">{{ item.name }}</a>{% endfor %}
+        <a href="{% url 'company:solution_list' %}">All solutions</a>
+      </div>
+    </div>
+
+    <div class="drawer__section">
+      <button class="drawer__toggle" type="button" data-drawer-toggle aria-expanded="false">Industries {% icon "chevron-down" "sm" "chev" %}</button>
+      <div class="drawer__panel">
+        {% for item in nav_industries %}<a href="{{ item.get_absolute_url }}">{{ item.name }}</a>{% endfor %}
+        <a href="{% url 'company:industry_list' %}">All industries</a>
+      </div>
+    </div>
+
+    <a class="drawer__link {% nav_active 'services:list' %}" href="{% url 'services:list' %}">Services</a>
+    <a class="drawer__link {% nav_active 'projects:list' %}" href="{% url 'projects:list' %}">Our Work</a>
+
+    <div class="drawer__section">
+      <button class="drawer__toggle" type="button" data-drawer-toggle aria-expanded="false">Company {% icon "chevron-down" "sm" "chev" %}</button>
+      <div class="drawer__panel">
+        <a href="{% url 'core:about' %}">About us</a>
+        <a href="{% url 'company:team_list' %}">Leadership &amp; team</a>
+        <a href="{% url 'company:client_list' %}">Clients</a>
+        <a href="{% url 'careers:list' %}">Careers</a>
+        <a href="{% url 'core:skills' %}">Technology</a>
+      </div>
+    </div>
+
+    <div class="drawer__section">
+      <button class="drawer__toggle" type="button" data-drawer-toggle aria-expanded="false">Resources {% icon "chevron-down" "sm" "chev" %}</button>
+      <div class="drawer__panel">
+        <a href="{% url 'blog:list' %}">Insights</a>
+        <a href="{% url 'company:resource_list' %}">Guides &amp; downloads</a>
+        <a href="{% url 'company:faq' %}">FAQ</a>
+      </div>
+    </div>
+
+    <a class="drawer__link {% nav_active 'contact:contact' %}" href="{% url 'contact:contact' %}">Contact</a>
+  </nav>
+
+  <a class="btn btn-primary btn-block mt-4" href="{% url 'contact:quote' %}">Request a Quote</a>
+  {% if social_links %}<div class="person-links mt-4" style="justify-content:flex-start">{% for link in social_links %}<a href="{{ link.url }}" target="_blank" rel="noopener noreferrer" aria-label="{{ link.name }}">{% icon link.icon "sm" %}</a>{% endfor %}</div>{% endif %}
+</div>

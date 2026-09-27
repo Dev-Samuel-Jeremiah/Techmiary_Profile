@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% load portfolio_tags %}
+
+{% block og_type %}article{% endblock %}
+{% block og_image %}{% if project.cover_image %}<meta property="og:image" content="{{ site_url }}{{ project.cover_image.url }}"><meta property="og:image:alt" content="{{ project.cover_alt_text }}">{% else %}{{ block.super }}{% endif %}{% endblock %}
+
+{% block content %}
+{% url 'projects:list' as work_url %}
+{% include "components/page_banner.html" with eyebrow=project.category.name crumb=project.title parent_label="Our Work" parent_url=work_url heading=project.title subheading=project.short_description %}
+
+<article class="section">
+  <div class="container-page">
+    {% if project.cover_image %}
+      <figure class="figure mb-5 reveal">
+        <img src="{{ project.cover_image.url }}" alt="{{ project.cover_alt_text }}" loading="lazy" decoding="async">
+      </figure>
+    {% endif %}
+
+    <div class="row g-5">
+      <div class="col-lg-8">
+        <div class="prose">
+          {% if project.description %}<div class="case-section reveal"><h2>Overview</h2>{{ project.description|linebreaks }}</div>{% endif %}
+          {% if project.problem %}<div class="case-section reveal"><h2>The problem</h2>{{ project.problem|linebreaks }}</div>{% endif %}
+          {% if project.solution %}<div class="case-section reveal"><h2>What we built</h2>{{ project.solution|linebreaks }}</div>{% endif %}
+
+          {% if project.features.all %}
+            <div class="case-section reveal">
+              <h2>Key features</h2>
+              <div class="row g-3">
+                {% for feature in project.features.all %}
+                  <div class="col-md-6 d-flex">
+                    <div class="card"><div class="card__body" style="padding:1.25rem">
+                      <h3 class="card__title" style="font-size:1rem">{{ feature.title }}</h3>
+                      {% if feature.description %}<p class="card__text" style="margin-bottom:0">{{ feature.description }}</p>{% endif %}
+                    </div></div>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          {% endif %}
+
+          {% if project.challenges.all %}
+            <div class="case-section reveal">
+              <h2>Engineering challenges</h2>
+              <div class="row g-3">
+                {% for challenge in project.challenges.all %}
+                  <div class="col-md-6 d-flex">
+                    <div class="card"><div class="card__body" style="padding:1.25rem">
+                      <span class="icon-tile icon-tile--sm">{% icon "settings" "sm" %}</span>
+                      <h3 class="card__title" style="font-size:1rem">{{ challenge.title }}</h3>
+                      {% if challenge.description %}<p class="card__text" style="margin-bottom:0">{{ challenge.description }}</p>{% endif %}
+                    </div></div>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          {% endif %}
+
+          {% if project.images.all %}
+            <div class="case-section reveal">
+              <h2>Inside the system</h2>
+              <div class="row g-3">
+                {% for image in project.images.all %}
+                  <div class="col-md-6">
+                    <figure class="figure">
+                      <img src="{{ image.image.url }}" alt="{{ image.alt_text }}" loading="lazy" decoding="async">
+                      {% if image.caption %}<figcaption>{{ image.caption }}</figcaption>{% endif %}
+                    </figure>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          {% endif %}
+
+          {% if project.result %}<div class="case-section reveal"><h2>Result</h2>{{ project.result|linebreaks }}</div>{% endif %}
+
+          {% if not project.has_case_study_body and not project.features.all %}
+            {% include "components/empty_state.html" with icon="file-text" title="Case study in preparation" body="The write-up for this project has not been published yet. The live product is linked alongside." %}
+          {% endif %}
+        </div>
+      </div>
+
+      <aside class="col-lg-4">
+        <div class="sticky-panel">
+          <div class="panel panel--pad reveal">
+            <p class="panel__label">Project details</p>
+            <ul class="fact-list">
+              <li><span class="k">Category</span><span class="v">{{ project.category.name }}</span></li>
+              {% if project.year %}<li><span class="k">Year</span><span class="v">{{ project.year }}</span></li>{% endif %}
+              <li><span class="k">Status</span><span class="v"><span class="status-pill" data-status="{{ project.status }}">{{ project.get_status_display }}</span></span></li>
+              {% if project.client %}<li><span class="k">Client</span><span class="v">{{ project.client }}</span></li>{% endif %}
+              {% if project.website_url %}<li><span class="k">Website</span><span class="v"><a href="{{ project.website_url }}" target="_blank" rel="noopener noreferrer">{{ project.website_url|cut:"https://"|cut:"http://" }}</a></span></li>{% endif %}
+              {% if project.github_url %}<li><span class="k">Source</span><span class="v"><a href="{{ project.github_url }}" target="_blank" rel="noopener noreferrer">GitHub</a></span></li>{% endif %}
+            </ul>
+            {% if project.technologies.all %}
+              <p class="panel__label mt-4">Built with</p>
+              <div class="tag-row">{% for tech in project.technologies.all %}<span class="tag tag--primary">{{ tech.name }}</span>{% endfor %}</div>
+            {% endif %}
+            {% if project.website_url %}
+              <a class="btn btn-primary btn-block mt-4" href="{{ project.website_url }}" target="_blank" rel="noopener noreferrer">Visit the product {% icon "arrow-up-right" "sm" %}</a>
+            {% endif %}
+          </div>
+
+          {% if project.architecture_description or project.architecture_diagram %}
+            <div class="panel panel--pad mt-4 reveal">
+              <p class="panel__label">Architecture</p>
+              {% if project.architecture_diagram %}
+                <img src="{{ project.architecture_diagram.url }}" alt="Architecture diagram for {{ project.title }}" class="w-100 mb-3" style="border-radius:var(--radius-sm)" loading="lazy" decoding="async">
+              {% endif %}
+              {% if project.architecture_description %}
+                <div class="arch-flow">
+                  {% for node in project.architecture_description|split_lines %}
+                    {% if not forloop.first %}<div class="arch-arrow" aria-hidden="true">{% icon "chevron-down" "sm" %}</div>{% endif %}
+                    <div class="arch-node {% if forloop.counter == 3 %}arch-node--accent{% endif %}">{{ node }}</div>
+                  {% endfor %}
+                </div>
+              {% endif %}
+            </div>
+          {% endif %}
+
+          {% if related_projects %}
+            <div class="panel panel--pad mt-4 reveal">
+              <p class="panel__label">Related work</p>
+              <ul class="fact-list">
+                {% for related in related_projects %}
+                  <li><span class="v" style="text-align:left"><a href="{{ related.get_absolute_url }}">{{ related.title }}</a></span></li>
+                {% endfor %}
+              </ul>
+            </div>
+          {% endif %}
+
+          <div class="panel panel--pad panel--primary mt-4">
+            <h3 style="font-size:1.05rem">Need something similar?</h3>
+            <p style="font-size:.92rem;color:var(--muted)">We can adapt this system for your organisation or build to your own requirements.</p>
+            <a class="btn btn-primary btn-block" href="{% url 'contact:quote' %}">Request a quote</a>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</article>
+{% endblock %}

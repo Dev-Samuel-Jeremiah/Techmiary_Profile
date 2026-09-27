@@ -1,0 +1,77 @@
+# /etc/systemd/system/techmiary-portfolio.service
+#
+#   sudo cp deploy/gunicorn.socket  /etc/systemd/system/techmiary-portfolio.socket
+#   sudo cp deploy/gunicorn.service /etc/systemd/system/techmiary-portfolio.service
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now techmiary-portfolio.socket techmiary-portfolio.service
+#   sudo systemctl status techmiary-portfolio
+#
+[Unit]
+Description=Gunicorn daemon for the Techmiary website
+Requires=techmiary-portfolio.socket
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=notify
+User=www-data
+Group=www-data
+RuntimeDirectory=gunicorn
+WorkingDirectory=/srv/portfolio
+
+Environment="DJANGO_SETTINGS_MODULE=config.settings.production"
+Environment="PYTHONUNBUFFERED=1"
+# ProtectHome=true hides /var/www, so fontconfig — which WeasyPrint needs to
+# render proposal PDFs — has nowhere to put its cache and falls over. Give it
+# somewhere writable inside the data directory.
+Environment="XDG_CACHE_HOME=/srv/portfolio/data/cache"
+Environment="HOME=/srv/portfolio/data"
+
+# python-decouple reads this file too; systemd's parser is stricter, so keep
+# every line a plain KEY=value with no inline comments.
+EnvironmentFile=/srv/portfolio/.env
+
+# SQLite serialises writes, so piling on processes only makes them queue for
+# the same lock. A few workers with a few threads each handles the read load
+# without multiplying write contention. Raise --workers before --threads.
+ExecStart=/srv/portfolio/venv/bin/gunicorn \
+    --workers 3 \
+    --threads 4 \
+    --worker-class gthread \
+    --timeout 60 \
+    --graceful-timeout 30 \
+    --keep-alive 5 \
+    --max-requests 1000 \
+    --max-requests-jitter 100 \
+    --access-logfile - \
+    --error-logfile - \
+    --capture-output \
+    --bind unix:/run/gunicorn/techmiary-portfolio.sock \
+    config.wsgi:application
+
+ExecReload=/bin/kill -s HUP $MAINPID
+KillMode=mixed
+Restart=on-failure
+RestartSec=5
+
+# --- Hardening -------------------------------------------------------------
+# ProtectSystem=strict makes the entire filesystem read-only, so every path the
+# app writes to has to be listed. That is the point: if this list is wrong the
+# service fails loudly at boot instead of a compromise finding somewhere to
+# write months later.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/srv/portfolio/data /srv/portfolio/staticfiles
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+RestrictRealtime=true
+LockPersonality=true
+RemoveIPC=true
+UMask=0027
+
+[Install]
+WantedBy=multi-user.target

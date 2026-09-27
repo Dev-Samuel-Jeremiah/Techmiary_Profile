@@ -1,0 +1,39 @@
+{% extends "dashboard/base.html" %}
+{% block title %}{{ quote.project_title }}{% endblock %}
+{% block heading %}{{ quote.project_title }}{% endblock %}
+{% block subheading %}<p class="dash-sub">{{ quote.created_at|date:"j F Y, H:i" }}</p>{% endblock %}
+{% block content %}
+<div class="dash-grid dash-grid--sidebar">
+  <section class="dash-card">
+    <h2>What they asked for</h2>
+    <p class="dash-prose">{{ quote.description|linebreaks }}</p>
+    <dl class="dash-kv">
+      <dt>Budget</dt><dd>{{ quote.get_budget_range_display }}</dd>
+      <dt>Timeline</dt><dd>{{ quote.get_timeline_display }}</dd>
+      <dt>Organisation type</dt><dd>{{ quote.get_organisation_type_display }}</dd>
+      {% if quote.service %}<dt>Service</dt><dd>{{ quote.service }}</dd>{% endif %}
+      {% if quote.solution %}<dt>Solution</dt><dd>{{ quote.solution }}</dd>{% endif %}
+      <dt>Existing system</dt><dd>{{ quote.existing_system|yesno:"Yes,No" }}</dd>
+    </dl>
+  </section>
+  <aside class="dash-card">
+    <h2>Contact</h2>
+    <dl class="dash-kv">
+      <dt>Name</dt><dd>{{ quote.contact_name }}</dd>
+      <dt>Email</dt><dd><a href="mailto:{{ quote.email }}">{{ quote.email }}</a></dd>
+      {% if quote.phone %}<dt>Phone</dt><dd>{{ quote.phone }}</dd>{% endif %}
+      {% if quote.organisation %}<dt>Organisation</dt><dd>{{ quote.organisation }}</dd>{% endif %}
+      {% if quote.country %}<dt>Country</dt><dd>{{ quote.country }}</dd>{% endif %}
+    </dl>
+    <form method="post">
+      {% csrf_token %}
+      <label class="dash-label" for="{{ form.status.id_for_label }}">Status</label>
+      {{ form.status }}
+      <label class="dash-label" for="{{ form.internal_notes.id_for_label }}">Internal notes</label>
+      {{ form.internal_notes }}
+      <button class="dash-btn dash-btn--block" type="submit">Save</button>
+    </form>
+    <a class="dash-link" href="{% url 'dashboard:quote_list' %}">Back to quote requests</a>
+  </aside>
+</div>
+{% endblock %}

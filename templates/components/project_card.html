@@ -1,0 +1,28 @@
+{% load portfolio_tags %}
+<article class="card card--hover reveal" {% if delay %}data-delay="{{ delay }}"{% endif %}>
+  <div class="card__media">
+    {% if project.cover_image %}
+      <img src="{{ project.cover_image.url }}" alt="{{ project.cover_alt_text }}" loading="lazy" decoding="async" width="800" height="450">
+    {% else %}
+      <span class="card__placeholder">{{ project.title }}</span>
+    {% endif %}
+  </div>
+  <div class="card__body">
+    <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+      <span class="tag tag--primary">{{ project.category.name }}</span>
+      {% if project.year %}<span class="tag">{{ project.year }}</span>{% endif %}
+      <span class="status-pill" data-status="{{ project.status }}">{{ project.get_status_display }}</span>
+    </div>
+    <h3 class="card__title"><a href="{{ project.get_absolute_url }}">{{ project.title }}</a></h3>
+    <p class="card__text">{{ project.short_description|truncatewords:24 }}</p>
+    {% if project.technologies.all %}
+      <div class="tag-row mb-3">{% for tech in project.technologies.all|slice:":4" %}<span class="tag">{{ tech.name }}</span>{% endfor %}</div>
+    {% endif %}
+    <div class="card__footer">
+      <a class="btn btn-outline btn-sm" href="{{ project.get_absolute_url }}">Case study</a>
+      {% if project.website_url %}
+        <a class="btn btn-soft btn-sm" href="{{ project.website_url }}" target="_blank" rel="noopener noreferrer">Visit site {% icon "arrow-up-right" "sm" %}</a>
+      {% endif %}
+    </div>
+  </div>
+</article>

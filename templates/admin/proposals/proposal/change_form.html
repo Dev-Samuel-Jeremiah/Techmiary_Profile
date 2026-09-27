@@ -1,0 +1,19 @@
+{% extends "admin/change_form.html" %}
+{% comment %}
+  Adds a Download PDF button to the proposal's save row, so issuing a proposal
+  is one click from where it was edited.
+{% endcomment %}
+{% block submit_buttons_bottom %}
+  {{ block.super }}
+  {% if show_download_pdf and original %}
+    <div class="submit-row" style="margin-top:-10px">
+      <a class="button default" style="float:right;background:#1b4dff"
+         href="{% url 'proposals:pdf' original.pk %}" target="_blank" rel="noopener">
+        Download proposal PDF
+      </a>
+      <p style="margin:6px 0 0;color:#64748b;font-size:12px">
+        Opens the letterhead PDF in a new tab. Save your edits first.
+      </p>
+    </div>
+  {% endif %}
+{% endblock %}

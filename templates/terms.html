@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% include "components/page_banner.html" with eyebrow="Legal" crumb=page_title heading=page_title subheading="The terms that apply to using this website." %}
+
+<section class="section">
+  <div class="container-page" style="max-width:820px">
+    <div class="prose">
+      <h2>About this site</h2>
+      <p>This is the website of {% if site %}{{ site.display_company }}{% else %}the company{% endif %}. It
+      describes the solutions and services we offer and the systems we have built. Nothing on it
+      constitutes a binding offer, quotation or contract.</p>
+
+      <h2>Quotations and engagements</h2>
+      <p>A quote request submitted through this site is an enquiry, not an order. Any work we undertake is
+      governed by a separate written agreement covering scope, timeline, payment, intellectual property
+      and support. That agreement takes precedence over anything stated here.</p>
+
+      <h2>Content and ownership</h2>
+      <p>The text, design and code of this site belong to the company. Product names, screenshots and
+      logos of the systems described remain the property of their respective owners, and client names
+      appear only where permission has been given. Please ask before reproducing content from this site.</p>
+
+      <h2>Accuracy</h2>
+      <p>Descriptions reflect our solutions and projects as they stood at the time of writing. Software
+      changes; if something here is out of date, tell us and we will correct it.</p>
+
+      <h2>External links</h2>
+      <p>Links to live products and third-party websites are provided for reference. We are not
+      responsible for the content or availability of external sites.</p>
+
+      <h2>Recruitment</h2>
+      <p>Submitting an application through this site does not create an employment relationship or
+      guarantee an interview. We consider every application we receive.</p>
+
+      <h2>Limitation</h2>
+      <p>This website is provided as is. We take care to keep it accurate and available, but we do not
+      warrant uninterrupted access or freedom from error.</p>
+    </div>
+  </div>
+</section>
+{% endblock %}

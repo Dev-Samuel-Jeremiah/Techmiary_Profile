@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% include "components/page_banner.html" with eyebrow="Legal" crumb=page_title heading=page_title subheading="How this website handles the information you give us." %}
+
+<section class="section">
+  <div class="container-page" style="max-width:820px">
+    <div class="prose">
+      <h2>What we collect</h2>
+      <p>This website collects only what you submit through its forms: your name, email address, and
+      optionally your phone number and organisation, along with the subject and body of your message,
+      quote request or job application. For applications we also store the CV you attach. The IP address
+      and browser user agent of each submission are recorded so abusive or automated traffic can be
+      identified.</p>
+
+      <h2>Why we collect it</h2>
+      <p>Your details are used to reply to your enquiry, to prepare a quotation, or to assess a job
+      application. Newsletter addresses are used only to send the updates you asked for. Nothing is sold,
+      rented, or shared with third parties for marketing.</p>
+
+      <h2>How long we keep it</h2>
+      <p>Enquiries and quote requests are kept while they remain relevant to the conversation or the
+      engagement. Job applications are kept for the duration of the recruitment process and for a
+      reasonable period afterwards in case another role suits you. You can ask us to delete your data at
+      any time and we will.</p>
+
+      <h2>Cookies</h2>
+      <p>The site sets a session cookie and a CSRF cookie. Both exist for security and for the forms to
+      work. No advertising or cross-site tracking cookies are set.</p>
+
+      <h2>Newsletter</h2>
+      <p>Every newsletter we send includes a way to unsubscribe. You can also ask us directly and we will
+      remove you.</p>
+
+      <h2>Third-party services</h2>
+      <p>Fonts are loaded from Google Fonts and the CSS and JavaScript framework from a public CDN. Those
+      providers may log the request as part of serving the file.</p>
+
+      <h2>Your rights</h2>
+      <p>You may ask what we hold about you, ask us to correct it, or ask us to delete it. Send the
+      request through the contact form and we will act on it.</p>
+    </div>
+  </div>
+</section>
+{% endblock %}

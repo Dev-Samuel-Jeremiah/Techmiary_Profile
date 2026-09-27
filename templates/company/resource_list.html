@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% load portfolio_tags %}
+
+{% block content %}
+{% include "components/page_banner.html" with eyebrow="Resources" crumb="Guides & downloads" heading="Guides, checklists and documents" subheading="Practical material on planning, procuring, building and running business software. Free to download." %}
+
+<section class="section">
+  <div class="container-page">
+    {% if categories %}
+      <div class="filter-row mb-4">
+        <a class="chip {% if not active_category %}is-active{% endif %}" href="{% url 'company:resource_list' %}">All</a>
+        {% for category in categories %}
+          <a class="chip {% if active_category and active_category.pk == category.pk %}is-active{% endif %}" href="?category={{ category.slug }}">{{ category.name }} ({{ category.total }})</a>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% if resources %}
+      <div class="row g-4">
+        {% for resource in resources %}
+          <div class="col-md-6 col-lg-4 d-flex">
+            <article class="card card--hover reveal" id="{{ resource.slug }}" data-delay="{{ forloop.counter0 }}">
+              {% if resource.cover_image %}
+                <div class="card__media"><img src="{{ resource.cover_image.url }}" alt="Cover of {{ resource.title }}" loading="lazy" decoding="async"></div>
+              {% endif %}
+              <div class="card__body">
+                <div class="d-flex flex-wrap gap-2 mb-2">
+                  <span class="tag tag--primary">{{ resource.get_kind_display }}</span>
+                  {% if resource.category %}<span class="tag">{{ resource.category.name }}</span>{% endif %}
+                  {% if resource.pages %}<span class="tag">{{ resource.pages }} pages</span>{% endif %}
+                </div>
+                <h3 class="card__title" style="font-size:1.05rem">{{ resource.title }}</h3>
+                <p class="card__text">{{ resource.summary|truncatewords:26 }}</p>
+                <div class="card__footer">
+                  {% if resource.is_available %}
+                    <a class="btn btn-outline btn-sm" href="{{ resource.download_url }}"{% if resource.external_url and not resource.file %} target="_blank" rel="noopener noreferrer"{% else %} download{% endif %}>
+                      {% icon "download" "sm" %} Download
+                    </a>
+                  {% else %}
+                    <span class="tag">Available on request</span>
+                  {% endif %}
+                  {% if resource.published_at %}<span class="text-faint" style="font-size:.82rem">{{ resource.published_at|date:"M Y" }}</span>{% endif %}
+                </div>
+              </div>
+            </article>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      {% include "components/empty_state.html" with icon="file-text" title="No resources published yet" body="Guides and documents uploaded in the Django admin will be listed here." %}
+    {% endif %}
+
+    <div class="panel panel--pad panel--primary mt-5 reveal">
+      <div class="row g-3 align-items-center">
+        <div class="col-lg-7">
+          <h2 style="font-size:1.25rem;margin-bottom:.3rem">Get new guides when we publish them</h2>
+          <p class="mb-0 text-muted-2" style="font-size:.93rem">{% if site and site.newsletter_blurb %}{{ site.newsletter_blurb }}{% else %}Occasional notes on building and running business software. No spam.{% endif %}</p>
+        </div>
+        <div class="col-lg-5">
+          <form class="newsletter-form" method="post" action="{% url 'contact:newsletter' %}">
+            {% csrf_token %}
+            <input type="hidden" name="source" value="resources">
+            <input type="hidden" name="next" value="{{ request.path }}">
+            <label class="visually-hidden" for="resources-newsletter-email">Email address</label>
+            <input class="form-control" id="resources-newsletter-email" type="email" name="email" required placeholder="you@example.com" autocomplete="email">
+            <button class="btn btn-primary" type="submit">Subscribe</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

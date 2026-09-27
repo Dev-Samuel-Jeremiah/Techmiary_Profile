@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% load portfolio_tags %}
+
+{% block content %}
+{% include "components/page_banner.html" with eyebrow="Careers" crumb="Careers" heading="Build software people actually depend on" subheading="We are a small, senior team. You will own real systems, talk to the people using them, and see your work go live." %}
+
+<section class="section">
+  <div class="container-page">
+    <div class="row g-4 mb-5">
+      <div class="col-md-6 col-lg-3 d-flex">
+        <div class="card reveal"><div class="card__body">
+          <span class="icon-tile icon-tile--sm">{% icon "rocket" "sm" %}</span>
+          <h3 class="card__title" style="font-size:1rem">Real ownership</h3>
+          <p class="card__text" style="margin-bottom:0">You take a feature from requirement to production, not a ticket from a queue.</p>
+        </div></div>
+      </div>
+      <div class="col-md-6 col-lg-3 d-flex">
+        <div class="card reveal" data-delay="1"><div class="card__body">
+          <span class="icon-tile icon-tile--sm">{% icon "users" "sm" %}</span>
+          <h3 class="card__title" style="font-size:1rem">Close to users</h3>
+          <p class="card__text" style="margin-bottom:0">You hear directly from the administrators and teachers using what you build.</p>
+        </div></div>
+      </div>
+      <div class="col-md-6 col-lg-3 d-flex">
+        <div class="card reveal" data-delay="2"><div class="card__body">
+          <span class="icon-tile icon-tile--sm">{% icon "compass" "sm" %}</span>
+          <h3 class="card__title" style="font-size:1rem">Mentorship</h3>
+          <p class="card__text" style="margin-bottom:0">Code review and architecture discussion are part of the week, not an afterthought.</p>
+        </div></div>
+      </div>
+      <div class="col-md-6 col-lg-3 d-flex">
+        <div class="card reveal" data-delay="3"><div class="card__body">
+          <span class="icon-tile icon-tile--sm">{% icon "trending-up" "sm" %}</span>
+          <h3 class="card__title" style="font-size:1rem">Room to grow</h3>
+          <p class="card__text" style="margin-bottom:0">As the systems grow, so does the scope of what you can lead.</p>
+        </div></div>
+      </div>
+    </div>
+
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+      <h2 style="font-size:1.6rem;margin:0">
+        {% if total_open %}{{ total_open }} open role{{ total_open|pluralize }}{% else %}Open roles{% endif %}
+      </h2>
+      {% if departments %}
+        <div class="filter-row">
+          <a class="chip {% if not active_department %}is-active{% endif %}" href="{% url 'careers:list' %}">All teams</a>
+          {% for department in departments %}
+            <a class="chip {% if active_department and active_department.pk == department.pk %}is-active{% endif %}" href="?department={{ department.slug }}">{{ department.name }}</a>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    {% if jobs %}
+      <div class="d-flex flex-column gap-3">
+        {% for job in jobs %}{% include "components/job_row.html" with job=job delay=forloop.counter0 %}{% endfor %}
+      </div>
+    {% else %}
+      {% if active_department %}
+        {% include "components/empty_state.html" with icon="briefcase" title="No open roles in this team" body="There is nothing open here right now." action_url="/careers/" action_label="See all roles" %}
+      {% else %}
+        {% include "components/empty_state.html" with icon="briefcase" title="No open roles right now" body="We are not hiring at the moment. Send us your CV through the contact form and we will keep it on file." action_url="/contact/" action_label="Get in touch" %}
+      {% endif %}
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

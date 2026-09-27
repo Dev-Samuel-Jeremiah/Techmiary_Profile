@@ -1,0 +1,3 @@
+<span class="tag" {% if skill.description %}title="{{ skill.description }}"{% endif %}>
+  {{ skill.name }}{% if skill.proficiency %} · {{ skill.get_proficiency_display }}{% endif %}
+</span>

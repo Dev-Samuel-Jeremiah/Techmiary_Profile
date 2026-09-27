@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% load portfolio_tags %}
+
+{% block content %}
+{% include "components/page_banner.html" with eyebrow="Technology" heading="The stack we build and run systems on" subheading="A tool appears here because it is part of how we deliver and operate software, not because it once appeared in a project." crumb="Technology" %}
+
+<section class="section">
+  <div class="container-page">
+    {% if categories %}
+      <div class="row g-4">
+        {% for category in categories %}
+          <div class="col-md-6 col-lg-4 d-flex">
+            <div class="card reveal" data-delay="{{ forloop.counter0 }}">
+              <div class="card__body">
+                <span class="icon-tile icon-tile--sm">{% icon "code" "sm" %}</span>
+                <h3 class="card__title" style="font-size:1.05rem">{{ category.name }}</h3>
+                {% if category.description %}<p class="card__text" style="flex:0">{{ category.description }}</p>{% endif %}
+                <div class="tag-row mt-2">
+                  {% for skill in category.skills.all %}{% if skill.is_active %}{% include "components/skill_badge.html" with skill=skill %}{% endif %}{% endfor %}
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      {% include "components/empty_state.html" with icon="code" title="No technologies listed yet" body="Skill categories and technologies added in the Django admin will appear here." %}
+    {% endif %}
+
+    <div class="row g-4 mt-5">
+      <div class="col-lg-6">
+        <div class="panel panel--pad h-100">
+          <p class="panel__label">Reference architecture</p>
+          <div class="arch-flow">
+            <div class="arch-node">Browser / mobile client</div>
+            <div class="arch-arrow" aria-hidden="true">{% icon "chevron-down" "sm" %}</div>
+            <div class="arch-node">Nginx — TLS, caching, static files</div>
+            <div class="arch-arrow" aria-hidden="true">{% icon "chevron-down" "sm" %}</div>
+            <div class="arch-node arch-node--accent">Gunicorn + Django application</div>
+            <div class="arch-arrow" aria-hidden="true">{% icon "chevron-down" "sm" %}</div>
+            <div class="arch-node">PostgreSQL</div>
+            <div class="arch-arrow" aria-hidden="true">{% icon "chevron-down" "sm" %}</div>
+            <div class="arch-node">Object storage &amp; third-party APIs</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="panel panel--pad h-100">
+          <p class="panel__label">Engineering practices</p>
+          <ul style="list-style:none;padding:0;margin:0">
+            <li class="list-line mb-2"><span class="tick">{% icon "check" "sm" %}</span> Version control with reviewed changes</li>
+            <li class="list-line mb-2"><span class="tick">{% icon "check" "sm" %}</span> Automated test suites before deployment</li>
+            <li class="list-line mb-2"><span class="tick">{% icon "check" "sm" %}</span> Environment-based configuration, no secrets in code</li>
+            <li class="list-line mb-2"><span class="tick">{% icon "check" "sm" %}</span> HTTPS, security headers and least-privilege access</li>
+            <li class="list-line mb-2"><span class="tick">{% icon "check" "sm" %}</span> Scheduled backups and restore checks</li>
+            <li class="list-line"><span class="tick">{% icon "check" "sm" %}</span> Documented handover for every deployment</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% include "components/cta.html" %}
+{% endblock %}

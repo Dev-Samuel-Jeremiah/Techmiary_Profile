@@ -1,0 +1,19 @@
+{% comment %}
+  The logo lockup: mark plus wordmark.
+
+  The uploaded logo is an icon, so the brand name always sits beside it rather
+  than being suppressed. Falls back to a lettered mark when no logo is set.
+  The descriptor is derived from the company name, so renaming the company in
+  the control panel updates every lockup.
+{% endcomment %}
+{% if site and site.logo %}
+  <img class="brand__logo" src="{{ site.logo.url }}" alt="" aria-hidden="true">
+{% else %}
+  <span class="brand__mark" aria-hidden="true">{{ site.brand_name|default:"T"|slice:":1"|upper }}</span>
+{% endif %}
+<span class="brand__text">
+  <span class="brand__name">{% if site %}{{ site.brand_name }}{% else %}Techmiary{% endif %}</span>
+  {% if site and site.brand_descriptor %}
+    <span class="brand__sub">{{ site.brand_descriptor }}</span>
+  {% endif %}
+</span>

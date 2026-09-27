@@ -1,0 +1,11 @@
+# /etc/systemd/system/techmiary-portfolio.socket
+[Unit]
+Description=Gunicorn socket for the Techmiary portfolio
+
+[Socket]
+ListenStream=/run/gunicorn/techmiary-portfolio.sock
+SocketUser=www-data
+SocketMode=0660
+
+[Install]
+WantedBy=sockets.target

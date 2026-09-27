@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% include "components/page_banner.html" with eyebrow="Background" crumb="Experience" heading="Professional background" subheading="Roles, responsibilities and the technologies used in each." %}
+
+<section class="section">
+  <div class="container-page">
+    {% if experiences %}
+      <div class="timeline" style="max-width:820px">
+        {% for experience in experiences %}{% include "components/experience_item.html" with experience=experience %}{% endfor %}
+      </div>
+    {% else %}
+      {% include "components/empty_state.html" with icon="briefcase" title="No experience entries yet" body="Roles added in the Django admin will appear on this timeline." %}
+    {% endif %}
+  </div>
+</section>
+
+{% include "components/cta.html" %}
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load portfolio_tags %}
+
+{% block content %}
+{% include "components/page_banner.html" with eyebrow="Clients" crumb="Clients" heading="Organisations we deliver for" subheading="We name an organisation here only where they have agreed to it." %}
+
+<section class="section">
+  <div class="container-page">
+    {% if clients %}
+      {% include "components/client_wall.html" with clients=clients %}
+
+      <div class="row g-4 mt-5">
+        {% for client in clients %}
+          {% if client.engagement %}
+            <div class="col-md-6 col-lg-4 d-flex">
+              <div class="card reveal" data-delay="{{ forloop.counter0 }}">
+                <div class="card__body">
+                  <h3 class="card__title" style="font-size:1.05rem">
+                    {% if client.website_url %}<a href="{{ client.website_url }}" target="_blank" rel="noopener noreferrer">{{ client.name }}</a>{% else %}{{ client.name }}{% endif %}
+                  </h3>
+                  {% if client.industry %}<span class="tag tag--primary mb-2">{{ client.industry.name }}</span>{% endif %}
+                  <p class="card__text">{{ client.engagement }}</p>
+                </div>
+              </div>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% else %}
+      {% include "components/empty_state.html" with icon="handshake" title="No clients listed yet" body="Client organisations added in the Django admin — with their permission recorded — will appear here." %}
+    {% endif %}
+  </div>
+</section>
+
+{% if testimonials %}
+<section class="section section--soft">
+  <div class="container-page">
+    {% include "components/section_heading.html" with center=1 eyebrow="In their words" heading="What clients say about working with us" %}
+    <div class="row g-4">
+      {% for testimonial in testimonials %}
+        <div class="col-md-6 col-lg-4 d-flex">{% include "components/testimonial_card.html" with testimonial=testimonial delay=forloop.counter0 %}</div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% include "components/cta.html" %}
+{% endblock %}

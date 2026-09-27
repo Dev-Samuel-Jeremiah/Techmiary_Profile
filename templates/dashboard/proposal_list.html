@@ -1,0 +1,57 @@
+{% extends "dashboard/base.html" %}
+{% load humanize %}
+{% block title %}Proposals{% endblock %}
+{% block heading %}Proposals{% endblock %}
+{% block subheading %}<p class="dash-sub">{{ paginator.count }} total</p>{% endblock %}
+{% block actions %}<a class="dash-btn dash-btn--primary" href="{% url 'dashboard:proposal_new' %}">New proposal</a>{% endblock %}
+
+{% block content %}
+<section class="dash-card">
+  <form class="dash-filters" method="get">
+    <input class="dash-input" type="search" name="q" value="{{ query }}" placeholder="Reference, client or title">
+    <select class="dash-select" name="status">
+      <option value="">All statuses</option>
+      {% for value, label in status_choices %}
+        <option value="{{ value }}" {% if active_status == value %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+    <button class="dash-btn" type="submit">Filter</button>
+    {% if query or active_status %}<a class="dash-link" href="{% url 'dashboard:proposal_list' %}">Clear</a>{% endif %}
+  </form>
+
+  {% if proposals %}
+    <table class="dash-table dash-table--lined">
+      <thead>
+        <tr><th>Reference</th><th>Client</th><th>Title</th><th class="dash-num">Total</th><th>Valid until</th><th>Status</th><th></th></tr>
+      </thead>
+      <tbody>
+        {% for p in proposals %}
+          <tr>
+            <td><a href="{% url 'dashboard:proposal_edit' p.pk %}"><strong>{{ p.reference }}</strong></a></td>
+            <td>{{ p.client_organisation }}<div class="dash-dim">{{ p.client_contact_name }}</div></td>
+            <td>{{ p.title|truncatechars:38 }}</td>
+            <td class="dash-num">{{ p.currency_symbol }}{{ p.total|floatformat:2|intcomma }}</td>
+            <td class="dash-dim">
+              {% if p.valid_until %}{{ p.valid_until|date:"j M Y" }}{% if p.is_expired %} <span class="dash-badge dash-badge--expired">Expired</span>{% endif %}{% else %}—{% endif %}
+            </td>
+            <td><span class="dash-badge dash-badge--{{ p.status }}">{{ p.get_status_display }}</span></td>
+            <td class="dash-num">
+              <a class="dash-btn dash-btn--sm" href="{% url 'proposals:pdf' p.pk %}" target="_blank" rel="noopener">PDF</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    {% if is_paginated %}
+      <nav class="dash-pager">
+        {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if active_status %}&status={{ active_status }}{% endif %}">Previous</a>{% endif %}
+        <span>Page {{ page_obj.number }} of {{ paginator.num_pages }}</span>
+        {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if active_status %}&status={{ active_status }}{% endif %}">Next</a>{% endif %}
+      </nav>
+    {% endif %}
+  {% else %}
+    <p class="dash-empty">No proposals match. <a href="{% url 'dashboard:proposal_new' %}">Create one</a>.</p>
+  {% endif %}
+</section>
+{% endblock %}

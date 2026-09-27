@@ -1,0 +1,82 @@
+{% load portfolio_tags %}
+<footer class="footer">
+  <div class="container-page">
+    <div class="row g-5">
+      <div class="col-lg-4">
+        <a class="brand" href="{% url 'core:home' %}">
+          {% include "components/brand.html" %}
+        </a>
+        {% if site %}
+          <p class="footer__about mt-3">{{ site.company_overview|default:site.short_bio|truncatewords:34 }}</p>
+          <ul class="mt-3">
+            {% if site.address %}<li>{{ site.address|linebreaksbr }}</li>{% elif site.location %}<li>{{ site.location }}</li>{% endif %}
+            {% if site.phone %}<li><a href="tel:{{ site.phone }}">{{ site.phone }}</a></li>{% endif %}
+            {% if site.primary_contact_email and site.show_email_publicly %}<li><a href="mailto:{{ site.primary_contact_email }}">{{ site.primary_contact_email }}</a></li>{% endif %}
+          </ul>
+        {% endif %}
+        {% if social_links %}<div class="social-row mt-4">{% include "components/social_links.html" %}</div>{% endif %}
+      </div>
+
+      <div class="col-6 col-lg-2">
+        <h4>Solutions</h4>
+        <ul>
+          {% for item in nav_solutions %}<li><a href="{{ item.get_absolute_url }}">{{ item.name }}</a></li>{% endfor %}
+          <li><a href="{% url 'company:solution_list' %}">All solutions</a></li>
+          <li><a href="{% url 'services:list' %}">Services</a></li>
+        </ul>
+      </div>
+
+      <div class="col-6 col-lg-2">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="{% url 'core:about' %}">About us</a></li>
+          <li><a href="{% url 'company:team_list' %}">Leadership</a></li>
+          <li><a href="{% url 'company:client_list' %}">Clients</a></li>
+          <li><a href="{% url 'projects:list' %}">Our work</a></li>
+          <li><a href="{% url 'careers:list' %}">Careers</a></li>
+          <li><a href="{% url 'contact:contact' %}">Contact</a></li>
+        </ul>
+      </div>
+
+      <div class="col-6 col-lg-2">
+        <h4>Resources</h4>
+        <ul>
+          <li><a href="{% url 'blog:list' %}">Insights</a></li>
+          <li><a href="{% url 'company:resource_list' %}">Guides &amp; downloads</a></li>
+          <li><a href="{% url 'company:faq' %}">FAQ</a></li>
+          <li><a href="{% url 'company:industry_list' %}">Industries</a></li>
+          <li><a href="{% url 'contact:quote' %}">Request a quote</a></li>
+        </ul>
+      </div>
+
+      <div class="col-12 col-lg-2">
+        <h4>Newsletter</h4>
+        <p style="font-size:.9rem">{% if site and site.newsletter_blurb %}{{ site.newsletter_blurb }}{% else %}Occasional notes on building and running business software. No spam.{% endif %}</p>
+        <form class="newsletter-form" method="post" action="{% url 'contact:newsletter' %}">
+          {% csrf_token %}
+          <input type="hidden" name="source" value="footer">
+          <input type="hidden" name="next" value="{{ request.path }}">
+          <label class="visually-hidden" for="footer-newsletter-email">Email address</label>
+          <input class="form-control" id="footer-newsletter-email" type="email" name="email" required placeholder="you@example.com" autocomplete="email">
+          <button class="btn btn-primary btn-block" type="submit">Subscribe</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <span>&copy; {% now "Y" %} {% if site %}{{ site.display_company }}{% else %}Techmiary Technology Concepts{% endif %}. All rights reserved.{% if site and site.registration_number %} Business name reg. No. {{ site.registration_number }}.{% endif %}</span>
+      <span class="footer__legal">
+        <a href="{% url 'core:privacy' %}">Privacy Policy</a>
+        <a href="{% url 'core:terms' %}">Terms of Use</a>
+        <a href="{% url 'company:faq' %}">FAQ</a>
+        <a href="/sitemap.xml">Sitemap</a>
+        {# Staff only. Signed-in staff get a direct link to the panel. #}
+        {% if request.user.is_authenticated and request.user.is_staff %}
+          <a class="footer__staff" href="{% url 'dashboard:home' %}">Control panel</a>
+        {% else %}
+          <a class="footer__staff" href="{% url 'dashboard:login' %}" rel="nofollow">Staff login</a>
+        {% endif %}
+      </span>
+    </div>
+  </div>
+</footer>

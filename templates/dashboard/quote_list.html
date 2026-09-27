@@ -1,0 +1,24 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Quote requests{% endblock %}
+{% block heading %}Quote requests{% endblock %}
+{% block subheading %}<p class="dash-sub">{{ paginator.count }} total</p>{% endblock %}
+{% block content %}
+<section class="dash-card">
+  {% if quotes %}
+    <table class="dash-table dash-table--lined">
+      <thead><tr><th>Project</th><th>From</th><th>Budget</th><th>Received</th><th>Status</th></tr></thead>
+      <tbody>
+        {% for q in quotes %}
+          <tr>
+            <td><a href="{% url 'dashboard:quote_detail' q.pk %}"><strong>{{ q.project_title|truncatechars:50 }}</strong></a></td>
+            <td>{{ q.contact_name }}<div class="dash-dim">{{ q.organisation|default:"—" }}</div></td>
+            <td class="dash-dim">{{ q.get_budget_range_display }}</td>
+            <td class="dash-dim">{{ q.created_at|date:"j M Y" }}</td>
+            <td><span class="dash-badge dash-badge--{{ q.status }}">{{ q.get_status_display }}</span></td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}<p class="dash-empty">No quote requests yet.</p>{% endif %}
+</section>
+{% endblock %}

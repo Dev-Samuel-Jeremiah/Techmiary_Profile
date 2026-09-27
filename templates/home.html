@@ -1,0 +1,233 @@
+{% extends "base.html" %}
+{% load static portfolio_tags %}
+
+{% block content %}
+
+{# ------------------------------------------------------------------ Hero #}
+<section class="hero">
+  <div class="container-page">
+    <div class="row g-5 align-items-center">
+      <div class="col-lg-6">
+        <span class="badge-pill">
+          <span class="dot" aria-hidden="true">{% icon "check" "sm" %}</span>
+          {% if site and site.founded_year %}Building software since {{ site.founded_year }}{% else %}Enterprise software, built and maintained{% endif %}
+        </span>
+
+        {% if site %}
+          <h1>{{ site.resolved_hero_headline }}</h1>
+          <p class="hero__text">{{ site.resolved_hero_subheadline }}</p>
+        {% else %}
+          <h1>Software that runs your organisation</h1>
+          <p class="hero__text">Add a Site Settings record in the Django admin to publish your company headline and description.</p>
+        {% endif %}
+
+        <div class="hero__actions">
+          <a class="btn btn-primary btn-lg" href="{% url 'contact:quote' %}">Request a Quote</a>
+          <a class="btn btn-outline btn-lg" href="{% url 'company:solution_list' %}">Explore Solutions</a>
+        </div>
+
+        <div class="hero__meta">
+          <span class="hero__meta-item">{% icon "check" "sm" %} End-to-end delivery</span>
+          <span class="hero__meta-item">{% icon "check" "sm" %} Hosted and maintained</span>
+          <span class="hero__meta-item">{% icon "check" "sm" %} Built on open standards</span>
+        </div>
+      </div>
+
+      <div class="col-lg-6">
+        <div class="position-relative">
+          <div class="hero-visual reveal" data-delay="1">
+            <div class="hero-visual__bar">
+              <span class="hero-visual__dot"></span><span class="hero-visual__dot"></span><span class="hero-visual__dot"></span>
+              <span class="hero-visual__addr">{% if site and site.website_url %}{{ site.website_url|cut:"https://"|cut:"http://" }}{% else %}techmiary.cloud{% endif %}/dashboard</span>
+            </div>
+            <div class="hero-visual__body">
+              <div class="metric-row">
+                <div class="metric-tile"><span class="k">Modules</span><span class="v">12</span></div>
+                <div class="metric-tile"><span class="k">Uptime</span><span class="v">24/7</span></div>
+                <div class="metric-tile"><span class="k">Roles</span><span class="v">RBAC</span></div>
+              </div>
+              <div class="bar-chart" role="img" aria-label="Illustrative chart in a product interface mock-up">
+                <span style="height:38%"></span><span style="height:62%"></span><span style="height:48%"></span>
+                <span style="height:78%"></span><span style="height:56%"></span><span style="height:88%"></span>
+                <span style="height:70%"></span>
+              </div>
+              <div class="list-line"><span class="tick">{% icon "check" "sm" %}</span> Multi-tenant data isolation</div>
+              <div class="list-line"><span class="tick">{% icon "check" "sm" %}</span> Role-based access control</div>
+              <div class="list-line"><span class="tick">{% icon "check" "sm" %}</span> Automated backups and reporting</div>
+            </div>
+          </div>
+          <div class="floating-card floating-card--tl"><span class="ico">{% icon "shield" "sm" %}</span> Secure by default</div>
+          <div class="floating-card floating-card--br"><span class="ico">{% icon "server" "sm" %}</span> Deployed &amp; monitored</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# ------------------------------------------------------------------ Clients #}
+{% if clients %}
+<section class="section section--tight">
+  <div class="container-page">
+    <p class="text-center text-faint mb-4" style="font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;font-weight:700">Organisations we build for</p>
+    {% include "components/client_wall.html" with clients=clients %}
+  </div>
+</section>
+{% endif %}
+
+{# ----------------------------------------------------------------- Partners #}
+{% if partners or trusted_by %}
+  {% include "components/partners.html" %}
+{% endif %}
+
+{# ------------------------------------------------------------- Solutions #}
+<section class="section section--soft">
+  <div class="container-page">
+    {% include "components/section_heading.html" with center=1 eyebrow="Our solutions" heading="Platforms built for how organisations actually work" subheading="Each one is a working system we designed, built, deployed and continue to maintain — not a concept." %}
+
+    {% if solutions %}
+      <div class="row g-4">
+        {% for solution in solutions %}
+          <div class="col-md-6 col-xl-3 d-flex">{% include "components/solution_card.html" with solution=solution delay=forloop.counter0 %}</div>
+        {% endfor %}
+      </div>
+      <div class="text-center mt-5"><a class="btn btn-outline" href="{% url 'company:solution_list' %}">View all solutions</a></div>
+    {% else %}
+      {% include "components/empty_state.html" with icon="layers" title="No solutions published yet" body="Solutions added in the Django admin will appear here." %}
+    {% endif %}
+  </div>
+</section>
+
+{# ------------------------------------------------------------- Industries #}
+{% if industries %}
+<section class="section">
+  <div class="container-page">
+    <div class="row g-5 align-items-center mb-5">
+      <div class="col-lg-6">
+        <span class="eyebrow">Industries</span>
+        <h2 style="font-size:clamp(1.9rem,3.6vw,2.6rem)">Sectors we understand before we write code</h2>
+      </div>
+      <div class="col-lg-6">
+        <p class="lead mb-0">Every sector carries its own rules, records and reporting duties. We learn those first, then design the system around them.</p>
+      </div>
+    </div>
+    <div class="row g-4">
+      {% for industry in industries %}
+        <div class="col-sm-6 col-lg-4 d-flex">{% include "components/industry_card.html" with industry=industry delay=forloop.counter0 %}</div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{# --------------------------------------------------------------- Services #}
+{% if services %}
+<section class="section section--soft">
+  <div class="container-page">
+    {% include "components/section_heading.html" with center=1 eyebrow="Services" heading="How we engage" subheading="From a single internal tool to a multi-tenant platform, the engagement covers the whole lifecycle." %}
+    <div class="row g-4">
+      {% for service in services %}
+        <div class="col-md-6 col-lg-4 d-flex">{% include "components/service_card.html" with service=service delay=forloop.counter0 %}</div>
+      {% endfor %}
+    </div>
+    <div class="text-center mt-5"><a class="btn btn-outline" href="{% url 'services:list' %}">All services</a></div>
+  </div>
+</section>
+{% endif %}
+
+{# ------------------------------------------------------------- How we work #}
+<section class="section">
+  <div class="container-page">
+    {% include "components/section_heading.html" with center=1 eyebrow="How we work" heading="A delivery process you can follow" subheading="No black boxes. You know what stage the work is at, what is next, and what is expected of you." %}
+    <div class="process-grid">
+      <div class="process-node reveal"><span class="process-node__num">1</span><h3>Discovery</h3><p>We map the workflow, the records and the people who touch them.</p></div>
+      <div class="process-node reveal" data-delay="1"><span class="process-node__num">2</span><h3>Architecture</h3><p>Data model, integrations and hosting decided before a line is written.</p></div>
+      <div class="process-node reveal" data-delay="2"><span class="process-node__num">3</span><h3>Build</h3><p>Short cycles with working software you can log into and try.</p></div>
+      <div class="process-node reveal" data-delay="3"><span class="process-node__num">4</span><h3>Deploy</h3><p>Provisioned, secured and put live on infrastructure we configure.</p></div>
+      <div class="process-node reveal"><span class="process-node__num">5</span><h3>Support</h3><p>Monitoring, backups, fixes and the changes your operations need next.</p></div>
+    </div>
+  </div>
+</section>
+
+{# ----------------------------------------------------------------- Work #}
+{% if featured_projects %}
+<section class="section section--soft">
+  <div class="container-page">
+    {% include "components/section_heading.html" with eyebrow="Our work" heading="Systems already in service" subheading="Case studies of what was built, the problem behind it and how it is architected." %}
+    <div class="row g-4">
+      {% for project in featured_projects %}
+        <div class="col-md-6 col-lg-4 d-flex">{% include "components/project_card.html" with project=project delay=forloop.counter0 %}</div>
+      {% endfor %}
+    </div>
+    <div class="text-center mt-5"><a class="btn btn-outline" href="{% url 'projects:list' %}">See all case studies</a></div>
+  </div>
+</section>
+{% endif %}
+
+{# --------------------------------------------------------- Testimonials #}
+{% if testimonials %}
+<section class="section">
+  <div class="container-page">
+    {% include "components/section_heading.html" with center=1 eyebrow="In their words" heading="What clients say" %}
+    <div class="row g-4">
+      {% for testimonial in testimonials %}
+        <div class="col-md-6 col-lg-4 d-flex">{% include "components/testimonial_card.html" with testimonial=testimonial delay=forloop.counter0 %}</div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{# ------------------------------------------------------------- Leadership #}
+{% if leadership %}
+<section class="section section--soft">
+  <div class="container-page">
+    {% include "components/section_heading.html" with center=1 eyebrow="Leadership" heading="The people accountable for the work" %}
+    <div class="row g-4 justify-content-center">
+      {% for member in leadership %}
+        <div class="col-sm-6 col-lg-3 d-flex">{% include "components/person_card.html" with member=member delay=forloop.counter0 %}</div>
+      {% endfor %}
+    </div>
+    <div class="text-center mt-5"><a class="btn btn-outline" href="{% url 'company:team_list' %}">Meet the team</a></div>
+  </div>
+</section>
+{% endif %}
+
+{# ---------------------------------------------------- Careers + Insights #}
+{% if open_roles or latest_posts %}
+<section class="section">
+  <div class="container-page">
+    <div class="row g-5">
+      {% if latest_posts %}
+        <div class="{% if open_roles %}col-lg-7{% else %}col-12{% endif %}">
+          <div class="section-heading" style="margin-bottom:1.75rem">
+            <span class="eyebrow">Insights</span>
+            <h2 style="font-size:1.75rem">From our engineering desk</h2>
+          </div>
+          <div class="row g-4">
+            {% for post in latest_posts %}
+              <div class="col-md-6 d-flex">{% include "components/blog_card.html" with post=post delay=forloop.counter0 %}</div>
+            {% endfor %}
+          </div>
+          <a class="link-arrow mt-4 d-inline-flex" href="{% url 'blog:list' %}">All insights {% icon "arrow-right" "sm" %}</a>
+        </div>
+      {% endif %}
+
+      {% if open_roles %}
+        <div class="{% if latest_posts %}col-lg-5{% else %}col-12{% endif %}">
+          <div class="section-heading" style="margin-bottom:1.75rem">
+            <span class="eyebrow">Careers</span>
+            <h2 style="font-size:1.75rem">We are hiring</h2>
+          </div>
+          <div class="d-flex flex-column gap-3">
+            {% for job in open_roles %}{% include "components/job_row.html" with job=job delay=forloop.counter0 %}{% endfor %}
+          </div>
+          <a class="link-arrow mt-4 d-inline-flex" href="{% url 'careers:list' %}">All open roles {% icon "arrow-right" "sm" %}</a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% include "components/cta.html" %}
+{% endblock %}

@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+{% load portfolio_tags %}
+
+{% block content %}
+{% include "components/page_banner.html" with eyebrow="About us" crumb="About" heading="Engineering the systems organisations depend on" subheading="We design, build, deploy and maintain software that schools, businesses and agencies run their daily operations on." %}
+
+<section class="section">
+  <div class="container-page">
+    <div class="row g-5">
+      <div class="col-lg-7">
+        {% if site %}
+          <p class="lead">{{ site.company_overview|default:site.short_bio }}</p>
+          {% if site.long_bio %}<div class="prose">{{ site.long_bio|linebreaks }}</div>{% endif %}
+        {% else %}
+          <p class="lead">Add a Site Settings record in the Django admin to publish the company overview.</p>
+        {% endif %}
+      </div>
+
+      <div class="col-lg-5">
+        <div class="panel panel--pad">
+          <p class="panel__label">At a glance</p>
+          <ul class="fact-list">
+            {% if site and site.display_company %}<li><span class="k">Company</span><span class="v">{{ site.display_company }}</span></li>{% endif %}
+            {% if site and site.founded_year %}<li><span class="k">Operating since</span><span class="v">{{ site.founded_year }}</span></li>{% endif %}
+            {% if site and site.location %}<li><span class="k">Based in</span><span class="v">{{ site.location }}</span></li>{% endif %}
+            {% if solution_count %}<li><span class="k">Solutions</span><span class="v">{{ solution_count }}</span></li>{% endif %}
+            {% if project_count %}<li><span class="k">Systems delivered</span><span class="v">{{ project_count }}</span></li>{% endif %}
+            {% if industry_count %}<li><span class="k">Sectors served</span><span class="v">{{ industry_count }}</span></li>{% endif %}
+            {% if service_count %}<li><span class="k">Services</span><span class="v">{{ service_count }}</span></li>{% endif %}
+            {% if site and site.registration_number %}<li><span class="k">Registration</span><span class="v">{{ site.registration_number }}</span></li>{% endif %}
+          </ul>
+          <a class="btn btn-primary btn-block mt-3" href="{% url 'contact:quote' %}">Request a Quote</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% if site and site.mission or site and site.vision %}
+<section class="section section--soft">
+  <div class="container-page">
+    <div class="row g-4">
+      {% if site.mission %}
+        <div class="col-lg-6 d-flex">
+          <div class="card"><div class="card__body">
+            <span class="icon-tile">{% icon "target" %}</span>
+            <h3 class="card__title">Our mission</h3>
+            <p class="card__text">{{ site.mission }}</p>
+          </div></div>
+        </div>
+      {% endif %}
+      {% if site.vision %}
+        <div class="col-lg-6 d-flex">
+          <div class="card"><div class="card__body">
+            <span class="icon-tile icon-tile--accent">{% icon "eye" %}</span>
+            <h3 class="card__title">Our vision</h3>
+            <p class="card__text">{{ site.vision }}</p>
+          </div></div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% if values %}
+<section class="section">
+  <div class="container-page">
+    {% include "components/section_heading.html" with center=1 eyebrow="What we stand for" heading="The principles behind every build" %}
+    <div class="row g-4">
+      {% for value in values %}
+        <div class="col-sm-6 col-lg-3 d-flex">
+          <div class="card card--hover reveal" data-delay="{{ forloop.counter0 }}">
+            <div class="card__body">
+              <span class="icon-tile icon-tile--sm">{% icon value.icon "sm" %}</span>
+              <h3 class="card__title" style="font-size:1.05rem">{{ value.title }}</h3>
+              <p class="card__text">{{ value.description }}</p>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<section class="section section--soft">
+  <div class="container-page">
+    {% include "components/section_heading.html" with center=1 eyebrow="How we work" heading="Idea to production, then kept running" subheading="The same lifecycle applies whether the deliverable is a platform for thousands of users or a single internal tool." %}
+    <div class="process-grid">
+      <div class="process-node reveal"><span class="process-node__num">1</span><h3>Requirements</h3><p>We document the workflow and agree what success looks like.</p></div>
+      <div class="process-node reveal" data-delay="1"><span class="process-node__num">2</span><h3>Architecture</h3><p>Data model, integrations, hosting and security designed up front.</p></div>
+      <div class="process-node reveal" data-delay="2"><span class="process-node__num">3</span><h3>Development</h3><p>Built in short cycles, reviewed against the agreed scope.</p></div>
+      <div class="process-node reveal" data-delay="3"><span class="process-node__num">4</span><h3>Testing</h3><p>Automated tests plus real users on real workflows before launch.</p></div>
+      <div class="process-node reveal"><span class="process-node__num">5</span><h3>Deployment</h3><p>Provisioned on Linux infrastructure with TLS, backups and monitoring.</p></div>
+      <div class="process-node reveal" data-delay="1"><span class="process-node__num">6</span><h3>Maintenance</h3><p>Updates, fixes and the new capabilities operations ask for.</p></div>
+    </div>
+  </div>
+</section>
+
+{% if milestones %}
+<section class="section">
+  <div class="container-page">
+    <div class="row g-5">
+      <div class="col-lg-4">
+        <span class="eyebrow">Our story</span>
+        <h2 style="font-size:clamp(1.8rem,3.4vw,2.4rem)">How the company grew</h2>
+        <p class="text-muted-2">Each entry is a step the business actually took.</p>
+      </div>
+      <div class="col-lg-8">
+        <div class="timeline">
+          {% for milestone in milestones %}
+            <article class="timeline-item {% if forloop.last %}is-current{% endif %} reveal">
+              <span class="timeline-item__period">{{ milestone.year }}</span>
+              <h3 class="timeline-item__role">{{ milestone.title }}</h3>
+              {% if milestone.description %}<p style="color:var(--muted)">{{ milestone.description }}</p>{% endif %}
+            </article>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% if leadership %}
+<section class="section section--soft">
+  <div class="container-page">
+    {% include "components/section_heading.html" with center=1 eyebrow="Leadership" heading="Who runs the company" %}
+    <div class="row g-4 justify-content-center">
+      {% for member in leadership %}
+        <div class="col-sm-6 col-lg-3 d-flex">{% include "components/person_card.html" with member=member delay=forloop.counter0 %}</div>
+      {% endfor %}
+    </div>
+    <div class="text-center mt-5"><a class="btn btn-outline" href="{% url 'company:team_list' %}">Full team</a></div>
+  </div>
+</section>
+{% endif %}
+
+{% if clients %}
+<section class="section">
+  <div class="container-page">
+    {% include "components/section_heading.html" with center=1 eyebrow="Clients" heading="Organisations we deliver for" %}
+    {% include "components/client_wall.html" with clients=clients %}
+  </div>
+</section>
+{% endif %}
+
+{% include "components/cta.html" %}
+{% endblock %}

@@ -1,0 +1,17 @@
+# Core
+Django==5.2.6
+python-decouple==3.8
+
+# The database is SQLite, which ships with Python — no driver needed.
+# Uncomment only if you migrate to PostgreSQL later:
+# psycopg[binary]==3.2.3
+
+# Static files & serving
+whitenoise==6.8.2
+gunicorn==23.0.0
+
+# Media
+Pillow==11.0.0
+
+# Proposal PDFs (needs system libs: libpango-1.0-0, libpangoft2-1.0-0)
+weasyprint==68.1

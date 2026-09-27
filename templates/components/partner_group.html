@@ -1,0 +1,11 @@
+<div class="mb-4">
+  <h3 style="font-size:.82rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:.85rem">{{ label }}</h3>
+  <div class="logo-wall reveal">
+    {% for entry in entries %}
+      <div class="logo-cell">
+        {% if entry.url %}<a href="{{ entry.url }}" target="_blank" rel="noopener noreferrer" style="display:grid;place-items:center">{% include "components/partner_tile_content.html" with entry=entry %}</a>
+        {% else %}{% include "components/partner_tile_content.html" with entry=entry %}{% endif %}
+      </div>
+    {% endfor %}
+  </div>
+</div>

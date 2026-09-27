@@ -1,0 +1,131 @@
+{% extends "dashboard/base.html" %}
+{% load humanize %}
+{% block title %}Overview{% endblock %}
+{% block heading %}Overview{% endblock %}
+{% block subheading %}<p class="dash-sub">What needs attention today.</p>{% endblock %}
+{% block actions %}
+  <a class="dash-btn dash-btn--primary" href="{% url 'dashboard:proposal_new' %}">New proposal</a>
+{% endblock %}
+
+{% block content %}
+<div class="dash-grid dash-grid--4">
+  <a class="dash-stat" href="{% url 'dashboard:enquiry_list' %}?status=new">
+    <span class="dash-stat__n">{{ stat_new_enquiries }}</span>
+    <span class="dash-stat__l">New enquiries</span>
+  </a>
+  <a class="dash-stat" href="{% url 'dashboard:quote_list' %}">
+    <span class="dash-stat__n">{{ stat_open_quotes }}</span>
+    <span class="dash-stat__l">Open quote requests</span>
+  </a>
+  <div class="dash-stat">
+    <span class="dash-stat__n">{{ stat_applications }}</span>
+    <span class="dash-stat__l">Job applications</span>
+  </div>
+  <div class="dash-stat">
+    <span class="dash-stat__n">{{ stat_subscribers }}</span>
+    <span class="dash-stat__l">Newsletter subscribers</span>
+  </div>
+</div>
+
+<div class="dash-grid dash-grid--2 dash-mt">
+  <section class="dash-card">
+    <h2>Proposal pipeline</h2>
+    <div class="dash-pipeline">
+      <div><strong>{{ proposal_counts.draft }}</strong><span>Draft</span></div>
+      <div><strong>{{ proposal_counts.sent }}</strong><span>Sent</span></div>
+      <div class="is-good"><strong>{{ proposal_counts.accepted }}</strong><span>Accepted</span></div>
+      <div><strong>{{ proposal_counts.declined }}</strong><span>Declined</span></div>
+    </div>
+    <dl class="dash-kv">
+      <dt>Open pipeline value</dt>
+      <dd>{{ pipeline_currency }}{{ pipeline_total|floatformat:2|intcomma }}</dd>
+      <dt>Won</dt>
+      <dd>{{ pipeline_currency }}{{ won_total|floatformat:2|intcomma }}</dd>
+      <dt>Created in the last 30 days</dt>
+      <dd>{{ new_this_month }}</dd>
+    </dl>
+    {% if expiring_soon %}
+      <div class="dash-alert">
+        <strong>Expiring within 7 days</strong>
+        <ul>
+          {% for p in expiring_soon %}
+            <li><a href="{% url 'dashboard:proposal_edit' p.pk %}">{{ p.reference }} — {{ p.client_organisation }}</a>
+                <span class="dash-dim">valid until {{ p.valid_until|date:"j M Y" }}</span></li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+  </section>
+
+  <section class="dash-card">
+    <h2>Recent proposals</h2>
+    {% if recent_proposals %}
+      <table class="dash-table">
+        <tbody>
+        {% for p in recent_proposals %}
+          <tr>
+            <td>
+              <a href="{% url 'dashboard:proposal_edit' p.pk %}"><strong>{{ p.reference }}</strong></a>
+              <div class="dash-dim">{{ p.client_organisation }}</div>
+            </td>
+            <td class="dash-num">{{ p.currency_symbol }}{{ p.total|floatformat:2|intcomma }}</td>
+            <td><span class="dash-badge dash-badge--{{ p.status }}">{{ p.get_status_display }}</span></td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      <a class="dash-link" href="{% url 'dashboard:proposal_list' %}">All proposals &rarr;</a>
+    {% else %}
+      <p class="dash-empty">No proposals yet. <a href="{% url 'dashboard:proposal_new' %}">Create the first one</a>.</p>
+    {% endif %}
+  </section>
+</div>
+
+<div class="dash-grid dash-grid--2 dash-mt">
+  <section class="dash-card">
+    <h2>Latest enquiries</h2>
+    {% if recent_enquiries %}
+      <table class="dash-table">
+        <tbody>
+        {% for e in recent_enquiries %}
+          <tr>
+            <td>
+              <a href="{% url 'dashboard:enquiry_detail' e.pk %}"><strong>{{ e.subject|truncatechars:44 }}</strong></a>
+              <div class="dash-dim">{{ e.name }}{% if e.company %} · {{ e.company }}{% endif %}</div>
+            </td>
+            <td class="dash-dim">{{ e.created_at|date:"j M" }}</td>
+            <td><span class="dash-badge dash-badge--{{ e.status }}">{{ e.get_status_display }}</span></td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      <a class="dash-link" href="{% url 'dashboard:enquiry_list' %}">All enquiries &rarr;</a>
+    {% else %}
+      <p class="dash-empty">No enquiries yet.</p>
+    {% endif %}
+  </section>
+
+  <section class="dash-card">
+    <h2>Quote requests</h2>
+    {% if recent_quotes %}
+      <table class="dash-table">
+        <tbody>
+        {% for q in recent_quotes %}
+          <tr>
+            <td>
+              <a href="{% url 'dashboard:quote_detail' q.pk %}"><strong>{{ q.project_title|truncatechars:40 }}</strong></a>
+              <div class="dash-dim">{{ q.organisation|default:q.contact_name }}</div>
+            </td>
+            <td class="dash-dim">{{ q.created_at|date:"j M" }}</td>
+            <td><span class="dash-badge dash-badge--{{ q.status }}">{{ q.get_status_display }}</span></td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      <a class="dash-link" href="{% url 'dashboard:quote_list' %}">All quote requests &rarr;</a>
+    {% else %}
+      <p class="dash-empty">No quote requests yet.</p>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

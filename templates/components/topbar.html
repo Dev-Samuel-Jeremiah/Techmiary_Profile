@@ -1,0 +1,25 @@
+{% load portfolio_tags %}
+{% comment %}Contact strip above the header. It only renders when there is
+something to put in it, so an unconfigured site gets no empty dark band.
+{% endcomment %}
+{% if site and site.phone or site and site.location or site and site.office_hours or site and site.show_email_publicly and site.primary_contact_email or social_links %}
+<div class="topbar">
+  <div class="container-page topbar__inner">
+    <div class="topbar__items">
+      {% if site.phone %}
+        <span class="topbar__item">{% icon "phone" "sm" %}<a href="tel:{{ site.phone }}">{{ site.phone }}</a></span>
+      {% endif %}
+      {% if site.primary_contact_email and site.show_email_publicly %}
+        <span class="topbar__item">{% icon "mail" "sm" %}<a href="mailto:{{ site.primary_contact_email }}">{{ site.primary_contact_email }}</a></span>
+      {% endif %}
+      {% if site.location %}
+        <span class="topbar__item">{% icon "pin" "sm" %}{{ site.location }}</span>
+      {% endif %}
+    </div>
+    <div class="topbar__items">
+      {% if site.office_hours %}<span class="topbar__item">{% icon "clock" "sm" %}{{ site.office_hours }}</span>{% endif %}
+      {% if social_links %}<span class="topbar__item" style="gap:.6rem">{% for link in social_links %}<a href="{{ link.url }}" target="_blank" rel="noopener noreferrer" aria-label="{{ link.name }}">{% icon link.icon "sm" %}</a>{% endfor %}</span>{% endif %}
+    </div>
+  </div>
+</div>
+{% endif %}

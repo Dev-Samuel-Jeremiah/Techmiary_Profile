@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% load portfolio_tags %}
+
+{% block content %}
+{% include "components/page_banner.html" with eyebrow="Contact" crumb="Contact" heading="Talk to our team" subheading="Ask a question, request a demonstration, or start a conversation about a system you need." %}
+
+<section class="section">
+  <div class="container-page">
+    <div class="row g-5">
+      <div class="col-lg-5">
+        {% if site %}
+          <div class="panel panel--pad">
+            <p class="panel__label">Company details</p>
+            {% if site.address %}
+              <div class="contact-detail"><span class="ico">{% icon "pin" "sm" %}</span>
+                <span><span class="k">Office</span><span class="v">{{ site.address|linebreaksbr }}</span></span></div>
+            {% elif site.location %}
+              <div class="contact-detail"><span class="ico">{% icon "pin" "sm" %}</span>
+                <span><span class="k">Location</span><span class="v">{{ site.location }}</span></span></div>
+            {% endif %}
+            {% if site.phone %}
+              <div class="contact-detail"><span class="ico">{% icon "phone" "sm" %}</span>
+                <span><span class="k">Phone</span><a class="v" href="tel:{{ site.phone }}">{{ site.phone }}</a>{% if site.secondary_phone %}<br><a class="v" href="tel:{{ site.secondary_phone }}">{{ site.secondary_phone }}</a>{% endif %}</span></div>
+            {% endif %}
+            {% if site.show_email_publicly %}
+              {% if site.sales_email %}
+                <div class="contact-detail"><span class="ico">{% icon "mail" "sm" %}</span>
+                  <span><span class="k">Sales</span><a class="v" href="mailto:{{ site.sales_email }}">{{ site.sales_email }}</a></span></div>
+              {% endif %}
+              {% if site.support_email %}
+                <div class="contact-detail"><span class="ico">{% icon "life-buoy" "sm" %}</span>
+                  <span><span class="k">Support</span><a class="v" href="mailto:{{ site.support_email }}">{{ site.support_email }}</a></span></div>
+              {% endif %}
+              {% if site.email and not site.sales_email and not site.support_email %}
+                <div class="contact-detail"><span class="ico">{% icon "mail" "sm" %}</span>
+                  <span><span class="k">Email</span><a class="v" href="mailto:{{ site.email }}">{{ site.email }}</a></span></div>
+              {% endif %}
+            {% endif %}
+            {% if site.office_hours %}
+              <div class="contact-detail"><span class="ico">{% icon "clock" "sm" %}</span>
+                <span><span class="k">Office hours</span><span class="v">{{ site.office_hours }}</span></span></div>
+            {% endif %}
+            {% if site.website_url %}
+              <div class="contact-detail"><span class="ico">{% icon "globe" "sm" %}</span>
+                <span><span class="k">Website</span><a class="v" href="{{ site.website_url }}" target="_blank" rel="noopener noreferrer">{{ site.website_url|cut:"https://"|cut:"http://" }}</a></span></div>
+            {% endif %}
+          </div>
+        {% endif %}
+
+        <div class="panel panel--pad panel--primary mt-4">
+          <h2 style="font-size:1.1rem">Ready to scope a project?</h2>
+          <p style="font-size:.93rem;color:var(--muted)">The quote form gathers what we need to give you a realistic answer first time.</p>
+          <a class="btn btn-primary btn-block" href="{% url 'contact:quote' %}">Request a quote</a>
+        </div>
+
+        {% if social_links %}<div class="social-row mt-4" style="--muted:var(--muted)">{% for link in social_links %}<a href="{{ link.url }}" target="_blank" rel="noopener noreferrer" aria-label="{{ link.name }}" style="border-color:var(--border);color:var(--muted)">{% icon link.icon "sm" %}</a>{% endfor %}</div>{% endif %}
+      </div>
+
+      <div class="col-lg-7">
+        <div class="panel panel--pad">
+          <h2 style="font-size:1.35rem;margin-bottom:.35rem">Send us a message</h2>
+          <p class="text-muted-2" style="font-size:.94rem">We read every message and reply personally.</p>
+
+          <form method="post" novalidate class="mt-4">
+            {% csrf_token %}
+            {% if form.non_field_errors %}<div class="alert alert-danger" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+            <div class="hp-wrap" aria-hidden="true">{{ form.website }}</div>
+
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label" for="{{ form.name.id_for_label }}">{{ form.name.label }}<span class="req">*</span></label>
+                {{ form.name }}
+                {% for error in form.name.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="{{ form.email.id_for_label }}">{{ form.email.label }}<span class="req">*</span></label>
+                {{ form.email }}
+                {% for error in form.email.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="{{ form.phone.id_for_label }}">{{ form.phone.label }}</label>
+                {{ form.phone }}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="{{ form.company.id_for_label }}">{{ form.company.label }}</label>
+                {{ form.company }}
+              </div>
+              <div class="col-12">
+                <label class="form-label" for="{{ form.subject.id_for_label }}">{{ form.subject.label }}<span class="req">*</span></label>
+                {{ form.subject }}
+                {% for error in form.subject.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+              </div>
+              <div class="col-12">
+                <label class="form-label" for="{{ form.message.id_for_label }}">{{ form.message.label }}<span class="req">*</span></label>
+                {{ form.message }}
+                {% for error in form.message.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+              </div>
+            </div>
+
+            <button class="btn btn-primary btn-lg mt-4" type="submit">Send message {% icon "arrow-right" "sm" %}</button>
+            <p class="form-text mt-3">Your details are stored only so we can reply. Nothing is shared with anyone else.</p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

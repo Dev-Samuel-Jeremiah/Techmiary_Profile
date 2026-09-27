@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% load portfolio_tags %}
+
+{% block content %}
+{% include "components/page_banner.html" with eyebrow="Industries" crumb="Industries" heading="Sectors we build for" subheading="We learn the rules, records and reporting duties of a sector before designing a system for it." %}
+
+<section class="section">
+  <div class="container-page">
+    {% if industries %}
+      <div class="row g-4">
+        {% for industry in industries %}
+          <div class="col-md-6 col-lg-4 d-flex">
+            <article class="card card--hover reveal" data-delay="{{ forloop.counter0 }}">
+              <div class="card__body">
+                <span class="icon-tile">{% icon industry.icon %}</span>
+                <h3 class="card__title"><a href="{{ industry.get_absolute_url }}">{{ industry.name }}</a></h3>
+                <p class="card__text">{{ industry.summary|truncatewords:28 }}</p>
+                {% if industry.solutions.all %}
+                  <div class="tag-row mb-3">{% for s in industry.solutions.all|slice:":3" %}<span class="tag tag--primary">{{ s.name }}</span>{% endfor %}</div>
+                {% endif %}
+                <div class="card__footer"><a class="link-arrow" href="{{ industry.get_absolute_url }}">See how we help {% icon "arrow-right" "sm" %}</a></div>
+              </div>
+            </article>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      {% include "components/empty_state.html" with icon="globe" title="No industries listed yet" body="Industries added in the Django admin will appear here." %}
+    {% endif %}
+  </div>
+</section>
+
+{% include "components/cta.html" %}
+{% endblock %}

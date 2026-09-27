@@ -1,0 +1,18 @@
+{% load portfolio_tags %}
+<article class="card card--hover reveal" {% if delay %}data-delay="{{ delay }}"{% endif %}>
+  {% if post.featured_image %}
+    <div class="card__media">
+      <img src="{{ post.featured_image.url }}" alt="{{ post.image_alt_text }}" loading="lazy" decoding="async" width="800" height="450">
+    </div>
+  {% endif %}
+  <div class="card__body">
+    <div class="d-flex flex-wrap gap-2 mb-2">
+      {% if post.category %}<span class="tag tag--primary">{{ post.category.name }}</span>{% endif %}
+      <span class="tag">{{ post.published_at|date:"M j, Y" }}</span>
+      <span class="tag">{{ post.reading_time }} min read</span>
+    </div>
+    <h3 class="card__title" style="font-size:1.08rem"><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h3>
+    <p class="card__text">{{ post.excerpt|truncatechars:140 }}</p>
+    <div class="card__footer"><a class="link-arrow" href="{{ post.get_absolute_url }}">Read article {% icon "arrow-right" "sm" %}</a></div>
+  </div>
+</article>

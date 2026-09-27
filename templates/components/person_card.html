@@ -1,0 +1,19 @@
+{% load portfolio_tags %}
+<article class="card card--hover person-card reveal" {% if delay %}data-delay="{{ delay }}"{% endif %}>
+  {% if member.photo %}
+    <img class="person-card__photo" src="{{ member.photo.url }}" alt="{{ member.image_alt }}" loading="lazy" decoding="async" width="108" height="108">
+  {% else %}
+    <span class="person-card__photo" aria-hidden="true">{{ member.initials }}</span>
+  {% endif %}
+  <h3 class="person-card__name"><a href="{{ member.get_absolute_url }}" style="color:var(--navy)">{{ member.name }}</a></h3>
+  <p class="person-card__role">{{ member.role }}</p>
+  {% if member.short_bio %}<p class="person-card__bio">{{ member.short_bio|truncatewords:22 }}</p>{% endif %}
+  {% if member.has_social %}
+    <div class="person-links">
+      {% if member.linkedin_url %}<a href="{{ member.linkedin_url }}" target="_blank" rel="noopener noreferrer" aria-label="{{ member.name }} on LinkedIn">{% icon "linkedin" "sm" %}</a>{% endif %}
+      {% if member.github_url %}<a href="{{ member.github_url }}" target="_blank" rel="noopener noreferrer" aria-label="{{ member.name }} on GitHub">{% icon "github" "sm" %}</a>{% endif %}
+      {% if member.twitter_url %}<a href="{{ member.twitter_url }}" target="_blank" rel="noopener noreferrer" aria-label="{{ member.name }} on X">{% icon "x" "sm" %}</a>{% endif %}
+      {% if member.email %}<a href="mailto:{{ member.email }}" aria-label="Email {{ member.name }}">{% icon "mail" "sm" %}</a>{% endif %}
+    </div>
+  {% endif %}
+</article>

@@ -1,0 +1,9 @@
+{% load portfolio_tags %}
+<a class="card card--hover reveal" href="{{ industry.get_absolute_url }}" {% if delay %}data-delay="{{ delay }}"{% endif %}>
+  <div class="card__body">
+    <span class="icon-tile icon-tile--accent icon-tile--sm">{% icon industry.icon "sm" %}</span>
+    <h3 class="card__title" style="font-size:1.05rem">{{ industry.name }}</h3>
+    <p class="card__text" style="margin-bottom:.5rem">{{ industry.tagline|default:industry.summary|truncatewords:18 }}</p>
+    <span class="link-arrow">Learn more {% icon "arrow-right" "sm" %}</span>
+  </div>
+</a>

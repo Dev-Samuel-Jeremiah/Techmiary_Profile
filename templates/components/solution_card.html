@@ -1,0 +1,17 @@
+{% load portfolio_tags %}
+<article class="card card--hover reveal" {% if delay %}data-delay="{{ delay }}"{% endif %}>
+  <div class="card__body">
+    <span class="icon-tile">{% icon solution.icon %}</span>
+    <h3 class="card__title"><a href="{{ solution.get_absolute_url }}">{{ solution.name }}</a></h3>
+    <p style="color:var(--primary);font-size:.88rem;font-weight:600;margin-bottom:.6rem">{{ solution.tagline }}</p>
+    <p class="card__text">{{ solution.summary|truncatewords:26 }}</p>
+    {% if solution.industries.all %}
+      <div class="tag-row mb-3">
+        {% for industry in solution.industries.all|slice:":3" %}<span class="tag">{{ industry.name }}</span>{% endfor %}
+      </div>
+    {% endif %}
+    <div class="card__footer">
+      <a class="link-arrow" href="{{ solution.get_absolute_url }}">Explore solution {% icon "arrow-right" "sm" %}</a>
+    </div>
+  </div>
+</article>

@@ -1,0 +1,19 @@
+{% load portfolio_tags %}
+{% comment %}Interior page header. Breadcrumbs take up to one intermediate
+level: Home / parent_label / crumb.{% endcomment %}
+<section class="page-banner">
+  <div class="container-page">
+    {% if crumb %}
+      <nav class="breadcrumbs" aria-label="Breadcrumb">
+        <a href="{% url 'core:home' %}">Home</a>
+        {% if parent_label and parent_url %}
+          <span class="sep" aria-hidden="true">/</span><a href="{{ parent_url }}">{{ parent_label }}</a>
+        {% endif %}
+        <span class="sep" aria-hidden="true">/</span><span aria-current="page">{{ crumb }}</span>
+      </nav>
+    {% endif %}
+    {% if eyebrow %}<span class="eyebrow">{{ eyebrow }}</span>{% endif %}
+    <h1 class="page-title">{{ heading }}</h1>
+    {% if subheading %}<p class="lead measure">{{ subheading }}</p>{% endif %}
+  </div>
+</section>

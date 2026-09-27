@@ -1,0 +1,5 @@
+{% if entry.logo %}
+  <img src="{{ entry.logo.url }}" alt="{{ entry.logo_alt|default:entry.name }}" loading="lazy" decoding="async">
+{% else %}
+  <span class="logo-cell__word">{{ entry.name }}{% if entry.relationship %}<span class="logo-cell__sub">{{ entry.relationship }}</span>{% endif %}</span>
+{% endif %}

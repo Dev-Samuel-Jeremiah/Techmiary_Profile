@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+{% load portfolio_tags %}
+
+{% block content %}
+{% url 'careers:list' as careers_url %}
+{% include "components/page_banner.html" with eyebrow=job.department.name crumb=job.title parent_label="Careers" parent_url=careers_url heading=job.title subheading=job.summary %}
+
+<section class="section">
+  <div class="container-page">
+    <div class="row g-5">
+      <div class="col-lg-8">
+        <div class="prose">
+          <div class="case-section reveal">
+            <h2>About the role</h2>
+            {{ job.description|linebreaks }}
+          </div>
+
+          {% if job.responsibility_list %}
+            <div class="case-section reveal">
+              <h2>What you will do</h2>
+              <ul>{% for item in job.responsibility_list %}<li>{{ item }}</li>{% endfor %}</ul>
+            </div>
+          {% endif %}
+
+          {% if job.requirement_list %}
+            <div class="case-section reveal">
+              <h2>What we are looking for</h2>
+              <ul>{% for item in job.requirement_list %}<li>{{ item }}</li>{% endfor %}</ul>
+            </div>
+          {% endif %}
+
+          {% if job.nice_to_have_list %}
+            <div class="case-section reveal">
+              <h2>Nice to have</h2>
+              <ul>{% for item in job.nice_to_have_list %}<li>{{ item }}</li>{% endfor %}</ul>
+            </div>
+          {% endif %}
+
+          {% if job.benefit_list %}
+            <div class="case-section reveal">
+              <h2>What we offer</h2>
+              <ul>{% for item in job.benefit_list %}<li>{{ item }}</li>{% endfor %}</ul>
+            </div>
+          {% endif %}
+        </div>
+
+        {# ---------------------------------------------------- Application #}
+        <div class="panel panel--pad mt-5" id="apply">
+          <h2 style="font-size:1.35rem;margin-bottom:.35rem">Apply for this role</h2>
+          {% if job.is_accepting_applications %}
+            <p class="text-muted-2" style="font-size:.94rem">Attach your CV and tell us why this role fits. We reply to every applicant.</p>
+
+            <form method="post" action="{% url 'careers:apply' job.slug %}" enctype="multipart/form-data" novalidate class="mt-4">
+              {% csrf_token %}
+              {% if form.non_field_errors %}<div class="alert alert-danger" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+              <div class="hp-wrap" aria-hidden="true">{{ form.website }}</div>
+
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label" for="{{ form.full_name.id_for_label }}">{{ form.full_name.label }}<span class="req">*</span></label>
+                  {{ form.full_name }}
+                  {% for error in form.full_name.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label" for="{{ form.email.id_for_label }}">{{ form.email.label }}<span class="req">*</span></label>
+                  {{ form.email }}
+                  {% for error in form.email.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label" for="{{ form.phone.id_for_label }}">{{ form.phone.label }}</label>
+                  {{ form.phone }}
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label" for="{{ form.location.id_for_label }}">{{ form.location.label }}</label>
+                  {{ form.location }}
+                </div>
+                <div class="col-12">
+                  <label class="form-label" for="{{ form.cv.id_for_label }}">{{ form.cv.label }}<span class="req">*</span></label>
+                  {{ form.cv }}
+                  <p class="form-text">PDF or Word document, up to 5 MB.</p>
+                  {% for error in form.cv.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                </div>
+                <div class="col-12">
+                  <label class="form-label" for="{{ form.cover_letter.id_for_label }}">{{ form.cover_letter.label }}</label>
+                  {{ form.cover_letter }}
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label" for="{{ form.portfolio_url.id_for_label }}">{{ form.portfolio_url.label }}</label>
+                  {{ form.portfolio_url }}
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label" for="{{ form.linkedin_url.id_for_label }}">{{ form.linkedin_url.label }}</label>
+                  {{ form.linkedin_url }}
+                </div>
+                <div class="col-12">
+                  <div class="form-check">
+                    {{ form.consent }}
+                    <label for="{{ form.consent.id_for_label }}">{{ form.consent.label }}</label>
+                  </div>
+                  {% for error in form.consent.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                </div>
+              </div>
+
+              <button class="btn btn-primary btn-lg mt-4" type="submit">Submit application {% icon "arrow-right" "sm" %}</button>
+            </form>
+          {% else %}
+            <div class="alert alert-info mb-0" role="status">
+              This role is no longer accepting applications.
+              <a href="{% url 'careers:list' %}">See the roles that are open</a>.
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <aside class="col-lg-4">
+        <div class="sticky-panel">
+          <div class="panel panel--pad reveal">
+            <p class="panel__label">Role details</p>
+            <ul class="fact-list">
+              <li><span class="k">Team</span><span class="v">{{ job.department.name }}</span></li>
+              <li><span class="k">Type</span><span class="v">{{ job.get_employment_type_display }}</span></li>
+              <li><span class="k">Arrangement</span><span class="v">{{ job.get_location_type_display }}</span></li>
+              {% if job.location %}<li><span class="k">Location</span><span class="v">{{ job.location }}</span></li>{% endif %}
+              <li><span class="k">Level</span><span class="v">{{ job.get_experience_level_display }}</span></li>
+              {% if job.salary_range %}<li><span class="k">Compensation</span><span class="v">{{ job.salary_range }}</span></li>{% endif %}
+              {% if job.posted_at %}<li><span class="k">Posted</span><span class="v">{{ job.posted_at|date:"j M Y" }}</span></li>{% endif %}
+              {% if job.closes_at %}<li><span class="k">Closes</span><span class="v">{{ job.closes_at|date:"j M Y" }}</span></li>{% endif %}
+            </ul>
+            {% if job.is_accepting_applications %}
+              <a class="btn btn-primary btn-block mt-3" href="#apply">Apply now</a>
+            {% endif %}
+          </div>
+
+          {% if other_jobs %}
+            <div class="panel panel--pad mt-4 reveal">
+              <p class="panel__label">Other open roles</p>
+              <ul class="fact-list">
+                {% for other in other_jobs %}
+                  <li><span class="v" style="text-align:left"><a href="{{ other.get_absolute_url }}">{{ other.title }}</a></span></li>
+                {% endfor %}
+              </ul>
+            </div>
+          {% endif %}
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+{% endblock %}

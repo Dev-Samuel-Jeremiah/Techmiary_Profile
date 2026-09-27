@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% load portfolio_tags %}
+
+{% block content %}
+{% include "components/page_banner.html" with eyebrow="Insights" crumb="Insights" heading="Notes from our engineering desk" subheading="Django, architecture, PostgreSQL, deployment and what running production systems for real organisations teaches." %}
+
+<section class="section">
+  <div class="container-page">
+    <div class="row g-3 align-items-center mb-4">
+      <div class="col-lg-7">
+        {% if categories %}
+          <div class="filter-row">
+            <a class="chip {% if not active_category %}is-active{% endif %}" href="{% url 'blog:list' %}">All</a>
+            {% for category in categories %}
+              <a class="chip {% if active_category and active_category.pk == category.pk %}is-active{% endif %}" href="?category={{ category.slug }}">{{ category.name }}</a>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+      <div class="col-lg-5">
+        <form role="search" method="get" action="{% url 'blog:list' %}" class="d-flex gap-2">
+          <label for="blog-search" class="visually-hidden">Search articles</label>
+          <input id="blog-search" class="form-control" type="search" name="q" value="{{ query }}" placeholder="Search articles">
+          <button class="btn btn-primary" type="submit">{% icon "search" "sm" %}<span class="visually-hidden">Search</span></button>
+        </form>
+      </div>
+    </div>
+
+    {% if query %}
+      <p class="text-muted-2">{{ paginator.count }} result{{ paginator.count|pluralize }} for &ldquo;{{ query }}&rdquo;. <a href="{% url 'blog:list' %}">Clear</a></p>
+    {% endif %}
+
+    {% if featured_post %}
+      <article class="panel panel--pad reveal mb-4">
+        <div class="row g-4 align-items-center">
+          {% if featured_post.featured_image %}
+            <div class="col-lg-5">
+              <img class="full-bleed-img" src="{{ featured_post.featured_image.url }}" alt="{{ featured_post.image_alt_text }}" loading="lazy" decoding="async">
+            </div>
+          {% endif %}
+          <div class="{% if featured_post.featured_image %}col-lg-7{% else %}col-12{% endif %}">
+            <span class="eyebrow">Featured</span>
+            <h2 style="font-size:clamp(1.4rem,2.6vw,2rem)"><a href="{{ featured_post.get_absolute_url }}" style="color:var(--navy)">{{ featured_post.title }}</a></h2>
+            <p class="text-muted-2">{{ featured_post.excerpt }}</p>
+            <div class="tag-row">
+              {% if featured_post.category %}<span class="tag tag--primary">{{ featured_post.category.name }}</span>{% endif %}
+              <span class="tag">{{ featured_post.published_at|date:"M j, Y" }}</span>
+              <span class="tag">{{ featured_post.reading_time }} min read</span>
+            </div>
+          </div>
+        </div>
+      </article>
+    {% endif %}
+
+    {% if posts %}
+      <div class="row g-4">
+        {% for post in posts %}
+          <div class="col-md-6 col-lg-4 d-flex">{% include "components/blog_card.html" with post=post delay=forloop.counter0 %}</div>
+        {% endfor %}
+      </div>
+      {% include "components/pagination.html" %}
+    {% else %}
+      {% if query or active_category %}
+        {% include "components/empty_state.html" with icon="search" title="No matching articles" body="Try a different search term or category." action_url="/blog/" action_label="Show all articles" %}
+      {% else %}
+        {% include "components/empty_state.html" with icon="book" title="No articles published yet" body="Posts written in the Django admin and marked as published will appear here." %}
+      {% endif %}
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

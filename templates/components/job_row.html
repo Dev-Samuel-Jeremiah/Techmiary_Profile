@@ -1,0 +1,14 @@
+{% load portfolio_tags %}
+<article class="job-row reveal" {% if delay %}data-delay="{{ delay }}"{% endif %}>
+  <div>
+    <h3 class="job-row__title"><a href="{{ job.get_absolute_url }}">{{ job.title }}</a></h3>
+    <div class="job-row__meta">
+      <span class="tag tag--primary">{{ job.department.name }}</span>
+      <span class="tag">{{ job.get_employment_type_display }}</span>
+      <span class="tag">{{ job.get_location_type_display }}{% if job.location %} · {{ job.location }}{% endif %}</span>
+      <span class="tag">{{ job.get_experience_level_display }}</span>
+      {% if job.salary_range %}<span class="tag tag--accent">{{ job.salary_range }}</span>{% endif %}
+    </div>
+  </div>
+  <a class="btn btn-outline btn-sm" href="{{ job.get_absolute_url }}">View role {% icon "arrow-right" "sm" %}</a>
+</article>
