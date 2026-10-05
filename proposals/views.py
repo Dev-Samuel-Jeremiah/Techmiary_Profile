@@ -11,7 +11,7 @@ from django.utils.text import slugify
 
 from core.models import SiteSettings
 
-from .models import Proposal
+from .models import Proposal, SchoolQuotation
 
 logger = logging.getLogger(__name__)
 
@@ -50,7 +50,8 @@ def proposal_pdf(request, pk):
         .prefetch_related("items", "milestones"),
         pk=pk,
     )
-    site = SiteSettings.load()
+    # An unsaved, empty profile rather than None, so a fresh install still renders.
+    site = SiteSettings.load() or SiteSettings()
 
     html = render_to_string(
         "proposals/proposal_pdf.html",
@@ -64,10 +65,16 @@ def proposal_pdf(request, pk):
         request=request,
     )
 
+    org = slugify(proposal.client_organisation) or "client"
+    return _pdf_response(request, html, f"{proposal.reference}-{org}.pdf")
+
+
+def _pdf_response(request, html, filename):
+    """Render letterhead HTML to a PDF response, or explain why it cannot."""
     try:
         from weasyprint import HTML
     except ImportError:  # pragma: no cover - depends on the deployment
-        logger.exception("WeasyPrint is not installed; cannot render proposal PDFs")
+        logger.exception("WeasyPrint is not installed; cannot render PDFs")
         return HttpResponse(
             "PDF rendering is unavailable on this server: WeasyPrint is not installed. "
             "Run `pip install -r requirements.txt` and restart.",
@@ -77,10 +84,34 @@ def proposal_pdf(request, pk):
 
     # base_url lets WeasyPrint resolve the logo and stylesheet by URL.
     pdf = HTML(string=html, base_url=request.build_absolute_uri("/")).write_pdf()
-
-    org = slugify(proposal.client_organisation) or "client"
-    filename = f"{proposal.reference}-{org}.pdf"
     response = HttpResponse(pdf, content_type="application/pdf")
-    # `inline` opens in the browser's viewer; the admin link adds a download.
+    # `inline` opens in the browser's viewer; the browser offers the download.
     response["Content-Disposition"] = f'inline; filename="{filename}"'
     return response
+
+
+@staff_member_required
+def quotation_pdf(request, pk):
+    """
+    Render one school quotation to PDF.
+
+    Staff-only for the same reason as proposals: it carries a school's
+    contact details and prices.
+    """
+    quotation = get_object_or_404(
+        SchoolQuotation.objects.select_related("prepared_by").prefetch_related("lines"),
+        pk=pk,
+    )
+    # An unsaved, empty profile rather than None, so a fresh install still renders.
+    site = SiteSettings.load() or SiteSettings()
+    html = render_to_string(
+        "proposals/quotation_pdf.html",
+        {
+            "q": quotation,
+            "site": site,
+            "logo_src": _local_file_uri(getattr(site, "logo", None)),
+        },
+        request=request,
+    )
+    school = slugify(quotation.school_name) or "school"
+    return _pdf_response(request, html, f"{quotation.reference}-{school}.pdf")

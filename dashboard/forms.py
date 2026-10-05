@@ -1,11 +1,18 @@
 """Forms used by the staff dashboard."""
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
-from django.forms import inlineformset_factory
+from django.forms import inlineformset_factory, modelformset_factory
 
 from contact.models import ContactMessage, QuoteRequest
 from core.models import SiteSettings
-from proposals.models import Proposal, ProposalItem, ProposalMilestone
+from proposals.models import (
+    PriceListItem,
+    Proposal,
+    ProposalItem,
+    ProposalMilestone,
+    SchoolQuotation,
+    SchoolQuotationLine,
+)
 
 
 class DashboardLoginForm(AuthenticationForm):
@@ -156,6 +163,8 @@ class CompanyProfileForm(forms.ModelForm):
             "phone", "secondary_phone",
             "address", "location", "office_hours",
             "website_url",
+            # Payment details
+            "bank_name", "bank_account_name", "bank_account_number",
             # Brand assets
             "logo", "favicon", "og_image",
             # Social
@@ -172,6 +181,7 @@ class CompanyProfileForm(forms.ModelForm):
             "address": "Shown on the proposal letterhead.",
             "logo": "Used in the site header and at the top of every proposal PDF.",
             "favicon": "The small icon shown in a browser tab.",
+            "bank_account_number": "Printed on school quotations under “How to pay”. Leave blank to omit.",
             "og_image": "1200×630. Shown when a link to the site is shared.",
         }
 
@@ -199,3 +209,121 @@ class CompanyProfileForm(forms.ModelForm):
             if value.upper().startswith(prefix.upper()):
                 value = value[len(prefix):].strip(" .:-")
         return value
+
+
+# ------------------------------------------------------ school quotations ---
+def style_fields(form):
+    """Give every widget the control panel's classes."""
+    for field in form.fields.values():
+        widget = field.widget
+        if isinstance(widget, forms.CheckboxSelectMultiple):
+            continue
+        if isinstance(widget, forms.Select):
+            css = "dash-select"
+        elif isinstance(widget, forms.Textarea):
+            css = "dash-input dash-textarea"
+        elif isinstance(widget, forms.CheckboxInput):
+            css = "dash-check"
+        else:
+            css = "dash-input"
+        widget.attrs.setdefault("class", css)
+
+
+SCHOOL_FIELDS = [
+    "school_name", "contact_name", "contact_role", "contact_email", "contact_phone",
+    "school_address", "school_type", "student_count", "campus_count", "deployment",
+]
+
+
+class PriceItemChoiceField(forms.ModelMultipleChoiceField):
+    def label_from_instance(self, item):
+        return item.name
+
+
+class QuotationStartForm(forms.ModelForm):
+    """School details plus the modules to quote for. Lines are built from the ticks."""
+
+    items = PriceItemChoiceField(
+        queryset=PriceListItem.objects.none(),
+        widget=forms.CheckboxSelectMultiple,
+        required=False,
+        label="What to include",
+    )
+
+    class Meta:
+        model = SchoolQuotation
+        fields = SCHOOL_FIELDS
+        widgets = {"school_address": forms.Textarea(attrs={"rows": 2})}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        active = PriceListItem.objects.filter(is_active=True)
+        self.fields["items"].queryset = active
+        if not self.is_bound:
+            self.fields["items"].initial = [i.pk for i in active if i.selected_by_default]
+        style_fields(self)
+
+    def grouped_items(self):
+        """Price-list choices grouped for display, each with its checkbox."""
+        by_pk = {str(w.data["value"]): w for w in self["items"]}
+        items = self.fields["items"].queryset
+        groups = []
+        for key, label in PriceListItem.GROUP_CHOICES:
+            rows = [(item, by_pk.get(str(item.pk))) for item in items if item.group == key]
+            if rows:
+                groups.append((label, rows))
+        return groups
+
+
+class QuotationForm(forms.ModelForm):
+    class Meta:
+        model = SchoolQuotation
+        fields = SCHOOL_FIELDS + [
+            "status", "currency", "discount_percent", "tax_percent", "deposit_percent",
+            "delivery_weeks", "valid_until", "payment_terms", "client_notes",
+            "internal_notes",
+        ]
+        widgets = {
+            "school_address": forms.Textarea(attrs={"rows": 2}),
+            "payment_terms": forms.Textarea(attrs={"rows": 4}),
+            "client_notes": forms.Textarea(attrs={"rows": 3}),
+            "internal_notes": forms.Textarea(attrs={"rows": 3}),
+            "valid_until": forms.DateInput(attrs={"type": "date"}, format="%Y-%m-%d"),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        style_fields(self)
+
+
+QuotationLineFormSet = inlineformset_factory(
+    SchoolQuotation, SchoolQuotationLine,
+    fields=["title", "description", "billing", "quantity", "unit", "unit_price", "display_order"],
+    extra=1, can_delete=True,
+    widgets={
+        "description": forms.Textarea(attrs={"rows": 2, "class": "dash-input dash-textarea"}),
+        "billing": forms.Select(attrs={"class": "dash-select"}),
+    },
+)
+
+
+class AddPriceItemsForm(forms.Form):
+    """Add more price-list items to an existing quotation."""
+
+    items = PriceItemChoiceField(
+        queryset=PriceListItem.objects.filter(is_active=True),
+        widget=forms.CheckboxSelectMultiple,
+    )
+
+
+PriceListFormSet = modelformset_factory(
+    PriceListItem,
+    fields=["name", "description", "group", "billing", "unit", "unit_price",
+            "default_quantity", "selected_by_default", "is_active", "display_order"],
+    extra=1, can_delete=False,
+    widgets={
+        "description": forms.Textarea(attrs={"rows": 2, "class": "dash-input dash-textarea"}),
+        "group": forms.Select(attrs={"class": "dash-select"}),
+        "billing": forms.Select(attrs={"class": "dash-select"}),
+    },
+)

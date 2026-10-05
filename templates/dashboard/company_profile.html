@@ -76,6 +76,22 @@
   </section>
 
   <section class="dash-card">
+    <h2>Payment details</h2>
+    <p class="dash-help">Printed on school quotations so a school knows where to pay the deposit. Leave blank to leave the section off.</p>
+    <div class="dash-form-grid">
+      {% for field in form %}
+        {% if field|in_group:"bank_name bank_account_name bank_account_number" %}
+          <div class="dash-field">
+            <label class="dash-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}<p class="dash-field-error">{{ field.errors|first }}</p>{% endif %}
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="dash-card">
     <h2>Brand assets</h2>
     <div class="dash-assets">
       {% for field in form %}

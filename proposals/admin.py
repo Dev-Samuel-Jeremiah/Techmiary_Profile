@@ -7,10 +7,13 @@ from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 
 from .models import (
+    PriceListItem,
     Proposal,
     ProposalItem,
     ProposalMilestone,
     ProposalTemplate,
+    SchoolQuotation,
+    SchoolQuotationLine,
     TemplateItem,
 )
 
@@ -251,3 +254,51 @@ class ProposalAdmin(admin.ModelAdmin):
             ])
             made += 1
         self.message_user(request, f"{made} draft(s) created.", messages.SUCCESS)
+
+
+# ------------------------------------------------------- school quotations ---
+@admin.register(PriceListItem)
+class PriceListItemAdmin(admin.ModelAdmin):
+    list_display = ("name", "group", "billing", "unit_price", "selected_by_default", "is_active", "display_order")
+    list_filter = ("group", "billing", "is_active")
+    list_editable = ("unit_price", "selected_by_default", "is_active", "display_order")
+    search_fields = ("name", "description")
+
+
+class SchoolQuotationLineInline(admin.TabularInline):
+    model = SchoolQuotationLine
+    extra = 1
+    fields = ("display_order", "title", "billing", "quantity", "unit", "unit_price", "description")
+    raw_id_fields = ("price_item",)
+
+
+@admin.register(SchoolQuotation)
+class SchoolQuotationAdmin(admin.ModelAdmin):
+    list_display = ("reference", "school_name", "student_count", "status", "valid_until", "pdf_link")
+    list_filter = ("status", "deployment", "school_type")
+    search_fields = ("reference", "school_name", "contact_name", "contact_email")
+    readonly_fields = ("reference", "sent_at", "created_at", "updated_at", "pdf_link")
+    raw_id_fields = ("source_request", "prepared_by")
+    inlines = [SchoolQuotationLineInline]
+    fieldsets = (
+        (None, {"fields": ("reference", "status", "pdf_link", "source_request")}),
+        ("School", {"fields": ("school_name", "contact_name", "contact_role", "contact_email",
+                               "contact_phone", "school_address", "school_type",
+                               "student_count", "campus_count", "deployment")}),
+        ("Terms", {"fields": ("currency", "discount_percent", "tax_percent", "deposit_percent",
+                              "delivery_weeks", "valid_until", "payment_terms", "client_notes")}),
+        ("Internal", {"fields": ("internal_notes", "prepared_by", "sent_at", "created_at", "updated_at")}),
+    )
+
+    @admin.display(description="PDF")
+    def pdf_link(self, obj):
+        if not obj.pk:
+            return "—"
+        return format_html(
+            '<a href="{}" target="_blank" rel="noopener">Open quotation PDF</a>', obj.get_pdf_url()
+        )
+
+    def save_model(self, request, obj, form, change):
+        if not obj.prepared_by_id:
+            obj.prepared_by = request.user
+        super().save_model(request, obj, form, change)

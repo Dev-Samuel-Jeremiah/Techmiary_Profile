@@ -1,0 +1,71 @@
+{% extends "dashboard/base.html" %}
+{% load humanize %}
+{% block title %}New school quotation{% endblock %}
+{% block heading %}New school quotation{% endblock %}
+{% block subheading %}<p class="dash-sub">Enter the school, tick what to include, and the quotation is priced from your price list.</p>{% endblock %}
+
+{% block content %}
+{% if source %}
+  <div class="dash-note">
+    <strong>From website request: {{ source.project_title }}</strong>
+    The school's details below came from {{ source.contact_name }}'s request on {{ source.created_at|date:"j M Y" }}.
+  </div>
+{% endif %}
+{% if unpriced_count %}
+  <div class="dash-note dash-note--warn">
+    <strong>{{ unpriced_count }} item{{ unpriced_count|pluralize }} in the price list {{ unpriced_count|pluralize:"has,have" }} no price.</strong>
+    You can still build the quotation, but it stays a draft until every line is priced. <a href="{% url 'dashboard:price_list' %}">Set prices</a>.
+  </div>
+{% endif %}
+
+<form method="post" novalidate>
+  {% csrf_token %}
+  {% if source %}<input type="hidden" name="from_request" value="{{ source.pk }}">{% endif %}
+
+  <section class="dash-card">
+    <h2>The school</h2>
+    <div class="dash-form-grid">
+      {% for field in form %}
+        {% if field.name != "items" %}
+          <div class="dash-field {% if field.name == 'school_address' %}dash-field--wide{% endif %}">
+            <label class="dash-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.help_text %}<p class="dash-help">{{ field.help_text }}</p>{% endif %}
+            {% if field.errors %}<p class="dash-field-error">{{ field.errors|first }}</p>{% endif %}
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="dash-card">
+    <h2>What to include</h2>
+    <p class="dash-help">Pre-ticked items are the usual package. Prices are copied onto the quotation now; you can adjust any of them on the next screen.</p>
+    {% for label, rows in form.grouped_items %}
+      <h3 class="dash-group-title">{{ label }}</h3>
+      <div class="dash-picks">
+        {% for item, widget in rows %}
+          <label class="dash-pick {% if not item.is_priced %}is-unpriced{% endif %}">
+            {{ widget.tag }}
+            <span class="dash-pick__body">
+              <strong>{{ item.name }}</strong>
+              <small>{{ item.description|truncatechars:110 }}</small>
+            </span>
+            <span class="dash-pick__price">
+              {% if item.is_priced %}₦{{ item.unit_price|floatformat:2|intcomma }}{% else %}No price{% endif %}
+              <small>{{ item.get_billing_display }}{% if item.unit and item.billing == "one_off" %} · per {{ item.unit }}{% endif %}</small>
+            </span>
+          </label>
+        {% endfor %}
+      </div>
+    {% empty %}
+      <p class="dash-empty">The price list is empty. Run <code>python manage.py seed_price_list</code>, or add items in the <a href="{% url 'dashboard:price_list' %}">price list</a>.</p>
+    {% endfor %}
+  </section>
+
+  <div class="dash-sticky-actions">
+    <button class="dash-btn dash-btn--primary" type="submit">Create quotation</button>
+    <a class="dash-link" href="{% url 'dashboard:quotation_list' %}">Cancel</a>
+  </div>
+</form>
+{% endblock %}

@@ -14,6 +14,14 @@ urlpatterns = [
     path("proposals/<int:pk>/", views.ProposalEditView.as_view(), name="proposal_edit"),
     path("proposals/<int:pk>/status/", views.ProposalStatusView.as_view(), name="proposal_status"),
 
+    path("quotations/", views.QuotationListView.as_view(), name="quotation_list"),
+    path("quotations/new/", views.QuotationCreateView.as_view(), name="quotation_new"),
+    path("quotations/<int:pk>/", views.QuotationEditView.as_view(), name="quotation_edit"),
+    path("quotations/<int:pk>/add/", views.QuotationAddItemsView.as_view(), name="quotation_add_items"),
+    path("quotations/<int:pk>/status/", views.QuotationStatusView.as_view(), name="quotation_status"),
+    path("quotations/<int:pk>/duplicate/", views.QuotationDuplicateView.as_view(), name="quotation_duplicate"),
+    path("price-list/", views.PriceListView.as_view(), name="price_list"),
+
     path("company/", views.CompanyProfileView.as_view(), name="company_profile"),
 
     path("enquiries/", views.EnquiryListView.as_view(), name="enquiry_list"),

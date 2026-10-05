@@ -23,6 +23,11 @@ COMPANY_ADMIN_PERMISSIONS = [
     ("proposals", "proposalitem", ["add", "change", "delete", "view"]),
     ("proposals", "proposalmilestone", ["add", "change", "delete", "view"]),
     ("proposals", "proposaltemplate", ["view"]),
+    ("proposals", "schoolquotation", ["add", "change", "delete", "view"]),
+    ("proposals", "schoolquotationline", ["add", "change", "delete", "view"]),
+    # Setting prices is a company admin's job; retiring an item is done by
+    # unticking Active, so delete is not granted.
+    ("proposals", "pricelistitem", ["add", "change", "view"]),
     # The company's own profile: name, contact details, logo, favicon. These
     # feed the public site and every proposal letterhead, so a company admin
     # needs them. Content models (solutions, blog, team) stay excluded.

@@ -106,6 +106,10 @@ class SiteSettings(models.Model):
     registration_number = models.CharField(
         max_length=80, blank=True, help_text="Company registration number, if you display one."
     )
+    # Printed on school quotations so a school knows where to pay the deposit.
+    bank_name = models.CharField(max_length=120, blank=True)
+    bank_account_name = models.CharField(max_length=160, blank=True)
+    bank_account_number = models.CharField(max_length=30, blank=True)
     newsletter_blurb = models.CharField(
         max_length=255,
         blank=True,

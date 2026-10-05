@@ -381,3 +381,203 @@ class FooterTests(TestCase):
         response = self.client.get("/")
         self.assertContains(response, reverse("dashboard:home"))
         self.assertContains(response, "Control panel")
+
+
+# ------------------------------------------------------- school quotations ---
+from proposals.models import PriceListItem, SchoolQuotation  # noqa: E402
+
+
+class SchoolQuotationTests(TestCase):
+    """The quotation builder: pricing maths, the issue guard, and the PDF."""
+
+    @classmethod
+    def setUpTestData(cls):
+        group, _ = sync_company_admin_group()
+        cls.admin = make_user("quoter", is_staff=True)
+        cls.admin.groups.add(group)
+        P = PriceListItem
+        cls.setup = P.objects.create(name="Setup", billing=P.BILL_ONE_OFF, unit_price=Decimal("500000"),
+                                     selected_by_default=True, display_order=1)
+        cls.training = P.objects.create(name="Training", billing=P.BILL_ONE_OFF, unit="day",
+                                        default_quantity=Decimal("2"), unit_price=Decimal("100000"),
+                                        group=P.GROUP_SERVICE, display_order=2)
+        cls.licence = P.objects.create(name="Licence", billing=P.BILL_PER_STUDENT_TERM,
+                                       unit_price=Decimal("1500"), group=P.GROUP_RECURRING,
+                                       selected_by_default=True, display_order=3)
+        cls.hosting = P.objects.create(name="Hosting", billing=P.BILL_PER_YEAR,
+                                       unit_price=Decimal("300000"), group=P.GROUP_RECURRING,
+                                       display_order=4)
+        cls.unpriced = P.objects.create(name="Hostel", billing=P.BILL_ONE_OFF, display_order=5)
+
+    def setUp(self):
+        self.client.force_login(self.admin)
+
+    def start(self, items, students=400, **extra):
+        data = {
+            "school_name": "Hillside Academy", "contact_name": "Mrs Okafor",
+            "school_type": "combined", "student_count": students, "campus_count": 1,
+            "deployment": "online", "items": [i.pk for i in items], **extra,
+        }
+        response = self.client.post(reverse("dashboard:quotation_new"), data)
+        self.assertEqual(response.status_code, 302, getattr(response, "context", None) and response.context["form"].errors)
+        return SchoolQuotation.objects.latest("pk")
+
+    def test_company_admin_holds_the_quotation_permissions(self):
+        for perm in ["proposals.add_schoolquotation", "proposals.change_schoolquotation",
+                     "proposals.change_pricelistitem"]:
+            self.assertTrue(self.admin.has_perm(perm), perm)
+        self.assertFalse(self.admin.has_perm("proposals.delete_pricelistitem"))
+
+    def test_start_page_pre_ticks_the_default_items(self):
+        response = self.client.get(reverse("dashboard:quotation_new"))
+        initial = response.context["form"].fields["items"].initial
+        self.assertEqual(set(initial), {self.setup.pk, self.licence.pk})
+
+    def test_ticked_items_become_lines_at_todays_prices(self):
+        q = self.start([self.setup, self.training, self.licence, self.hosting])
+        self.assertRegex(q.reference, r"^TMY-Q-\d{4}-0001$")
+        self.assertEqual(q.lines.count(), 4)
+        self.assertEqual(q.prepared_by, self.admin)
+        # A later price change must not touch a quotation already written.
+        PriceListItem.objects.filter(pk=self.setup.pk).update(unit_price=Decimal("999999"))
+        self.assertEqual(q.lines.get(title="Setup").unit_price, Decimal("500000"))
+
+    def test_totals_split_one_off_termly_and_yearly(self):
+        q = self.start([self.setup, self.training, self.licence, self.hosting],
+                       students=400)
+        q.discount_percent = Decimal("10")
+        q.tax_percent = Decimal("7.5")
+        q.deposit_percent = Decimal("60")
+        q.save()
+        q = SchoolQuotation.objects.prefetch_related("lines").get(pk=q.pk)
+        # One-off: 500,000 + 2 days × 100,000 = 700,000; less 10% = 630,000; + 7.5% VAT
+        self.assertEqual(q.one_off_subtotal, Decimal("700000.00"))
+        self.assertEqual(q.one_off_net, Decimal("630000.00"))
+        self.assertEqual(q.one_off_total, Decimal("677250.00"))
+        self.assertEqual(q.deposit_amount, Decimal("406350.00"))
+        self.assertEqual(q.balance_amount, Decimal("270900.00"))
+        # Per term: 400 students × 1,500 = 600,000 + VAT. The discount is setup-only.
+        self.assertEqual(q.termly_total, Decimal("645000.00"))
+        self.assertEqual(q.yearly_total, Decimal("322500.00"))
+        self.assertEqual(q.first_year_total, Decimal("677250.00") + Decimal("645000.00") * 3 + Decimal("322500.00"))
+        self.assertEqual(q.per_student_termly_cost, Decimal("1612.50"))
+
+    def test_per_student_lines_follow_the_student_count(self):
+        q = self.start([self.licence], students=100)
+        q.student_count = 250
+        q.save()
+        q = SchoolQuotation.objects.prefetch_related("lines").get(pk=q.pk)
+        self.assertEqual(q.termly_subtotal, Decimal("375000.00"))
+        self.assertEqual(q.lines.get().quantity_label, "250 students")
+
+    def test_unpriced_line_blocks_sending_and_keeps_a_draft(self):
+        q = self.start([self.setup, self.unpriced])
+        self.assertTrue(q.issue_problems)
+        response = self.client.post(
+            reverse("dashboard:quotation_status", args=[q.pk]), {"status": "sent"}, follow=True
+        )
+        self.assertContains(response, "not ready to send")
+        q.refresh_from_db()
+        self.assertEqual(q.status, "draft")
+
+    def test_fully_priced_quotation_can_be_sent(self):
+        q = self.start([self.setup, self.licence])
+        self.client.post(reverse("dashboard:quotation_status", args=[q.pk]), {"status": "sent"})
+        q.refresh_from_db()
+        self.assertEqual(q.status, "sent")
+        self.assertIsNotNone(q.sent_at)
+
+    def test_editor_saves_lines_and_adds_a_custom_one(self):
+        q = self.start([self.setup])
+        line = q.lines.get()
+        data = {
+            "school_name": q.school_name, "contact_name": q.contact_name,
+            "school_type": q.school_type, "student_count": 300, "campus_count": 1,
+            "deployment": "hybrid", "status": "draft", "currency": "NGN",
+            "discount_percent": "0", "tax_percent": "0", "deposit_percent": "50",
+            "delivery_weeks": "6", "valid_until": "2030-01-31", "payment_terms": "Deposit first.",
+            "client_notes": "", "internal_notes": "",
+            "lines-TOTAL_FORMS": "2", "lines-INITIAL_FORMS": "1",
+            "lines-MIN_NUM_FORMS": "0", "lines-MAX_NUM_FORMS": "1000",
+            "lines-0-id": line.pk, "lines-0-title": "Setup", "lines-0-description": "",
+            "lines-0-billing": "one_off", "lines-0-quantity": "1", "lines-0-unit": "",
+            "lines-0-unit_price": "450000", "lines-0-display_order": "1",
+            "lines-1-title": "Offline result manager", "lines-1-description": "",
+            "lines-1-billing": "one_off", "lines-1-quantity": "2", "lines-1-unit": "installation",
+            "lines-1-unit_price": "80000", "lines-1-display_order": "2",
+        }
+        response = self.client.post(reverse("dashboard:quotation_edit", args=[q.pk]), data)
+        self.assertEqual(response.status_code, 302)
+        q = SchoolQuotation.objects.prefetch_related("lines").get(pk=q.pk)
+        self.assertEqual(q.deployment, "hybrid")
+        self.assertEqual(q.one_off_subtotal, Decimal("610000.00"))
+        self.assertEqual(q.lines.get(title="Offline result manager").quantity_label, "2 installations")
+
+    def test_duplicate_makes_an_independent_draft(self):
+        q = self.start([self.setup, self.licence])
+        self.client.post(reverse("dashboard:quotation_duplicate", args=[q.pk]))
+        copy = SchoolQuotation.objects.latest("pk")
+        self.assertNotEqual(copy.pk, q.pk)
+        self.assertNotEqual(copy.reference, q.reference)
+        self.assertEqual(copy.lines.count(), 2)
+        self.assertEqual(q.lines.count(), 2)
+
+    def test_start_prefills_from_a_website_quote_request(self):
+        from contact.models import QuoteRequest
+        request = QuoteRequest.objects.create(
+            project_title="SMS for our school", description="We need results and fees.",
+            contact_name="Mr Bello", email="bello@school.example", organisation="Unity College",
+        )
+        response = self.client.get(reverse("dashboard:quotation_new") + f"?from_request={request.pk}")
+        self.assertEqual(response.context["form"].initial["school_name"], "Unity College")
+        q = self.start([self.setup], from_request=request.pk)
+        self.assertEqual(q.source_request, request)
+
+    def test_price_list_page_saves_prices(self):
+        response = self.client.get(reverse("dashboard:price_list"))
+        self.assertEqual(response.status_code, 200)
+        formset = response.context["formset"]
+        data = {"form-TOTAL_FORMS": str(formset.total_form_count()),
+                "form-INITIAL_FORMS": str(formset.initial_form_count()),
+                "form-MIN_NUM_FORMS": "0", "form-MAX_NUM_FORMS": "1000"}
+        for i, form in enumerate(formset.forms):
+            inst = form.instance
+            if not inst.pk:
+                # The blank "new item" row, posted as a browser would: untouched defaults.
+                data.update({f"form-{i}-group": "module", f"form-{i}-billing": "one_off",
+                             f"form-{i}-unit_price": "0", f"form-{i}-default_quantity": "1",
+                             f"form-{i}-is_active": "on", f"form-{i}-display_order": "0"})
+                continue
+            price = "250000" if inst.pk == self.unpriced.pk else str(inst.unit_price)
+            data.update({
+                f"form-{i}-id": inst.pk, f"form-{i}-name": inst.name, f"form-{i}-description": inst.description,
+                f"form-{i}-group": inst.group, f"form-{i}-billing": inst.billing, f"form-{i}-unit": inst.unit,
+                f"form-{i}-unit_price": price, f"form-{i}-default_quantity": str(inst.default_quantity),
+                f"form-{i}-is_active": "on", f"form-{i}-display_order": inst.display_order,
+            })
+        response = self.client.post(reverse("dashboard:price_list"), data)
+        self.assertEqual(response.status_code, 302,
+                         response.status_code == 200 and response.context["formset"].errors)
+        self.unpriced.refresh_from_db()
+        self.assertEqual(self.unpriced.unit_price, Decimal("250000"))
+
+    def test_pdf_renders_with_the_school_and_totals(self):
+        from io import BytesIO
+        q = self.start([self.setup, self.licence, self.hosting], students=400)
+        response = self.client.get(reverse("proposals:quotation_pdf", args=[q.pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "application/pdf")
+        self.assertTrue(response.content.startswith(b"%PDF"))
+        try:
+            from pypdf import PdfReader
+        except ImportError:
+            return
+        text = "".join(p.extract_text() for p in PdfReader(BytesIO(response.content)).pages)
+        self.assertIn("Hillside Academy", text)
+        self.assertIn(q.reference, text)
+
+    def test_pdf_is_staff_only(self):
+        q = self.start([self.setup])
+        self.client.logout()
+        response = self.client.get(reverse("proposals:quotation_pdf", args=[q.pk]))
+        self.assertEqual(response.status_code, 302)

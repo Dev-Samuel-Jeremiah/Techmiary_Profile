@@ -4,7 +4,8 @@
 {% block heading %}Overview{% endblock %}
 {% block subheading %}<p class="dash-sub">What needs attention today.</p>{% endblock %}
 {% block actions %}
-  <a class="dash-btn dash-btn--primary" href="{% url 'dashboard:proposal_new' %}">New proposal</a>
+  <a class="dash-btn" href="{% url 'dashboard:proposal_new' %}">New proposal</a>
+  <a class="dash-btn dash-btn--primary" href="{% url 'dashboard:quotation_new' %}">New school quotation</a>
 {% endblock %}
 
 {% block content %}

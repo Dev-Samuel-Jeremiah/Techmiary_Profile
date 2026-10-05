@@ -22,19 +22,23 @@
       </span>
     </a>
 
+    {% with u=request.resolver_match.url_name|default:"" %}
     <nav class="dash-nav" aria-label="Dashboard sections">
-      <a href="{% url 'dashboard:home' %}" class="{% if section == 'home' %}is-active{% endif %}">Overview</a>
+      <a href="{% url 'dashboard:home' %}" class="{% if u == 'home' %}is-active{% endif %}">Overview</a>
 
       <span class="dash-nav__label">Sales</span>
-      <a href="{% url 'dashboard:proposal_list' %}" class="{% if section == 'proposals' %}is-active{% endif %}">Proposals</a>
-      <a href="{% url 'dashboard:quote_list' %}" class="{% if section == 'quotes' %}is-active{% endif %}">Quote requests</a>
-      <a href="{% url 'dashboard:enquiry_list' %}" class="{% if section == 'enquiries' %}is-active{% endif %}">Enquiries</a>
+      <a href="{% url 'dashboard:quotation_list' %}" class="{% if u|slice:':9' == 'quotation' %}is-active{% endif %}">School quotations</a>
+      <a href="{% url 'dashboard:proposal_list' %}" class="{% if u|slice:':8' == 'proposal' %}is-active{% endif %}">Proposals</a>
+      <a href="{% url 'dashboard:quote_list' %}" class="{% if u|slice:':6' == 'quote_' %}is-active{% endif %}">Quote requests</a>
+      <a href="{% url 'dashboard:enquiry_list' %}" class="{% if u|slice:':7' == 'enquiry' %}is-active{% endif %}">Enquiries</a>
 
       <span class="dash-nav__label">Company</span>
-      <a href="{% url 'dashboard:company_profile' %}" class="{% if section == 'company' %}is-active{% endif %}">Company profile</a>
+      <a href="{% url 'dashboard:price_list' %}" class="{% if u == 'price_list' %}is-active{% endif %}">Price list</a>
+      <a href="{% url 'dashboard:company_profile' %}" class="{% if u == 'company_profile' %}is-active{% endif %}">Company profile</a>
       <a href="/{{ admin_url }}" target="_blank" rel="noopener">Site content &#8599;</a>
       <a href="/" target="_blank" rel="noopener">View website &#8599;</a>
     </nav>
+    {% endwith %}
 
     <div class="dash-side__foot">
       <div class="dash-user">

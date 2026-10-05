@@ -1,0 +1,41 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Price list{% endblock %}
+{% block heading %}Price list{% endblock %}
+{% block subheading %}<p class="dash-sub">What you charge schools, in naira. New quotation lines copy these prices; quotations already written keep theirs.</p>{% endblock %}
+{% block actions %}<a class="dash-btn" href="{% url 'dashboard:quotation_new' %}">New quotation</a>{% endblock %}
+
+{% block content %}
+<form method="post" novalidate>
+  {% csrf_token %}
+  {{ formset.management_form }}
+  {% if formset.non_form_errors %}<div class="dash-msg dash-msg--error">{{ formset.non_form_errors|first }}</div>{% endif %}
+  <section class="dash-card">
+    <p class="dash-help">Billing decides where a line is totalled: <strong>One-off</strong> (setup), <strong>Per student, per term</strong> (licence × student count), <strong>Per term</strong> or <strong>Per year</strong>. “Default” items are pre-ticked on a new quotation. Untick “Active” to retire an item without deleting it. The last row adds a new item.</p>
+    <div class="dash-table-scroll">
+      <table class="dash-table dash-table--form dash-table--prices">
+        <thead><tr><th>Item</th><th>Group</th><th>Billing</th><th>Unit</th><th>Price (₦)</th><th>Def. qty</th><th>Default</th><th>Active</th><th>Order</th></tr></thead>
+        <tbody>
+          {% for f in formset %}
+            <tr class="{% if f.instance.pk and not f.instance.unit_price %}is-unpriced{% endif %}">
+              {{ f.id }}
+              <td>{{ f.name }}{{ f.description }}{% for e in f.errors.values %}<p class="dash-field-error">{{ e|first }}</p>{% endfor %}</td>
+              <td class="dash-cell-md">{{ f.group }}</td>
+              <td class="dash-cell-md">{{ f.billing }}</td>
+              <td class="dash-cell-sm">{{ f.unit }}</td>
+              <td class="dash-cell-price">{{ f.unit_price }}</td>
+              <td class="dash-cell-xs">{{ f.default_quantity }}</td>
+              <td class="dash-cell-xs">{{ f.selected_by_default }}</td>
+              <td class="dash-cell-xs">{{ f.is_active }}</td>
+              <td class="dash-cell-xs">{{ f.display_order }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+  <div class="dash-sticky-actions">
+    <button class="dash-btn dash-btn--primary" type="submit">Save prices</button>
+    <a class="dash-link" href="{% url 'dashboard:quotation_list' %}">Back to quotations</a>
+  </div>
+</form>
+{% endblock %}

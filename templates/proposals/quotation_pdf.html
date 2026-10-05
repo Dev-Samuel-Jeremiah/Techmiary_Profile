@@ -1,0 +1,266 @@
+{% load humanize %}<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>{{ q.reference }} — Quotation for {{ q.school_name }}</title>
+<style>
+  @page {
+    size: A4;
+    margin: 28mm 17mm 22mm 17mm;
+    @top-left { content: element(letterhead); }
+    @bottom-left {
+      content: "{{ site.legal_name|default:site.company_name|default:site.brand_name }}"
+               {% if site.registration_number %} " · Business name reg. No. {{ site.registration_number }}"{% endif %};
+      font-family: Helvetica, Arial, sans-serif; font-size: 7.4pt; color: #8b95a5;
+    }
+    @bottom-right {
+      content: "{{ q.reference }} · Page " counter(page) " of " counter(pages);
+      font-family: Helvetica, Arial, sans-serif; font-size: 7.4pt; color: #8b95a5;
+    }
+  }
+  @page :first { margin-top: 16mm; @top-left { content: none; } }
+
+  * { box-sizing: border-box; }
+  body { font-family: Helvetica, Arial, sans-serif; font-size: 9.3pt; line-height: 1.5; color: #33425b; margin: 0; }
+  h1, h2, h3 { color: #0a2540; margin: 0; }
+
+  #letterhead { position: running(letterhead); width: 100%; border-bottom: .6pt solid #dfe6f1; padding-bottom: 3mm; font-size: 7.4pt; color: #8b95a5; }
+  #letterhead strong { color: #0a2540; font-size: 8.8pt; letter-spacing: .04em; }
+
+  /* Company watermark. position: fixed makes WeasyPrint repeat it on every page. */
+  .watermark {
+    position: fixed; top: 122mm; left: 0; right: 0; text-align: center;
+    transform: rotate(-30deg); color: rgba(27, 77, 255, .085); font-weight: bold; line-height: 1.05;
+    z-index: 10; pointer-events: none;
+  }
+  .watermark span { display: block; font-size: 46pt; letter-spacing: 5pt; }
+  .watermark small { display: block; font-size: 19pt; letter-spacing: 5pt; margin-top: 2mm; }
+
+  .masthead { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2.4pt solid #1b4dff; padding-bottom: 4.5mm; margin-bottom: 6mm; }
+  .masthead__logo { max-height: 15mm; max-width: 60mm; }
+  .masthead__wordmark { font-size: 17pt; font-weight: bold; color: #0a2540; letter-spacing: .06em; }
+  .masthead__sub { font-size: 8pt; color: #64748b; margin-top: 1mm; }
+  .masthead__contact { text-align: right; font-size: 7.8pt; color: #64748b; line-height: 1.5; }
+  .masthead__contact strong { color: #0a2540; display: block; margin-bottom: 1mm; font-size: 8.4pt; }
+
+  .title-row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 5mm; }
+  .doc-kicker { font-size: 7.6pt; letter-spacing: .2em; text-transform: uppercase; color: #1b4dff; font-weight: bold; margin-bottom: 1.5mm; }
+  .doc-title { font-size: 20pt; line-height: 1.15; }
+  .doc-sub { color: #64748b; font-size: 9.4pt; margin-top: 1.5mm; }
+  .doc-amount { text-align: right; }
+  .doc-amount span { display: block; font-size: 7.4pt; letter-spacing: .14em; text-transform: uppercase; color: #8b95a5; }
+  .doc-amount strong { display: block; font-size: 17pt; color: #0a2540; }
+
+  .panels { display: flex; gap: 5mm; margin-bottom: 6mm; }
+  .panel { flex: 1; border: .6pt solid #dfe6f1; border-radius: 2mm; padding: 3.6mm 4.2mm; background: #fbfcfe; }
+  .panel h3 { font-size: 7.2pt; letter-spacing: .14em; text-transform: uppercase; color: #8b95a5; margin-bottom: 2.2mm; }
+  .panel .org { font-weight: bold; color: #0a2540; font-size: 10.2pt; margin-bottom: .8mm; }
+  .panel .line { margin-bottom: .6mm; font-size: 8.6pt; }
+  .kv { width: 100%; border-collapse: collapse; }
+  .kv td { padding: .55mm 0; vertical-align: top; font-size: 8.4pt; }
+  .kv td:first-child { color: #8b95a5; width: 38%; }
+  .kv td:last-child { color: #0a2540; }
+
+  section { margin-bottom: 6mm; }
+  section h2 { font-size: 10.6pt; padding-bottom: 1.5mm; margin-bottom: 2.6mm; border-bottom: .6pt solid #dfe6f1; }
+  section h2 small { font-weight: normal; color: #8b95a5; font-size: 8pt; margin-left: 2mm; }
+
+  table.items { width: 100%; border-collapse: collapse; }
+  table.items thead th { font-size: 7.2pt; letter-spacing: .1em; text-transform: uppercase; color: #8b95a5; text-align: left; border-bottom: .9pt solid #cfd9e8; padding: 0 2mm 1.8mm 0; }
+  table.items tbody td { padding: 2.2mm 2mm 2.2mm 0; border-bottom: .5pt solid #eef2f8; vertical-align: top; }
+  table.items .num { text-align: right; white-space: nowrap; }
+  table.items .n { color: #8b95a5; width: 6%; font-size: 8pt; }
+  .item-title { color: #0a2540; font-weight: bold; }
+  .item-desc { color: #64748b; font-size: 8pt; margin-top: .6mm; }
+
+  table.totals { width: 72mm; margin-left: auto; margin-top: 3mm; border-collapse: collapse; }
+  table.totals td { padding: 1.3mm 0; font-size: 8.8pt; }
+  table.totals td:last-child { text-align: right; white-space: nowrap; }
+  table.totals tr.grand td { border-top: .9pt solid #0a2540; border-bottom: 2pt double #0a2540; font-weight: bold; font-size: 10.6pt; color: #0a2540; padding: 2mm 0; }
+  table.totals tr.muted td { color: #64748b; }
+
+  .summary { display: flex; gap: 4mm; margin-bottom: 6mm; }
+  .summary div { flex: 1; border-radius: 2mm; padding: 3.4mm 4mm; background: #f3f6ff; border: .6pt solid #d7e1ff; }
+  .summary div.is-main { background: #0a2540; border-color: #0a2540; }
+  .summary span { display: block; font-size: 7.2pt; letter-spacing: .12em; text-transform: uppercase; color: #64748b; }
+  .summary strong { display: block; font-size: 12.5pt; color: #0a2540; margin-top: .8mm; }
+  .summary small { display: block; font-size: 7.6pt; color: #64748b; margin-top: .4mm; }
+  .summary .is-main span, .summary .is-main small { color: #9fb2cc; }
+  .summary .is-main strong { color: #fff; }
+
+  ul.clean { margin: 0; padding-left: 4.5mm; }
+  ul.clean li { margin-bottom: 1.2mm; }
+  .bank { border: .6pt solid #dfe6f1; border-radius: 2mm; padding: 3.6mm 4.2mm; background: #fbfcfe; }
+  .accept { border: .6pt solid #dfe6f1; border-radius: 2mm; padding: 4.5mm; background: #fbfcfe; }
+  .sig { display: flex; gap: 8mm; margin-top: 6mm; }
+  .sig div { flex: 1; }
+  .sig .rule { border-bottom: .6pt solid #8b95a5; height: 9mm; }
+  .sig .lbl { font-size: 7.4pt; color: #8b95a5; margin-top: 1.4mm; }
+  .note { font-size: 7.8pt; color: #8b95a5; }
+  .avoid-break { break-inside: avoid; }
+</style>
+</head>
+<body>
+{% with company=site.company_name|default:site.brand_name|default:"Techmiary Technology Concepts" %}<div class="watermark" aria-hidden="true">{% for word in company.split %}{% if forloop.first %}<span>{{ word|upper }}</span><small>{% else %}{{ word|upper }} {% endif %}{% if forloop.last %}</small>{% endif %}{% endfor %}</div>{% endwith %}
+
+<div id="letterhead"><strong>{{ site.company_name|default:site.brand_name|default:"Techmiary" }}</strong> &nbsp;·&nbsp; Quotation {{ q.reference }} &nbsp;·&nbsp; {{ q.school_name }}</div>
+
+<div class="masthead">
+  <div>
+    {% if logo_src %}<img class="masthead__logo" src="{{ logo_src }}" alt="{{ site.brand_name }}">{% else %}<div class="masthead__wordmark">{{ site.brand_name|default:"TECHMIARY" }}</div>{% endif %}
+    {% if site.company_name %}<div class="masthead__sub">{{ site.company_name }}</div>{% endif %}
+  </div>
+  <div class="masthead__contact">
+    <strong>{{ site.legal_name|default:site.company_name }}</strong>
+    {% if site.address %}{{ site.address|linebreaksbr }}<br>{% endif %}
+    {% if site.phone %}{{ site.phone }}{% if site.secondary_phone %} · {{ site.secondary_phone }}{% endif %}<br>{% endif %}
+    {% if site.sales_email %}{{ site.sales_email }}<br>{% elif site.email %}{{ site.email }}<br>{% endif %}
+    {% if site.website_url %}{{ site.website_url|cut:"https://"|cut:"http://" }}{% endif %}
+  </div>
+</div>
+
+<div class="title-row">
+  <div>
+    <div class="doc-kicker">Quotation · {{ q.reference }}</div>
+    <h1 class="doc-title">School Management System</h1>
+    <div class="doc-sub">{{ q.get_deployment_display }}{% if q.student_count %} · {{ q.student_count|intcomma }} student{{ q.student_count|pluralize }}{% endif %}{% if q.campus_count > 1 %} · {{ q.campus_count }} campuses{% endif %}</div>
+  </div>
+  <div class="doc-amount"><span>One-off total</span><strong>{{ q.currency_symbol }}{{ q.one_off_total|floatformat:2|intcomma }}</strong></div>
+</div>
+
+<div class="panels">
+  <div class="panel">
+    <h3>Prepared for</h3>
+    <div class="org">{{ q.school_name }}</div>
+    <div class="line">{{ q.contact_name }}{% if q.contact_role %}, {{ q.contact_role }}{% endif %}</div>
+    {% if q.contact_phone %}<div class="line">{{ q.contact_phone }}</div>{% endif %}
+    {% if q.contact_email %}<div class="line">{{ q.contact_email }}</div>{% endif %}
+    {% if q.school_address %}<div class="line">{{ q.school_address|linebreaksbr }}</div>{% endif %}
+  </div>
+  <div class="panel">
+    <h3>Quotation details</h3>
+    <table class="kv">
+      <tr><td>Reference</td><td>{{ q.reference }}</td></tr>
+      <tr><td>Date</td><td>{{ q.created_at|date:"j F Y" }}</td></tr>
+      {% if q.valid_until %}<tr><td>Valid until</td><td>{{ q.valid_until|date:"j F Y" }}</td></tr>{% endif %}
+      <tr><td>School type</td><td>{{ q.get_school_type_display }}</td></tr>
+      <tr><td>Delivery</td><td>{{ q.delivery_weeks }} week{{ q.delivery_weeks|pluralize }} from deposit</td></tr>
+      {% if q.prepared_by %}<tr><td>Prepared by</td><td>{{ q.prepared_by.get_full_name|default:q.prepared_by.get_username }}</td></tr>{% endif %}
+    </table>
+  </div>
+</div>
+
+{% if q.one_off_lines %}
+<section>
+  <h2>One-off setup <small>paid once</small></h2>
+  <table class="items">
+    <thead><tr><th class="n">#</th><th style="width:52%">Item</th><th class="num" style="width:12%">Qty</th><th class="num" style="width:15%">Unit price</th><th class="num" style="width:15%">Amount</th></tr></thead>
+    <tbody>
+      {% for l in q.one_off_lines %}
+        <tr class="avoid-break">
+          <td class="n">{{ forloop.counter }}</td>
+          <td><div class="item-title">{{ l.title }}</div>{% if l.description %}<div class="item-desc">{{ l.description }}</div>{% endif %}</td>
+          <td class="num">{{ l.quantity_label }}</td>
+          <td class="num">{{ q.currency_symbol }}{{ l.unit_price|floatformat:2|intcomma }}</td>
+          <td class="num">{{ q.currency_symbol }}{{ l.line_total|floatformat:2|intcomma }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <table class="totals avoid-break">
+    <tr><td>Subtotal</td><td>{{ q.currency_symbol }}{{ q.one_off_subtotal|floatformat:2|intcomma }}</td></tr>
+    {% if q.discount_percent %}<tr class="muted"><td>Discount ({{ q.discount_label }}%)</td><td>−{{ q.currency_symbol }}{{ q.discount_amount|floatformat:2|intcomma }}</td></tr>{% endif %}
+    {% if q.tax_percent %}<tr class="muted"><td>VAT ({{ q.tax_label }}%)</td><td>{{ q.currency_symbol }}{{ q.one_off_tax|floatformat:2|intcomma }}</td></tr>{% endif %}
+    <tr class="grand"><td>One-off total</td><td>{{ q.currency_symbol }}{{ q.one_off_total|floatformat:2|intcomma }}</td></tr>
+    {% if q.deposit_percent %}
+      <tr class="muted"><td>Deposit to begin ({{ q.deposit_label }}%)</td><td>{{ q.currency_symbol }}{{ q.deposit_amount|floatformat:2|intcomma }}</td></tr>
+      <tr class="muted"><td>Balance on handover</td><td>{{ q.currency_symbol }}{{ q.balance_amount|floatformat:2|intcomma }}</td></tr>
+    {% endif %}
+  </table>
+</section>
+{% endif %}
+
+{% if q.termly_lines or q.yearly_lines %}
+<section class="avoid-break">
+  <h2>Recurring charges <small>after the system goes live</small></h2>
+  <table class="items">
+    <thead><tr><th class="n">#</th><th style="width:44%">Item</th><th style="width:14%">Billed</th><th class="num" style="width:12%">Qty</th><th class="num" style="width:12%">Rate</th><th class="num" style="width:12%">Amount</th></tr></thead>
+    <tbody>
+      {% for l in q.termly_lines %}
+        <tr><td class="n">{{ forloop.counter }}</td>
+          <td><div class="item-title">{{ l.title }}</div>{% if l.description %}<div class="item-desc">{{ l.description }}</div>{% endif %}</td>
+          <td>Every term</td>
+          <td class="num">{{ l.quantity_label }}</td>
+          <td class="num">{{ q.currency_symbol }}{{ l.unit_price|floatformat:2|intcomma }}</td>
+          <td class="num">{{ q.currency_symbol }}{{ l.line_total|floatformat:2|intcomma }}</td></tr>
+      {% endfor %}
+      {% for l in q.yearly_lines %}
+        <tr><td class="n">{{ q.termly_lines|length|add:forloop.counter }}</td>
+          <td><div class="item-title">{{ l.title }}</div>{% if l.description %}<div class="item-desc">{{ l.description }}</div>{% endif %}</td>
+          <td>Every year</td>
+          <td class="num">{{ l.quantity_label }}</td>
+          <td class="num">{{ q.currency_symbol }}{{ l.unit_price|floatformat:2|intcomma }}</td>
+          <td class="num">{{ q.currency_symbol }}{{ l.line_total|floatformat:2|intcomma }}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <table class="totals">
+    {% if q.termly_lines %}<tr class="grand"><td>Per term{% if q.tax_percent %} (incl. VAT){% endif %}</td><td>{{ q.currency_symbol }}{{ q.termly_total|floatformat:2|intcomma }}</td></tr>{% endif %}
+    {% if q.yearly_lines %}<tr class="grand"><td>Per year{% if q.tax_percent %} (incl. VAT){% endif %}</td><td>{{ q.currency_symbol }}{{ q.yearly_total|floatformat:2|intcomma }}</td></tr>{% endif %}
+  </table>
+</section>
+
+<div class="summary avoid-break">
+  <div><span>One-off setup</span><strong>{{ q.currency_symbol }}{{ q.one_off_total|floatformat:2|intcomma }}</strong><small>Deposit {{ q.currency_symbol }}{{ q.deposit_amount|floatformat:2|intcomma }}</small></div>
+  {% if q.termly_lines %}<div><span>Each term</span><strong>{{ q.currency_symbol }}{{ q.termly_total|floatformat:2|intcomma }}</strong>{% if q.student_count %}<small>≈ {{ q.currency_symbol }}{{ q.per_student_termly_cost|floatformat:2|intcomma }} per student</small>{% endif %}</div>{% endif %}
+  <div class="is-main"><span>First session total</span><strong>{{ q.currency_symbol }}{{ q.first_year_total|floatformat:2|intcomma }}</strong><small>Setup + 3 terms{% if q.yearly_lines %} + 1 year{% endif %}</small></div>
+</div>
+{% endif %}
+
+{% if q.client_notes %}
+<section class="avoid-break"><h2>Notes</h2>{{ q.client_notes|linebreaks }}</section>
+{% endif %}
+
+{% if q.payment_terms %}
+<section class="avoid-break">
+  <h2>Payment terms</h2>
+  <ul class="clean">{% for line in q.payment_terms.splitlines %}{% if line.strip %}<li>{{ line }}</li>{% endif %}{% endfor %}</ul>
+</section>
+{% endif %}
+
+{% if site.bank_account_number %}
+<section class="avoid-break">
+  <h2>How to pay</h2>
+  <div class="bank">
+    <table class="kv">
+      {% if site.bank_name %}<tr><td>Bank</td><td>{{ site.bank_name }}</td></tr>{% endif %}
+      {% if site.bank_account_name %}<tr><td>Account name</td><td>{{ site.bank_account_name }}</td></tr>{% endif %}
+      <tr><td>Account number</td><td><strong>{{ site.bank_account_number }}</strong></td></tr>
+      <tr><td>Payment reference</td><td>{{ q.reference }}</td></tr>
+    </table>
+  </div>
+</section>
+{% endif %}
+
+<section class="avoid-break">
+  <h2>Acceptance</h2>
+  <div class="accept">
+    <p style="margin:0">
+      To accept, sign below and return a copy to
+      {% if site.sales_email %}{{ site.sales_email }}{% elif site.email %}{{ site.email }}{% else %}us{% endif %}{% if site.phone %} or call {{ site.phone }}{% endif %}.
+      {% if q.valid_until %}Prices are held until <strong>{{ q.valid_until|date:"j F Y" }}</strong>.{% endif %}
+    </p>
+    <div class="sig">
+      <div><div class="rule"></div><div class="lbl">Signed for {{ q.school_name }}</div></div>
+      <div><div class="rule"></div><div class="lbl">Name and position</div></div>
+      <div style="flex:.6"><div class="rule"></div><div class="lbl">Date</div></div>
+    </div>
+  </div>
+  <p class="note" style="margin-top:3mm">
+    Prepared by {{ site.legal_name|default:site.company_name|default:site.brand_name }}.
+    {% if site.registration_number %}Business name registration No. {{ site.registration_number }}.{% endif %}
+    All amounts are in {{ q.get_currency_display }}.
+  </p>
+</section>
+</body>
+</html>

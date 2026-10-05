@@ -18,11 +18,16 @@ from django.views.generic import DetailView, ListView, TemplateView, View
 from careers.models import JobApplication
 from contact.models import ContactMessage, NewsletterSubscriber, QuoteRequest
 from core.models import SiteSettings
-from proposals.models import Proposal
+from proposals.models import PriceListItem, Proposal, SchoolQuotation
 
 from .access import DashboardAccessMixin
 from .forms import (
+    AddPriceItemsForm,
     CompanyProfileForm,
+    PriceListFormSet,
+    QuotationForm,
+    QuotationLineFormSet,
+    QuotationStartForm,
     ContactStatusForm,
     DashboardLoginForm,
     ProposalForm,
@@ -353,3 +358,241 @@ class CompanyProfileView(DashboardAccessMixin, View):
         return render(request, self.template_name, {
             "site_settings": site, "form": form,
         })
+
+
+# ----------------------------------------------------- school quotations ---
+class QuotationListView(DashboardAccessMixin, ListView):
+    template_name = "dashboard/quotation_list.html"
+    context_object_name = "quotations"
+    paginate_by = 20
+    required_permission = "proposals.view_schoolquotation"
+
+    def get_queryset(self):
+        qs = SchoolQuotation.objects.prefetch_related("lines")
+        self.status = self.request.GET.get("status") or ""
+        self.query = (self.request.GET.get("q") or "").strip()
+        if self.status:
+            qs = qs.filter(status=self.status)
+        if self.query:
+            qs = qs.filter(
+                Q(reference__icontains=self.query)
+                | Q(school_name__icontains=self.query)
+                | Q(contact_name__icontains=self.query)
+            )
+        return qs
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx.update({
+            "status_choices": SchoolQuotation.STATUS_CHOICES,
+            "active_status": self.status,
+            "query": self.query,
+            "unpriced_count": PriceListItem.objects.filter(
+                is_active=True, unit_price__lte=0
+            ).count(),
+        })
+        return ctx
+
+
+class QuotationCreateView(DashboardAccessMixin, View):
+    """
+    Start a quotation: the school's details and a tick-list of what to include.
+
+    The ticked price-list items become the quotation's lines at today's
+    prices. ``?from_request=<id>`` prefills the school from a website quote
+    request, so an enquiry becomes a quotation without retyping.
+    """
+
+    required_permission = "proposals.add_schoolquotation"
+    template_name = "dashboard/quotation_start.html"
+
+    def source_request(self, request):
+        pk = request.GET.get("from_request") or request.POST.get("from_request")
+        if pk and str(pk).isdigit():
+            return QuoteRequest.objects.filter(pk=pk).first()
+        return None
+
+    def render_form(self, request, form, source):
+        return render(request, self.template_name, {
+            "form": form, "source": source,
+            "unpriced_count": PriceListItem.objects.filter(
+                is_active=True, unit_price__lte=0
+            ).count(),
+        })
+
+    def get(self, request):
+        source = self.source_request(request)
+        initial = {}
+        if source:
+            initial = {
+                "school_name": source.organisation,
+                "contact_name": source.contact_name,
+                "contact_email": source.email,
+                "contact_phone": source.phone,
+            }
+        return self.render_form(request, QuotationStartForm(initial=initial), source)
+
+    def post(self, request):
+        source = self.source_request(request)
+        form = QuotationStartForm(request.POST)
+        if not form.is_valid():
+            messages.error(request, "Please correct the highlighted fields.")
+            return self.render_form(request, form, source)
+        quotation = form.save(commit=False)
+        quotation.prepared_by = request.user
+        quotation.source_request = source
+        quotation.save()
+        quotation.add_price_items(form.cleaned_data["items"].order_by(
+            "group", "display_order", "name"
+        ))
+        messages.success(
+            request,
+            f"{quotation.reference} created for {quotation.school_name}. "
+            "Adjust quantities and prices below, then download the PDF.",
+        )
+        return redirect("dashboard:quotation_edit", pk=quotation.pk)
+
+
+class QuotationEditView(DashboardAccessMixin, View):
+    """The quotation editor: school, lines and terms on one page, with totals."""
+
+    required_permission = "proposals.change_schoolquotation"
+    template_name = "dashboard/quotation_edit.html"
+
+    def get_object(self, pk):
+        return get_object_or_404(SchoolQuotation.objects.prefetch_related("lines"), pk=pk)
+
+    def render_form(self, request, quotation, form=None, lines=None):
+        used = {l.price_item_id for l in quotation.lines.all() if l.price_item_id}
+        return render(request, self.template_name, {
+            "q": quotation,
+            "form": form or QuotationForm(instance=quotation),
+            "lines": lines or QuotationLineFormSet(instance=quotation),
+            "available_items": PriceListItem.objects.filter(is_active=True).exclude(pk__in=used),
+        })
+
+    def get(self, request, pk):
+        return self.render_form(request, self.get_object(pk))
+
+    def post(self, request, pk):
+        quotation = self.get_object(pk)
+        form = QuotationForm(request.POST, instance=quotation)
+        lines = QuotationLineFormSet(request.POST, instance=quotation)
+        if form.is_valid() and lines.is_valid():
+            wants_issue = form.cleaned_data["status"] in (
+                SchoolQuotation.STATUS_SENT, SchoolQuotation.STATUS_ACCEPTED
+            )
+            form.save()
+            lines.save()
+            quotation = self.get_object(pk)
+            problems = quotation.issue_problems
+            if wants_issue and problems:
+                quotation.status = SchoolQuotation.STATUS_DRAFT
+                quotation.save(update_fields=["status"])
+                messages.error(
+                    request,
+                    "Saved, but kept as a draft — it is not ready to send. " + " ".join(problems),
+                )
+                return redirect("dashboard:quotation_edit", pk=pk)
+            messages.success(request, f"{quotation.reference} saved.")
+            if "_download" in request.POST:
+                return redirect("proposals:quotation_pdf", pk=pk)
+            return redirect("dashboard:quotation_edit", pk=pk)
+        messages.error(request, "Please correct the highlighted fields.")
+        return self.render_form(request, quotation, form, lines)
+
+
+class QuotationAddItemsView(DashboardAccessMixin, View):
+    required_permission = "proposals.change_schoolquotation"
+
+    def post(self, request, pk):
+        quotation = get_object_or_404(SchoolQuotation, pk=pk)
+        form = AddPriceItemsForm(request.POST)
+        if form.is_valid():
+            items = form.cleaned_data["items"].order_by("group", "display_order", "name")
+            quotation.add_price_items(items)
+            messages.success(request, f"Added {items.count()} line(s) at current prices.")
+        else:
+            messages.error(request, "Tick at least one item to add.")
+        return redirect("dashboard:quotation_edit", pk=pk)
+
+
+class QuotationStatusView(DashboardAccessMixin, View):
+    """Move a quotation along; refuses to mark one sent while it is incomplete."""
+
+    required_permission = "proposals.change_schoolquotation"
+
+    def post(self, request, pk):
+        quotation = get_object_or_404(
+            SchoolQuotation.objects.prefetch_related("lines"), pk=pk
+        )
+        status = request.POST.get("status")
+        if status not in {key for key, _ in SchoolQuotation.STATUS_CHOICES}:
+            messages.error(request, "Unknown status.")
+        elif status in (SchoolQuotation.STATUS_SENT, SchoolQuotation.STATUS_ACCEPTED) \
+                and quotation.issue_problems:
+            messages.error(
+                request, f"{quotation.reference} is not ready to send. "
+                + " ".join(quotation.issue_problems),
+            )
+        else:
+            quotation.status = status
+            quotation.save()
+            messages.success(
+                request,
+                f"{quotation.reference} marked as {quotation.get_status_display().lower()}.",
+            )
+        return redirect(request.POST.get("next") or "dashboard:quotation_list")
+
+
+class QuotationDuplicateView(DashboardAccessMixin, View):
+    """Copy a quotation — e.g. a revised offer — as a new draft with its own reference."""
+
+    required_permission = "proposals.add_schoolquotation"
+
+    def post(self, request, pk):
+        original = get_object_or_404(SchoolQuotation.objects.prefetch_related("lines"), pk=pk)
+        lines = list(original.lines.all())
+        copy = original
+        copy.pk = None
+        copy.reference = ""
+        copy.status = SchoolQuotation.STATUS_DRAFT
+        copy.sent_at = None
+        copy.valid_until = None
+        copy.prepared_by = request.user
+        copy._state.adding = True
+        copy.save()
+        for line in lines:
+            line.pk = None
+            line.quotation = copy
+        copy.lines.model.objects.bulk_create(lines)
+        messages.success(request, f"Copied to {copy.reference}. The original is unchanged.")
+        return redirect("dashboard:quotation_edit", pk=copy.pk)
+
+
+class PriceListView(DashboardAccessMixin, View):
+    """Every price on one page. Changes affect new quotation lines only."""
+
+    required_permission = "proposals.change_pricelistitem"
+    template_name = "dashboard/price_list.html"
+
+    def render_form(self, request, formset=None):
+        return render(request, self.template_name, {
+            "formset": formset or PriceListFormSet(queryset=PriceListItem.objects.all()),
+        })
+
+    def get(self, request):
+        return self.render_form(request)
+
+    def post(self, request):
+        formset = PriceListFormSet(request.POST, queryset=PriceListItem.objects.all())
+        if formset.is_valid():
+            formset.save()
+            messages.success(
+                request,
+                "Price list saved. New quotation lines use these prices; quotations "
+                "already written keep the prices they were given.",
+            )
+            return redirect("dashboard:price_list")
+        messages.error(request, "Please correct the highlighted rows.")
+        return self.render_form(request, formset)

@@ -2,6 +2,12 @@
 {% block title %}{{ quote.project_title }}{% endblock %}
 {% block heading %}{{ quote.project_title }}{% endblock %}
 {% block subheading %}<p class="dash-sub">{{ quote.created_at|date:"j F Y, H:i" }}</p>{% endblock %}
+{% block actions %}
+  {% with existing=quote.school_quotations.all %}
+    {% for sq in existing %}<a class="dash-btn" href="{% url 'dashboard:quotation_edit' sq.pk %}">{{ sq.reference }}</a>{% endfor %}
+  {% endwith %}
+  <a class="dash-btn dash-btn--primary" href="{% url 'dashboard:quotation_new' %}?from_request={{ quote.pk }}">Create school quotation</a>
+{% endblock %}
 {% block content %}
 <div class="dash-grid dash-grid--sidebar">
   <section class="dash-card">

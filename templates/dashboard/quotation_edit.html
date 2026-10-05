@@ -1,0 +1,161 @@
+{% extends "dashboard/base.html" %}
+{% load humanize dashboard_tags %}
+{% block title %}{{ q.reference }}{% endblock %}
+{% block heading %}{{ q.reference }}{% endblock %}
+{% block subheading %}
+  <p class="dash-sub">{{ q.school_name }} · <span class="dash-badge dash-badge--{{ q.status }}">{{ q.get_status_display }}</span>{% if q.source_request %} · from website request <a href="{% url 'dashboard:quote_detail' q.source_request.pk %}">#{{ q.source_request.pk }}</a>{% endif %}</p>
+{% endblock %}
+{% block actions %}
+  <a class="dash-btn" href="{% url 'proposals:quotation_pdf' q.pk %}" target="_blank" rel="noopener">Preview PDF</a>
+  <form method="post" action="{% url 'dashboard:quotation_duplicate' q.pk %}" class="dash-inline-form">
+    {% csrf_token %}
+    <button class="dash-btn" type="submit">Duplicate</button>
+  </form>
+  <form method="post" action="{% url 'dashboard:quotation_status' q.pk %}" class="dash-inline-form">
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ request.path }}">
+    <select class="dash-select dash-select--sm" name="status" aria-label="Status">
+      {% for value, label in q.STATUS_CHOICES %}
+        <option value="{{ value }}" {% if q.status == value %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+    <button class="dash-btn dash-btn--sm" type="submit">Set status</button>
+  </form>
+{% endblock %}
+
+{% block content %}
+{% with problems=q.issue_problems %}
+  {% if problems %}
+    <div class="dash-alert dash-alert--top">
+      <strong>Not ready to send yet</strong>
+      <ul>{% for p in problems %}<li>{{ p }}</li>{% endfor %}</ul>
+      <p class="dash-help">Until these are fixed the quotation stays a draft.</p>
+    </div>
+  {% endif %}
+{% endwith %}
+
+<div class="dash-grid dash-grid--2 dash-quote-top">
+    <section class="dash-card">
+      <h2>Totals</h2>
+      <dl class="dash-kv dash-kv--totals">
+        <dt>One-off subtotal</dt><dd>{{ q.currency_symbol }}{{ q.one_off_subtotal|floatformat:2|intcomma }}</dd>
+        {% if q.discount_percent %}<dt>Discount ({{ q.discount_label }}%)</dt><dd>−{{ q.currency_symbol }}{{ q.discount_amount|floatformat:2|intcomma }}</dd>{% endif %}
+        {% if q.tax_percent %}<dt>VAT ({{ q.tax_label }}%)</dt><dd>{{ q.currency_symbol }}{{ q.one_off_tax|floatformat:2|intcomma }}</dd>{% endif %}
+        <dt class="is-total">One-off total</dt><dd class="is-total">{{ q.currency_symbol }}{{ q.one_off_total|floatformat:2|intcomma }}</dd>
+        <dt>Deposit ({{ q.deposit_label }}%)</dt><dd>{{ q.currency_symbol }}{{ q.deposit_amount|floatformat:2|intcomma }}</dd>
+        <dt>Balance on handover</dt><dd>{{ q.currency_symbol }}{{ q.balance_amount|floatformat:2|intcomma }}</dd>
+      </dl>
+      {% if q.termly_lines or q.yearly_lines %}
+        <dl class="dash-kv dash-kv--totals dash-mt-sm">
+          {% if q.termly_lines %}<dt>Per term</dt><dd>{{ q.currency_symbol }}{{ q.termly_total|floatformat:2|intcomma }}</dd>
+            {% if q.student_count %}<dt class="dash-dim">≈ per student, per term</dt><dd class="dash-dim">{{ q.currency_symbol }}{{ q.per_student_termly_cost|floatformat:2|intcomma }}</dd>{% endif %}
+          {% endif %}
+          {% if q.yearly_lines %}<dt>Per year</dt><dd>{{ q.currency_symbol }}{{ q.yearly_total|floatformat:2|intcomma }}</dd>{% endif %}
+          <dt class="is-total">First session total</dt><dd class="is-total">{{ q.currency_symbol }}{{ q.first_year_total|floatformat:2|intcomma }}</dd>
+        </dl>
+        <p class="dash-help">First session = one-off + three terms + one year.</p>
+      {% endif %}
+      <p class="dash-help">Totals refresh when you save.</p>
+    </section>
+
+    {% if available_items %}
+      <section class="dash-card">
+        <h2>Add from price list</h2>
+        <form method="post" action="{% url 'dashboard:quotation_add_items' q.pk %}">
+          {% csrf_token %}
+          <div class="dash-picks dash-picks--compact">
+            {% for item in available_items %}
+              <label class="dash-pick {% if not item.is_priced %}is-unpriced{% endif %}">
+                <input type="checkbox" name="items" value="{{ item.pk }}">
+                <span class="dash-pick__body"><strong>{{ item.name }}</strong></span>
+                <span class="dash-pick__price">{% if item.is_priced %}₦{{ item.unit_price|floatformat:0|intcomma }}{% else %}No price{% endif %}</span>
+              </label>
+            {% endfor %}
+          </div>
+          <button class="dash-btn dash-btn--block" type="submit">Add selected</button>
+          <p class="dash-help">Save your edits first — adding reloads the page.</p>
+        </form>
+      </section>
+    {% endif %}
+</div>
+
+  <div>
+    <form method="post" novalidate id="quotation-form">
+      {% csrf_token %}
+
+      <section class="dash-card">
+        <h2>The school</h2>
+        <div class="dash-form-grid">
+          {% for field in form %}
+            {% if field|in_group:"school_name contact_name contact_role contact_email contact_phone school_type student_count campus_count deployment school_address" %}
+              <div class="dash-field {% if field.name == 'school_address' %}dash-field--wide{% endif %}">
+                <label class="dash-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}<p class="dash-help">{{ field.help_text }}</p>{% endif %}
+                {% if field.errors %}<p class="dash-field-error">{{ field.errors|first }}</p>{% endif %}
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </section>
+
+      <section class="dash-card">
+        <h2>Lines</h2>
+        <p class="dash-help">Per-student lines are multiplied by the student count automatically — their quantity box is ignored. Tick Del to remove a row; fill the blank row to add a custom line.</p>
+        {{ lines.management_form }}
+        {% if lines.non_form_errors %}<p class="dash-field-error">{{ lines.non_form_errors|first }}</p>{% endif %}
+        <div class="dash-table-scroll">
+          <table class="dash-table dash-table--form dash-table--lines">
+            <thead><tr><th>Item</th><th>Billing</th><th>Qty</th><th>Unit</th><th>Unit price (₦)</th><th>Order</th><th>Del</th></tr></thead>
+            <tbody>
+              {% for f in lines %}
+                <tr class="{% if f.instance.pk and not f.instance.unit_price %}is-unpriced{% endif %}">
+                  {{ f.id }}
+                  <td>{{ f.title }}{{ f.description }}{% for e in f.errors.values %}<p class="dash-field-error">{{ e|first }}</p>{% endfor %}</td>
+                  <td class="dash-cell-md">{{ f.billing }}</td>
+                  <td class="dash-cell-xs">{{ f.quantity }}</td>
+                  <td class="dash-cell-sm">{{ f.unit }}</td>
+                  <td class="dash-cell-price">{{ f.unit_price }}</td>
+                  <td class="dash-cell-xs">{{ f.display_order }}</td>
+                  <td class="dash-cell-xs">{% if f.instance.pk %}{{ f.DELETE }}{% endif %}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="dash-card">
+        <h2>Terms</h2>
+        <div class="dash-form-grid">
+          {% for field in form %}
+            {% if field|in_group:"status currency discount_percent tax_percent deposit_percent delivery_weeks valid_until" %}
+              <div class="dash-field">
+                <label class="dash-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}<p class="dash-help">{{ field.help_text }}</p>{% endif %}
+                {% if field.errors %}<p class="dash-field-error">{{ field.errors|first }}</p>{% endif %}
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+        {% for field in form %}
+          {% if field|in_group:"payment_terms client_notes internal_notes" %}
+            <div class="dash-field">
+              <label class="dash-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+              {{ field }}
+              {% if field.help_text %}<p class="dash-help">{{ field.help_text }}</p>{% endif %}
+            </div>
+          {% endif %}
+        {% endfor %}
+      </section>
+
+      <div class="dash-sticky-actions">
+        <button class="dash-btn dash-btn--primary" type="submit">Save</button>
+        <button class="dash-btn" type="submit" name="_download" value="1">Save &amp; download PDF</button>
+        <a class="dash-link" href="{% url 'dashboard:quotation_list' %}">Back to quotations</a>
+      </div>
+    </form>
+  </div>
+
+{% endblock %}
