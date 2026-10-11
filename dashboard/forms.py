@@ -1,4 +1,5 @@
 """Forms used by the staff dashboard."""
+import re
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 from django.forms import inlineformset_factory, modelformset_factory
@@ -327,3 +328,155 @@ PriceListFormSet = modelformset_factory(
         "billing": forms.Select(attrs={"class": "dash-select"}),
     },
 )
+
+
+# ---------------------------------------------------------- question bank ---
+from django.utils.text import slugify  # noqa: E402
+
+from questionnaires.models import Question, QuestionSection  # noqa: E402
+
+QUESTION_CODE_RE = r"^[A-Za-z0-9_-]{1,12}$"
+
+
+def _lines(text):
+    return [line.strip() for line in (text or "").splitlines() if line.strip()]
+
+
+class QuestionSectionForm(forms.ModelForm):
+    class Meta:
+        model = QuestionSection
+        fields = ["code", "title", "handled_by", "display_order", "is_active"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        style_fields(self)
+
+    def clean_code(self):
+        code = self.cleaned_data["code"].strip().upper()
+        if not re.match(r"^[A-Z0-9]{1,4}$", code):
+            raise forms.ValidationError("Use 1–4 letters or digits, e.g. Y.")
+        return code
+
+
+class QuestionForm(forms.ModelForm):
+    """
+    The question editor. Options, table rows and table columns are edited as
+    plain lines, then stored in the shape the questionnaire page reads.
+    """
+
+    options_text = forms.CharField(
+        label="Options", required=False, widget=forms.Textarea(attrs={"rows": 6}),
+        help_text="One per line. “Other” is added automatically unless you tick “No Other option”.",
+    )
+    grid_rows_text = forms.CharField(
+        label="Table rows", required=False, widget=forms.Textarea(attrs={"rows": 6}),
+        help_text="One row per line, e.g. Physics lab.",
+    )
+    grid_columns_text = forms.CharField(
+        label="Table columns", required=False, widget=forms.Textarea(attrs={"rows": 5}),
+        help_text=(
+            "One column per line: Label | type | options. Types: yn, one, many, num, text. "
+            "Options (for one / many) are separated by commas. Add “| no other” to hide Other. "
+            "Example: Sections that use it | many | Nursery & Primary, Secondary, Islamic | no other"
+        ),
+    )
+
+    class Meta:
+        model = Question
+        fields = ["section", "code", "qtype", "text", "ask_who", "per_section", "long_answer",
+                  "no_other", "accept", "single_file", "display_order", "is_active"]
+        labels = {"no_other": "No Other option", "ask_who": "Ask (optional)", "accept": "Allowed files"}
+        widgets = {"text": forms.TextInput()}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        q = self.instance
+        if q.pk:
+            self.fields["options_text"].initial = "\n".join(q.options or [])
+            self.fields["grid_rows_text"].initial = "\n".join(q.grid_rows or [])
+            self.fields["grid_columns_text"].initial = "\n".join(
+                " | ".join(
+                    [c.get("label", ""), c.get("type", "text")]
+                    + ([", ".join(c.get("o") or [])] if c.get("o") else [])
+                    + (["no other"] if c.get("noOther") else [])
+                )
+                for c in (q.grid_columns or [])
+            )
+        self.fields["accept"].help_text = "File questions only. Leave blank for any document, or image/* for images."
+        style_fields(self)
+
+    def clean_code(self):
+        code = self.cleaned_data["code"].strip()
+        if not re.match(QUESTION_CODE_RE, code):
+            raise forms.ValidationError("Use letters, digits, - or _ only (no spaces), e.g. A22.")
+        return code
+
+    def _parse_columns(self, text):
+        old = {c.get("label"): c.get("k") for c in (self.instance.grid_columns or [])}
+        columns, used = [], set()
+        for n, line in enumerate(_lines(text), start=1):
+            parts = [p.strip() for p in line.split("|")]
+            label = parts[0]
+            ctype = (parts[1].lower() if len(parts) > 1 and parts[1] else "text")
+            if not label:
+                raise forms.ValidationError(f"Column line {n} has no label.")
+            if ctype not in Question.GRID_COLUMN_TYPES:
+                raise forms.ValidationError(f"Column “{label}”: type must be one of yn, one, many, num, text.")
+            extras = parts[2:]
+            no_other = any(p.lower().replace("-", " ") == "no other" for p in extras)
+            option_parts = [p for p in extras if p.lower().replace("-", " ") != "no other"]
+            options = [o.strip() for o in ",".join(option_parts).split(",") if o.strip()]
+            if ctype in Question.CHOICE_TYPES and not options:
+                raise forms.ValidationError(f"Column “{label}” needs options.")
+            # Keep the stored key when the label is unchanged, so answers
+            # already given to this column stay attached to it.
+            key = old.get(label) or slugify(label).replace("-", "_")[:24] or f"c{n}"
+            while key in used:
+                key += "_"
+            used.add(key)
+            col = {"k": key, "label": label, "type": ctype}
+            if ctype in Question.CHOICE_TYPES:
+                col["o"] = options
+            if no_other:
+                col["noOther"] = True
+            columns.append(col)
+        return columns
+
+    def clean(self):
+        data = super().clean()
+        qtype = data.get("qtype")
+        options = _lines(data.get("options_text"))
+        if qtype in Question.CHOICE_TYPES and not options:
+            self.add_error("options_text", "Add at least one option.")
+        if qtype == Question.TYPE_GRID:
+            rows = _lines(data.get("grid_rows_text"))
+            if not rows:
+                self.add_error("grid_rows_text", "Add at least one row.")
+            try:
+                columns = self._parse_columns(data.get("grid_columns_text"))
+            except forms.ValidationError as e:
+                self.add_error("grid_columns_text", e)
+                columns = []
+            if not columns and not self.has_error("grid_columns_text"):
+                self.add_error("grid_columns_text", "Add at least one column.")
+            data["_rows"], data["_columns"] = rows, columns
+        if data.get("per_section") and qtype in (Question.TYPE_GRID, Question.TYPE_FILE):
+            self.add_error("per_section", "Tables and file uploads cannot be asked per section.")
+        data["_options"] = options
+        return data
+
+    def save(self, commit=True):
+        q = super().save(commit=False)
+        data = self.cleaned_data
+        q.options = data.get("_options", []) if q.qtype in Question.CHOICE_TYPES else []
+        if q.qtype == Question.TYPE_GRID:
+            q.grid_rows, q.grid_columns = data.get("_rows", []), data.get("_columns", [])
+        else:
+            q.grid_rows, q.grid_columns = [], []
+        if q.qtype != Question.TYPE_TEXT:
+            q.long_answer = False
+        if q.qtype != Question.TYPE_FILE:
+            q.accept, q.single_file = "", False
+        if commit:
+            q.save()
+        return q

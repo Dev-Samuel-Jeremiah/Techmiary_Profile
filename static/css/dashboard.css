@@ -310,3 +310,31 @@ tr.is-unpriced input[name$="unit_price"] { border-color: #e9b864; }
 .dash-quote-top { align-items: start; margin-bottom: 1.1rem; }
 .dash-quote-top .dash-card { margin-bottom: 0; }
 .dash-cell-price { width: 150px; }
+
+/* ---- Delete & sync --------------------------------------------------------- */
+.dash-btn--danger { color: var(--d-danger); border-color: #f1c4c4; }
+.dash-btn--danger:hover { background: #fdeaea; border-color: var(--d-danger); }
+.dash-btn--danger-solid { background: var(--d-danger); border-color: var(--d-danger); color: #fff; }
+.dash-btn--danger-solid:hover { background: #b91c1c; border-color: #b91c1c; }
+.dash-row-actions { display: flex; gap: .35rem; justify-content: flex-end; }
+.dash-sync-note { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.dash-sync-list { margin: .35rem 0 0; padding-left: 1.1rem; font-size: .84rem; }
+
+/* ---- Questionnaires -------------------------------------------------------- */
+.dash-progress-cell { min-width: 180px; }
+.dash-progress { height: 8px; border-radius: 999px; background: #e7edf6; overflow: hidden; margin: .35rem 0 .3rem; }
+.dash-progress span { display: block; height: 100%; background: var(--d-ok); border-radius: inherit; }
+.dash-qsec { margin-bottom: 1.1rem; }
+.dash-qsec__head { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap; margin-bottom: .6rem; }
+.dash-qsec__head h2 { margin: 0; }
+.dash-qsec__code { color: #c53a3a; margin-right: .35rem; }
+.dash-qrow td { vertical-align: top; }
+.dash-qrow.is-off td { opacity: .55; }
+.dash-qcode { font-weight: 700; color: #c53a3a; white-space: nowrap; }
+.dash-qopts { color: var(--d-muted); font-size: .78rem; margin-top: .2rem; }
+.dash-qtype { font-size: .7rem; text-transform: uppercase; letter-spacing: .06em; color: var(--d-faint); font-weight: 700; white-space: nowrap; }
+.dash-check-row { display: flex; flex-wrap: wrap; gap: .5rem 1.4rem; margin-top: .9rem; }
+.dash-check-row label { display: flex; gap: .45rem; align-items: center; font-size: .86rem; color: var(--d-ink); }
+.dash-check-row input { width: auto; }
+.dash-type-hint { display: none; }
+.dash-filters .dash-input--wide { max-width: 440px; flex: 1; }

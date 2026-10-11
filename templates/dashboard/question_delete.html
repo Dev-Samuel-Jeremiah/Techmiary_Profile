@@ -1,0 +1,15 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Remove {{ question.code }}{% endblock %}
+{% block heading %}Remove {{ question.code }}?{% endblock %}
+{% block content %}
+<section class="dash-card dash-card--narrow">
+  <p><strong>{{ question.text }}</strong></p>
+  <p>It will disappear from every questionnaire.{% if answered %} {{ answered }} school{{ answered|pluralize:" has,s have" }} already answered it; those answers stay in the saved responses, but will no longer show on the page.{% endif %}</p>
+  <p class="dash-help">To hide it for now and keep the option of bringing it back, <a href="{% url 'dashboard:question_edit' question.pk %}">edit it</a> and untick Active instead.</p>
+  <form method="post" class="dash-actions">
+    {% csrf_token %}
+    <button class="dash-btn dash-btn--danger-solid" type="submit">Yes, remove {{ question.code }}</button>
+    <a class="dash-link" href="{% url 'dashboard:question_bank' %}#section-{{ question.section.code }}">Cancel</a>
+  </form>
+</section>
+{% endblock %}

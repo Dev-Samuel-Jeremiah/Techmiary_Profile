@@ -68,6 +68,7 @@ LOCAL_APPS = [
     "blog.apps.BlogConfig",
     "contact.apps.ContactConfig",
     "proposals.apps.ProposalsConfig",
+    "questionnaires.apps.QuestionnairesConfig",
     "dashboard.apps.DashboardConfig",
 ]
 
@@ -244,6 +245,9 @@ MEDIA_URL = "media/"
 # Uploads belong with the database, not in the code directory: they are user
 # data, they are not in version control, and they have to survive a re-clone.
 MEDIA_ROOT = Path(config("MEDIA_ROOT", default=str(DATA_DIR / "media")))
+# Uploads that must never be served directly by the web server (school
+# questionnaire documents). Read only through staff-only views.
+PRIVATE_MEDIA_ROOT = Path(config("PRIVATE_MEDIA_ROOT", default=str(DATA_DIR / "private")))
 
 STORAGES = {
     "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},

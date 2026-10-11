@@ -1,0 +1,94 @@
+{% extends "dashboard/base.html" %}
+{% block title %}{% if question %}Edit {{ question.code }}{% else %}Add question{% endif %}{% endblock %}
+{% block heading %}{% if question %}Edit {{ question.code }}{% else %}Add a question{% endif %}{% endblock %}
+{% block subheading %}<p class="dash-sub">Fill in only the parts that apply to the type you pick.</p>{% endblock %}
+
+{% block content %}
+<form method="post" novalidate>
+  {% csrf_token %}
+  {% if form.non_field_errors %}<div class="dash-msg dash-msg--error">{{ form.non_field_errors|first }}</div>{% endif %}
+
+  <section class="dash-card">
+    <h2>The question</h2>
+    <div class="dash-form-grid">
+      {% for field in form %}
+        {% if field.name == "section" or field.name == "code" or field.name == "qtype" or field.name == "display_order" %}
+          <div class="dash-field">
+            <label class="dash-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.help_text %}<p class="dash-help">{{ field.help_text }}</p>{% endif %}
+            {% if field.errors %}<p class="dash-field-error">{{ field.errors|first }}</p>{% endif %}
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+    {% for field in form %}
+      {% if field.name == "text" or field.name == "ask_who" %}
+        <div class="dash-field">
+          <label class="dash-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% if field.help_text %}<p class="dash-help">{{ field.help_text }}</p>{% endif %}
+          {% if field.errors %}<p class="dash-field-error">{{ field.errors|first }}</p>{% endif %}
+        </div>
+      {% endif %}
+    {% endfor %}
+    <div class="dash-check-row">
+      {% for field in form %}
+        {% if field.name == "per_section" or field.name == "is_active" %}
+          <label>{{ field }} {{ field.label }}</label>
+        {% endif %}
+      {% endfor %}
+    </div>
+    {% if form.per_section.errors %}<p class="dash-field-error">{{ form.per_section.errors|first }}</p>{% endif %}
+    <p class="dash-help">“Per section” asks the question once each for Nursery &amp; Primary, Secondary and Islamic.</p>
+  </section>
+
+  <section class="dash-card">
+    <h2>Pick one / pick any</h2>
+    <div class="dash-field">
+      <label class="dash-label" for="{{ form.options_text.id_for_label }}">{{ form.options_text.label }}</label>
+      {{ form.options_text }}
+      <p class="dash-help">{{ form.options_text.help_text }}</p>
+      {% if form.options_text.errors %}<p class="dash-field-error">{{ form.options_text.errors|first }}</p>{% endif %}
+    </div>
+    <div class="dash-check-row"><label>{{ form.no_other }} {{ form.no_other.label }}</label></div>
+  </section>
+
+  <section class="dash-card">
+    <h2>Table</h2>
+    <div class="dash-grid dash-grid--2">
+      <div class="dash-field">
+        <label class="dash-label" for="{{ form.grid_rows_text.id_for_label }}">{{ form.grid_rows_text.label }}</label>
+        {{ form.grid_rows_text }}
+        <p class="dash-help">{{ form.grid_rows_text.help_text }}</p>
+        {% if form.grid_rows_text.errors %}<p class="dash-field-error">{{ form.grid_rows_text.errors|first }}</p>{% endif %}
+      </div>
+      <div class="dash-field">
+        <label class="dash-label" for="{{ form.grid_columns_text.id_for_label }}">{{ form.grid_columns_text.label }}</label>
+        {{ form.grid_columns_text }}
+        <p class="dash-help">{{ form.grid_columns_text.help_text }}</p>
+        {% if form.grid_columns_text.errors %}<p class="dash-field-error">{{ form.grid_columns_text.errors|first }}</p>{% endif %}
+      </div>
+    </div>
+  </section>
+
+  <section class="dash-card">
+    <h2>Text and file questions</h2>
+    <div class="dash-check-row">
+      <label>{{ form.long_answer }} {{ form.long_answer.label }}</label>
+      <label>{{ form.single_file }} {{ form.single_file.label }}</label>
+    </div>
+    <div class="dash-field">
+      <label class="dash-label" for="{{ form.accept.id_for_label }}">{{ form.accept.label }}</label>
+      {{ form.accept }}
+      <p class="dash-help">{{ form.accept.help_text }}</p>
+    </div>
+  </section>
+
+  <div class="dash-sticky-actions">
+    <button class="dash-btn dash-btn--primary" type="submit">Save question</button>
+    {% if not question %}<button class="dash-btn" type="submit" name="_another" value="1">Save and add another</button>{% endif %}
+    <a class="dash-link" href="{% url 'dashboard:question_bank' %}">Cancel</a>
+  </div>
+</form>
+{% endblock %}

@@ -44,7 +44,12 @@
             <td class="dash-num">{% if q.termly_total %}{{ q.currency_symbol }}{{ q.termly_total|floatformat:2|intcomma }}{% else %}—{% endif %}</td>
             <td class="dash-dim">{% if q.valid_until %}{{ q.valid_until|date:"j M Y" }}{% if q.is_expired %} <span class="dash-badge dash-badge--expired">Expired</span>{% endif %}{% else %}—{% endif %}</td>
             <td><span class="dash-badge dash-badge--{{ q.status }}">{{ q.get_status_display }}</span></td>
-            <td class="dash-num"><a class="dash-btn dash-btn--sm" href="{% url 'proposals:quotation_pdf' q.pk %}" target="_blank" rel="noopener">PDF</a></td>
+            <td class="dash-num">
+              <div class="dash-row-actions">
+                <a class="dash-btn dash-btn--sm" href="{% url 'proposals:quotation_pdf' q.pk %}" target="_blank" rel="noopener">PDF</a>
+                <a class="dash-btn dash-btn--sm dash-btn--danger" href="{% url 'dashboard:quotation_delete' q.pk %}">Delete</a>
+              </div>
+            </td>
           </tr>
         {% endfor %}
       </tbody>

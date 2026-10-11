@@ -1,0 +1,55 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+{% block title %}Questionnaire · {{ response_obj.display_name }}{% endblock %}
+{% block extra_head %}
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bitter:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/questionnaire.css' %}">
+{% endblock %}
+{% block heading %}{{ response_obj.display_name }}{% endblock %}
+{% block subheading %}<p class="dash-sub">School system questionnaire · saves automatically to the control panel</p>{% endblock %}
+{% block actions %}
+  <form method="post" action="{% url 'dashboard:questionnaire_status' response_obj.pk %}" class="dash-inline-form">
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ request.path }}">
+    {% if response_obj.status == "complete" %}
+      <input type="hidden" name="status" value="in_progress">
+      <button class="dash-btn" type="submit">Reopen</button>
+    {% else %}
+      <input type="hidden" name="status" value="complete">
+      <button class="dash-btn" type="submit">Mark complete</button>
+    {% endif %}
+  </form>
+  <a class="dash-btn" href="{% url 'dashboard:quotation_new' %}?from_questionnaire={{ response_obj.pk }}">Start a quotation</a>
+  <a class="dash-link" href="{% url 'dashboard:questionnaire_list' %}">All questionnaires</a>
+{% endblock %}
+
+{% block content %}
+<div class="dash-questionnaire">
+  {{ bank|json_script:"sq-bank" }}
+  {{ sq_config|json_script:"sq-config" }}
+  <div class="sq-app" id="sq-app" data-theme="light">
+    <header class="sq-header">
+      <div class="sq-top">
+        <img class="sq-logo" id="sq-logo" alt="School logo" hidden>
+        <h1 class="sq-title">School System Questionnaire<small id="sq-overall">0 of 0 answered</small></h1>
+        <button type="button" class="sq-btn sq-primary" id="sq-export-btn">Export</button>
+      </div>
+      <nav class="sq-tabs" id="sq-tabs" aria-label="Sections"></nav>
+    </header>
+    <main class="sq-main" id="sq-main"></main>
+    <div class="sq-modal" id="sq-export-modal" role="dialog" aria-modal="true" aria-labelledby="sq-ex-title">
+      <div class="sq-panel">
+        <h3 id="sq-ex-title">Export answers</h3>
+        <p>Excel opens the CSV file directly. The JSON file keeps everything, including notes and the list of attachments.</p>
+        <div class="sq-row">
+          <button type="button" class="sq-btn sq-primary" data-ex="csv">Download for Excel (.csv)</button>
+          <button type="button" class="sq-btn" data-ex="json">Download full data (.json)</button>
+        </div>
+        <p id="sq-ex-msg" role="status"></p>
+        <button type="button" class="sq-btn" id="sq-ex-close">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}<script src="{% static 'js/questionnaire.js' %}" defer></script>{% endblock %}

@@ -722,6 +722,38 @@ class SchoolQuotation(models.Model):
     def is_expired(self):
         return bool(self.valid_until and self.valid_until < timezone.localdate())
 
+    # -- Price-list sync --------------------------------------------------
+    SYNC_FIELDS = ("title", "description", "billing", "unit", "unit_price")
+
+    @property
+    def stale_lines(self):
+        """Lines from the price list whose price or wording has since changed there."""
+        return [l for l in self.lines.all() if l.price_list_changes()]
+
+    @property
+    def can_sync(self):
+        # A quotation the school already holds must not change under them;
+        # revise it as a duplicate instead.
+        return self.status in (self.STATUS_DRAFT, self.STATUS_DECLINED)
+
+    def sync_with_price_list(self):
+        """
+        Bring every price-list line up to the current price list.
+
+        Quantities are the quotation's own and are kept, and custom lines (not
+        from the price list) are never touched. Returns ``(line, changes)``
+        pairs for the lines that changed.
+        """
+        updated = []
+        for line in self.lines.select_related("price_item"):
+            changes = line.price_list_changes()
+            if changes:
+                for field, (_, new) in changes.items():
+                    setattr(line, field, new)
+                line.save(update_fields=list(changes))
+                updated.append((line, changes))
+        return updated
+
     def get_pdf_url(self):
         return reverse("proposals:quotation_pdf", kwargs={"pk": self.pk})
 
@@ -760,6 +792,24 @@ class SchoolQuotationLine(models.Model):
 
     def __str__(self):
         return self.title
+
+    def price_list_changes(self):
+        """
+        ``{field: (current, price_list_value)}`` for fields that differ from
+        the price-list item this line came from. Empty for custom lines.
+        """
+        item = self.price_item
+        if item is None:
+            return {}
+        source = {
+            "title": item.name, "description": item.description, "billing": item.billing,
+            "unit": item.unit, "unit_price": item.unit_price,
+        }
+        return {
+            field: (getattr(self, field), value)
+            for field, value in source.items()
+            if getattr(self, field) != value
+        }
 
     @property
     def is_per_student(self):

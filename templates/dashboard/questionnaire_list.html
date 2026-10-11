@@ -1,0 +1,63 @@
+{% extends "dashboard/base.html" %}
+{% block title %}School questionnaires{% endblock %}
+{% block heading %}School questionnaires{% endblock %}
+{% block subheading %}<p class="dash-sub">{{ paginator.count }} school{{ paginator.count|pluralize }} · {{ question_total }} questions in the bank</p>{% endblock %}
+{% block actions %}
+  <a class="dash-btn" href="{% url 'dashboard:question_bank' %}">Edit questions</a>
+{% endblock %}
+
+{% block content %}
+<section class="dash-card">
+  <h2>Start a new questionnaire</h2>
+  <form method="post" action="{% url 'dashboard:questionnaire_new' %}" class="dash-filters">
+    {% csrf_token %}
+    <input class="dash-input dash-input--wide" type="text" name="school_name" placeholder="School name (optional — question A1 fills it in)" maxlength="200">
+    <button class="dash-btn dash-btn--primary" type="submit">Start questionnaire</button>
+  </form>
+  <p class="dash-help">Answers, notes, uploaded documents and voice notes save to the control panel as you go. Several people can work on the same school, one after another.</p>
+</section>
+
+<section class="dash-card">
+  <form class="dash-filters" method="get">
+    <input class="dash-input" type="search" name="q" value="{{ query }}" placeholder="School name">
+    <button class="dash-btn" type="submit">Search</button>
+    {% if query %}<a class="dash-link" href="{% url 'dashboard:questionnaire_list' %}">Clear</a>{% endif %}
+  </form>
+
+  {% if responses %}
+    <table class="dash-table dash-table--lined">
+      <thead><tr><th>School</th><th>Progress</th><th class="dash-num">Files</th><th>Last saved</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+        {% for r in responses %}
+          <tr>
+            <td><a href="{{ r.get_absolute_url }}"><strong>{{ r.display_name }}</strong></a>
+              <div class="dash-dim">Started by {{ r.created_by.get_username|default:"—" }} · {{ r.created_at|date:"j M Y" }}{% if r.quotation %} · <a href="{% url 'dashboard:quotation_edit' r.quotation.pk %}">{{ r.quotation.reference }}</a>{% endif %}</div></td>
+            <td class="dash-progress-cell">
+              <div class="dash-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ r.percent }}" aria-label="{{ r.percent }}% answered"><span style="width:{{ r.percent }}%"></span></div>
+              <div class="dash-dim">{{ r.answered_count }} of {{ r.question_count }} answered</div>
+            </td>
+            <td class="dash-num">{{ r.file_count }}</td>
+            <td class="dash-dim">{{ r.updated_at|date:"j M Y, H:i" }}</td>
+            <td><span class="dash-badge dash-badge--{% if r.status == 'complete' %}accepted{% else %}sent{% endif %}">{{ r.get_status_display }}</span></td>
+            <td class="dash-num">
+              <div class="dash-row-actions">
+                <a class="dash-btn dash-btn--sm" href="{{ r.get_absolute_url }}">Open</a>
+                <a class="dash-btn dash-btn--sm dash-btn--danger" href="{% url 'dashboard:questionnaire_delete' r.pk %}">Delete</a>
+              </div>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% if is_paginated %}
+      <nav class="dash-pager">
+        {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query|urlencode }}{% endif %}">Previous</a>{% endif %}
+        <span>Page {{ page_obj.number }} of {{ paginator.num_pages }}</span>
+        {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query|urlencode }}{% endif %}">Next</a>{% endif %}
+      </nav>
+    {% endif %}
+  {% else %}
+    <p class="dash-empty">No questionnaires yet. Start one above.</p>
+  {% endif %}
+</section>
+{% endblock %}

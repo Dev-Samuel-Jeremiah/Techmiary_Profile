@@ -1,0 +1,3638 @@
+[
+ {
+  "id": "A",
+  "title": "School profile",
+  "by": "Proprietor / Director, with the heads of each section",
+  "qs": [
+   {
+    "code": "A0",
+    "type": "file",
+    "text": "Upload the school logo.",
+    "accept": "image/*",
+    "single": true
+   },
+   {
+    "code": "A1",
+    "type": "text",
+    "text": "What is the full name of the school?"
+   },
+   {
+    "code": "A2",
+    "type": "text",
+    "text": "What is the school address?"
+   },
+   {
+    "code": "A3",
+    "type": "yn",
+    "text": "Are all three sections on one campus?"
+   },
+   {
+    "code": "A4",
+    "type": "text",
+    "text": "Who is the head of each section?",
+    "per": true
+   },
+   {
+    "code": "A5",
+    "type": "many",
+    "text": "Which classes are in Nursery & Primary?",
+    "o": [
+     "Creche",
+     "Pre-nursery",
+     "Nursery 1",
+     "Nursery 2",
+     "Nursery 3 / KG",
+     "Primary 1",
+     "Primary 2",
+     "Primary 3",
+     "Primary 4",
+     "Primary 5",
+     "Primary 6"
+    ]
+   },
+   {
+    "code": "A6",
+    "type": "one",
+    "text": "How many arms does each Nursery & Primary class have?",
+    "o": [
+     "1",
+     "2",
+     "3",
+     "4",
+     "5 or more",
+     "Varies by class"
+    ]
+   },
+   {
+    "code": "A7",
+    "type": "many",
+    "text": "Which classes are in Secondary?",
+    "o": [
+     "JSS1",
+     "JSS2",
+     "JSS3",
+     "SSS1",
+     "SSS2",
+     "SSS3"
+    ]
+   },
+   {
+    "code": "A8",
+    "type": "one",
+    "text": "How many arms does each Secondary class have?",
+    "o": [
+     "1",
+     "2",
+     "3",
+     "4",
+     "5 or more",
+     "Varies by class"
+    ]
+   },
+   {
+    "code": "A9",
+    "type": "many",
+    "text": "Which SSS streams do you have?",
+    "o": [
+     "Science",
+     "Art",
+     "Commercial",
+     "Technical"
+    ]
+   },
+   {
+    "code": "A10",
+    "type": "many",
+    "text": "Which levels are in the Islamic section?",
+    "o": [
+     "Raudah (nursery)",
+     "Ibtida'i (primary)",
+     "I'dadi (junior)",
+     "Thanawi (senior)",
+     "Tahfiz",
+     "Adult classes"
+    ]
+   },
+   {
+    "code": "A11",
+    "type": "yn",
+    "text": "Can one pupil attend two sections at the same time?"
+   },
+   {
+    "code": "A12",
+    "type": "num",
+    "text": "How many pupils are in each section now?",
+    "per": true
+   },
+   {
+    "code": "A13",
+    "type": "one",
+    "text": "How many pupils do you expect in five years?",
+    "o": [
+     "Under 500",
+     "500–1,000",
+     "1,000–2,000",
+     "2,000–5,000",
+     "Over 5,000"
+    ]
+   },
+   {
+    "code": "A14",
+    "type": "num",
+    "text": "How many staff are in each section?",
+    "per": true
+   },
+   {
+    "code": "A15",
+    "type": "yn",
+    "text": "Do all sections use the same session and terms?"
+   },
+   {
+    "code": "A16",
+    "type": "one",
+    "text": "How many terms are in a session?",
+    "o": [
+     "2",
+     "3"
+    ]
+   },
+   {
+    "code": "A17",
+    "type": "one",
+    "text": "Do you have boarding students?",
+    "o": [
+     "Day only",
+     "Boarding only",
+     "Both day and boarding"
+    ]
+   },
+   {
+    "code": "A18",
+    "type": "yn",
+    "text": "Do you plan to open new branches that will share this system?"
+   },
+   {
+    "code": "A19",
+    "type": "many",
+    "text": "Which bodies do you send reports to?",
+    "o": [
+     "Ministry of Education",
+     "SUBEB",
+     "WAEC",
+     "NECO",
+     "NBAIS",
+     "NABTEB",
+     "JAMB",
+     "None"
+    ]
+   },
+   {
+    "code": "A20",
+    "type": "yn",
+    "text": "Does each section have its own letterhead and stamp?"
+   },
+   {
+    "code": "A21",
+    "type": "file",
+    "text": "Upload a sample letterhead and stamp."
+   }
+  ]
+ },
+ {
+  "id": "B",
+  "title": "Users and roles",
+  "by": "Proprietor and heads of each section",
+  "qs": [
+   {
+    "code": "B0",
+    "type": "grid",
+    "text": "Which roles need the system, and what do they do?",
+    "rows": [
+     "Proprietor / Director",
+     "Principal / Head teacher / Mudir",
+     "Vice principal",
+     "Exam officer",
+     "Form / class teacher",
+     "Subject teacher",
+     "Qur'an / Islamiyya teacher",
+     "Lab attendant / ICT coordinator",
+     "Bursar / accountant",
+     "Secretary / admissions officer",
+     "Librarian",
+     "Nurse",
+     "Counsellor",
+     "Store keeper",
+     "Hostel master / mistress",
+     "Transport officer / driver",
+     "Discipline master",
+     "Gateman / security",
+     "Parent / guardian",
+     "Student"
+    ],
+    "cols": [
+     {
+      "k": "login",
+      "label": "Needs a login?",
+      "type": "yn"
+     },
+     {
+      "k": "secs",
+      "label": "Sections",
+      "type": "many",
+      "o": [
+       "Nursery & Primary",
+       "Secondary",
+       "Islamic"
+      ],
+      "noOther": true
+     },
+     {
+      "k": "tasks",
+      "label": "Main tasks in the system",
+      "type": "text"
+     }
+    ]
+   },
+   {
+    "code": "B1",
+    "type": "yn",
+    "text": "Can one staff member have more than one role?"
+   },
+   {
+    "code": "B2",
+    "type": "yn",
+    "text": "Can one teacher teach in more than one section?"
+   },
+   {
+    "code": "B3",
+    "type": "one",
+    "text": "What should a teacher see?",
+    "o": [
+     "Only their own classes and subjects",
+     "All classes in their section",
+     "Everything"
+    ]
+   },
+   {
+    "code": "B4",
+    "type": "many",
+    "text": "Who can change a score after it is submitted?",
+    "o": [
+     "Subject teacher",
+     "Form teacher",
+     "Exam officer",
+     "Vice principal",
+     "Principal / Head teacher",
+     "Nobody"
+    ]
+   },
+   {
+    "code": "B5",
+    "type": "many",
+    "text": "Who approves result release?",
+    "o": [
+     "Principal / Head teacher",
+     "Mudir",
+     "Exam officer",
+     "Proprietor"
+    ]
+   },
+   {
+    "code": "B6",
+    "type": "many",
+    "text": "Who approves fee discounts and refunds?",
+    "o": [
+     "Bursar",
+     "Principal",
+     "Proprietor"
+    ]
+   },
+   {
+    "code": "B7",
+    "type": "many",
+    "text": "Who approves staff leave?",
+    "o": [
+     "Head of section",
+     "Principal",
+     "Admin officer",
+     "Proprietor"
+    ]
+   },
+   {
+    "code": "B8",
+    "type": "many",
+    "text": "Who approves expenses?",
+    "o": [
+     "Bursar",
+     "Principal",
+     "Proprietor"
+    ]
+   },
+   {
+    "code": "B9",
+    "type": "yn",
+    "text": "Should a parent see all their children with one login?"
+   },
+   {
+    "code": "B10",
+    "type": "one",
+    "text": "Should students have their own login?",
+    "o": [
+     "No student login",
+     "From Primary 4",
+     "From JSS1",
+     "From SSS1",
+     "All pupils"
+    ]
+   },
+   {
+    "code": "B11",
+    "type": "yn",
+    "text": "Should management see one dashboard for all sections?"
+   },
+   {
+    "code": "B12",
+    "type": "yn",
+    "text": "Should the system record who changed what and when?"
+   },
+   {
+    "code": "B13",
+    "type": "yn",
+    "text": "Should admins and the bursar use a second login code (two-step login)?"
+   }
+  ]
+ },
+ {
+  "id": "C",
+  "title": "Morning — arrival, ID cards, assembly and attendance",
+  "by": "Gateman, form teachers and the head of each section",
+  "qs": [
+   {
+    "code": "C1",
+    "type": "time",
+    "text": "What time does the gate open?"
+   },
+   {
+    "code": "C2",
+    "type": "time",
+    "text": "What time does each section start?",
+    "per": true
+   },
+   {
+    "code": "C3",
+    "type": "many",
+    "text": "How do pupils come to school?",
+    "o": [
+     "Parents drop off",
+     "School bus",
+     "Walk",
+     "Private driver",
+     "Boarding"
+    ]
+   },
+   {
+    "code": "C4",
+    "type": "yn",
+    "text": "Do you record when pupils arrive?"
+   },
+   {
+    "code": "C5",
+    "type": "one",
+    "text": "Do pupils have ID cards?",
+    "o": [
+     "Yes, all pupils",
+     "Some sections only",
+     "No"
+    ]
+   },
+   {
+    "code": "C6",
+    "type": "many",
+    "text": "What is on the pupil ID card?",
+    "o": [
+     "Photo",
+     "Name",
+     "Admission number",
+     "Class",
+     "Section",
+     "Blood group",
+     "Parent phone",
+     "QR code / barcode",
+     "Expiry date"
+    ]
+   },
+   {
+    "code": "C7",
+    "type": "one",
+    "text": "Who prints the ID cards?",
+    "o": [
+     "School prints them",
+     "Outside printer",
+     "Not printed"
+    ]
+   },
+   {
+    "code": "C8",
+    "type": "one",
+    "text": "How often are ID cards replaced?",
+    "o": [
+     "Every session",
+     "When a pupil changes section",
+     "Only when lost"
+    ]
+   },
+   {
+    "code": "C9",
+    "type": "yn",
+    "text": "Do pupils pay for a lost ID card?"
+   },
+   {
+    "code": "C10",
+    "type": "yn",
+    "text": "Do staff have ID cards?"
+   },
+   {
+    "code": "C11",
+    "type": "many",
+    "text": "What would you like to use at the gate?",
+    "o": [
+     "QR code scan",
+     "RFID / NFC card",
+     "Fingerprint",
+     "Face recognition",
+     "Nothing"
+    ]
+   },
+   {
+    "code": "C12",
+    "type": "yn",
+    "text": "Should parents get a message when their child arrives and leaves?"
+   },
+   {
+    "code": "C13",
+    "type": "one",
+    "text": "How do staff sign in?",
+    "o": [
+     "Signing book",
+     "Biometric",
+     "ID card",
+     "Nothing"
+    ]
+   },
+   {
+    "code": "C14",
+    "type": "many",
+    "text": "What happens when a pupil is late?",
+    "o": [
+     "Recorded",
+     "Punished",
+     "Parents told",
+     "Nothing"
+    ]
+   },
+   {
+    "code": "C15",
+    "type": "many",
+    "text": "What happens when a staff member is late?",
+    "o": [
+     "Recorded",
+     "Query issued",
+     "Salary deduction",
+     "Nothing"
+    ]
+   },
+   {
+    "code": "C16",
+    "type": "yn",
+    "text": "Do visitors sign in at the gate?"
+   },
+   {
+    "code": "C17",
+    "type": "many",
+    "text": "What do you record about visitors?",
+    "o": [
+     "Name",
+     "Phone",
+     "Person to see",
+     "Purpose",
+     "Time in",
+     "Time out",
+     "ID card number"
+    ]
+   },
+   {
+    "code": "C18",
+    "type": "yn",
+    "text": "Should visitors book visits in advance and get a QR gate pass?"
+   },
+   {
+    "code": "C19",
+    "type": "one",
+    "text": "How often is assembly held?",
+    "o": [
+     "Every day",
+     "Some days",
+     "No assembly"
+    ]
+   },
+   {
+    "code": "C20",
+    "type": "one",
+    "text": "Is assembly joint or separate?",
+    "o": [
+     "Joint for all sections",
+     "Separate for each section",
+     "Mixed"
+    ]
+   },
+   {
+    "code": "C21",
+    "type": "many",
+    "text": "What happens at assembly?",
+    "o": [
+     "Prayers / Du'a",
+     "Qur'an recitation",
+     "National anthem",
+     "Pledge",
+     "Announcements",
+     "Inspection",
+     "Talks"
+    ]
+   },
+   {
+    "code": "C22",
+    "type": "many",
+    "text": "What do you inspect?",
+    "o": [
+     "Uniform",
+     "Hair",
+     "Nails",
+     "Shoes",
+     "ID card",
+     "Nothing"
+    ]
+   },
+   {
+    "code": "C23",
+    "type": "yn",
+    "text": "Do you record defaulters?"
+   },
+   {
+    "code": "C24",
+    "type": "many",
+    "text": "Who takes attendance?",
+    "o": [
+     "Form teacher",
+     "Subject teacher",
+     "Prefect",
+     "Admin staff"
+    ]
+   },
+   {
+    "code": "C25",
+    "type": "one",
+    "text": "How often is attendance taken?",
+    "o": [
+     "Once in the morning",
+     "Morning and afternoon",
+     "Every period"
+    ]
+   },
+   {
+    "code": "C26",
+    "type": "many",
+    "text": "What attendance marks do you use?",
+    "o": [
+     "Present",
+     "Absent",
+     "Late",
+     "Sick",
+     "Excused / permission",
+     "Suspended"
+    ]
+   },
+   {
+    "code": "C27",
+    "type": "one",
+    "text": "How is attendance recorded now?",
+    "o": [
+     "Paper register",
+     "Excel",
+     "Software"
+    ]
+   },
+   {
+    "code": "C28",
+    "type": "one",
+    "text": "Should parents get a message when their child is absent?",
+    "o": [
+     "Yes, by SMS",
+     "Yes, by WhatsApp",
+     "Yes, by app",
+     "No"
+    ]
+   },
+   {
+    "code": "C29",
+    "type": "yn",
+    "text": "Does the Islamic section take its own attendance?"
+   }
+  ]
+ },
+ {
+  "id": "D",
+  "title": "Teaching day — timetable, lessons, duties and prayers",
+  "by": "Vice principal (academics), head teacher and timetable officer",
+  "qs": [
+   {
+    "code": "D1",
+    "type": "num",
+    "text": "How many periods are there each day?",
+    "per": true
+   },
+   {
+    "code": "D2",
+    "type": "one",
+    "text": "How long is each period?",
+    "o": [
+     "30 min",
+     "35 min",
+     "40 min",
+     "45 min",
+     "60 min"
+    ]
+   },
+   {
+    "code": "D3",
+    "type": "one",
+    "text": "How is the timetable made?",
+    "o": [
+     "By hand",
+     "Excel",
+     "Software"
+    ]
+   },
+   {
+    "code": "D4",
+    "type": "yn",
+    "text": "Do some teachers teach in more than one section?"
+   },
+   {
+    "code": "D5",
+    "type": "time",
+    "text": "What time is break?",
+    "per": true
+   },
+   {
+    "code": "D6",
+    "type": "time",
+    "text": "What time is Zuhr prayer?"
+   },
+   {
+    "code": "D7",
+    "type": "yn",
+    "text": "Is prayer attendance taken?"
+   },
+   {
+    "code": "D8",
+    "type": "many",
+    "text": "When do Islamic classes hold?",
+    "o": [
+     "Morning",
+     "Afternoon",
+     "Evening",
+     "Weekends",
+     "Same time as regular school"
+    ]
+   },
+   {
+    "code": "D9",
+    "type": "yn",
+    "text": "Do teachers submit lesson notes?"
+   },
+   {
+    "code": "D10",
+    "type": "many",
+    "text": "Who checks lesson notes?",
+    "o": [
+     "HOD",
+     "Vice principal",
+     "Head teacher",
+     "Principal"
+    ]
+   },
+   {
+    "code": "D11",
+    "type": "one",
+    "text": "How often are lesson notes checked?",
+    "o": [
+     "Weekly",
+     "Fortnightly",
+     "Monthly",
+     "Termly"
+    ]
+   },
+   {
+    "code": "D12",
+    "type": "yn",
+    "text": "Do you track how much of the scheme of work is covered?"
+   },
+   {
+    "code": "D13",
+    "type": "many",
+    "text": "When a teacher is absent, what happens?",
+    "o": [
+     "Another teacher covers",
+     "Class is left alone",
+     "Prefect supervises",
+     "It is recorded"
+    ]
+   },
+   {
+    "code": "D14",
+    "type": "many",
+    "text": "Which of these are recorded?",
+    "o": [
+     "Homework",
+     "Class work",
+     "Assignments",
+     "Projects",
+     "None"
+    ]
+   },
+   {
+    "code": "D15",
+    "type": "yn",
+    "text": "Should parents see homework and class work?"
+   },
+   {
+    "code": "D16",
+    "type": "yn",
+    "text": "Should teachers share notes and videos with pupils in the system?"
+   },
+   {
+    "code": "D17",
+    "type": "one",
+    "text": "Is there a feeding programme?",
+    "o": [
+     "No feeding",
+     "Included in fees",
+     "Paid separately",
+     "Pupils bring food"
+    ]
+   },
+   {
+    "code": "D18",
+    "type": "many",
+    "text": "Which incidents are recorded?",
+    "o": [
+     "Injury",
+     "Fight",
+     "Sickness",
+     "Damage to property",
+     "Bullying",
+     "None recorded"
+    ]
+   },
+   {
+    "code": "D19",
+    "type": "yn",
+    "text": "Do heads of department watch teachers teach and use a form for it?"
+   },
+   {
+    "code": "D20",
+    "type": "yn",
+    "text": "Is there a teacher duty roster?"
+   },
+   {
+    "code": "D21",
+    "type": "many",
+    "text": "Which duties are on the roster?",
+    "o": [
+     "Gate",
+     "Assembly",
+     "Break",
+     "Dining",
+     "Prep",
+     "Weekend"
+    ]
+   },
+   {
+    "code": "D22",
+    "type": "many",
+    "text": "Which spaces need booking for events or meetings?",
+    "o": [
+     "Hall",
+     "Mosque / prayer hall",
+     "Sports field",
+     "ICT lab",
+     "Conference room",
+     "None"
+    ]
+   },
+   {
+    "code": "D23",
+    "type": "file",
+    "text": "Upload the current timetables."
+   }
+  ]
+ },
+ {
+  "id": "E",
+  "title": "Closing, pickup and after-school",
+  "by": "Head of each section, gateman and hostel master",
+  "qs": [
+   {
+    "code": "E1",
+    "type": "time",
+    "text": "What time does each section close?",
+    "per": true
+   },
+   {
+    "code": "E2",
+    "type": "yn",
+    "text": "Is closing time different on Fridays?"
+   },
+   {
+    "code": "E3",
+    "type": "yn",
+    "text": "Is there a closing prayer or assembly?"
+   },
+   {
+    "code": "E4",
+    "type": "many",
+    "text": "Who is allowed to pick up a child?",
+    "o": [
+     "Parents",
+     "Guardians on a list",
+     "Drivers",
+     "Older siblings",
+     "Anyone known to the school"
+    ]
+   },
+   {
+    "code": "E5",
+    "type": "one",
+    "text": "How should the gate check who collects a child?",
+    "o": [
+     "Photo in the system",
+     "Pickup code",
+     "Pickup card",
+     "Not checked"
+    ]
+   },
+   {
+    "code": "E6",
+    "type": "yn",
+    "text": "Do you record who picked up each child and when?"
+   },
+   {
+    "code": "E7",
+    "type": "many",
+    "text": "What happens when a parent comes late for pickup?",
+    "o": [
+     "Child waits with staff",
+     "Parent is called",
+     "Fine is charged",
+     "It is recorded"
+    ]
+   },
+   {
+    "code": "E8",
+    "type": "yn",
+    "text": "Can a pupil leave school during the day?"
+   },
+   {
+    "code": "E9",
+    "type": "many",
+    "text": "What is needed for a pupil to leave early?",
+    "o": [
+     "Parent request",
+     "Head's approval",
+     "Written gate pass",
+     "Message to parent"
+    ]
+   },
+   {
+    "code": "E10",
+    "type": "yn",
+    "text": "Do staff sign out?"
+   },
+   {
+    "code": "E11",
+    "type": "many",
+    "text": "What after-school activities do you run?",
+    "o": [
+     "Extra lessons",
+     "Clubs",
+     "Sports",
+     "Islamiyya",
+     "Tahfiz",
+     "Holiday lessons",
+     "None"
+    ]
+   },
+   {
+    "code": "E12",
+    "type": "yn",
+    "text": "Are after-school activities paid for?"
+   },
+   {
+    "code": "E13",
+    "type": "yn",
+    "text": "Is attendance taken for after-school activities?"
+   },
+   {
+    "code": "E14",
+    "type": "many",
+    "text": "What happens for boarders in the evening?",
+    "o": [
+     "Prep",
+     "Prayers",
+     "Roll call",
+     "Dinner register",
+     "Lights out"
+    ]
+   },
+   {
+    "code": "E15",
+    "type": "yn",
+    "text": "Does anyone write an end-of-day report?"
+   }
+  ]
+ },
+ {
+  "id": "F",
+  "title": "Admissions and pupil records",
+  "by": "Secretary / admissions officer",
+  "qs": [
+   {
+    "code": "F1",
+    "type": "many",
+    "text": "Which steps are in your admission process?",
+    "o": [
+     "Enquiry",
+     "Buy form",
+     "Fill form",
+     "Entrance exam",
+     "Interview",
+     "Offer letter",
+     "Acceptance fee",
+     "Document check",
+     "Pay fees"
+    ]
+   },
+   {
+    "code": "F2",
+    "type": "one",
+    "text": "How do parents get the admission form?",
+    "o": [
+     "Free",
+     "Sold",
+     "Online and paper"
+    ]
+   },
+   {
+    "code": "F3",
+    "type": "yn",
+    "text": "Do you want online applications?"
+   },
+   {
+    "code": "F4",
+    "type": "yn",
+    "text": "Is there an entrance exam?",
+    "per": true
+   },
+   {
+    "code": "F5",
+    "type": "many",
+    "text": "Who decides admission?",
+    "o": [
+     "Head of section",
+     "Principal",
+     "Proprietor",
+     "Admissions officer"
+    ]
+   },
+   {
+    "code": "F6",
+    "type": "text",
+    "text": "Write an example admission number."
+   },
+   {
+    "code": "F7",
+    "type": "yn",
+    "text": "Is the admission number format different for each section?"
+   },
+   {
+    "code": "F8",
+    "type": "yn",
+    "text": "Does a pupil keep the same number from Primary to Secondary?"
+   },
+   {
+    "code": "F9",
+    "type": "num",
+    "text": "What is the most pupils allowed in one class arm?"
+   },
+   {
+    "code": "F10",
+    "type": "yn",
+    "text": "Do you keep a waiting list when classes are full?"
+   },
+   {
+    "code": "F11",
+    "type": "many",
+    "text": "What details do you collect about each pupil?",
+    "o": [
+     "Name",
+     "Date of birth",
+     "Sex",
+     "State / LGA",
+     "Religion",
+     "Address",
+     "Blood group",
+     "Genotype",
+     "Allergies",
+     "Previous school",
+     "Photo",
+     "NIN"
+    ]
+   },
+   {
+    "code": "F12",
+    "type": "many",
+    "text": "What details do you collect about parents?",
+    "o": [
+     "Name",
+     "Phone",
+     "Email",
+     "Address",
+     "Occupation",
+     "Relationship",
+     "Workplace"
+    ]
+   },
+   {
+    "code": "F13",
+    "type": "one",
+    "text": "How many guardians can a pupil have?",
+    "o": [
+     "1",
+     "2",
+     "3 or more"
+    ]
+   },
+   {
+    "code": "F14",
+    "type": "yn",
+    "text": "Do you link brothers and sisters?"
+   },
+   {
+    "code": "F15",
+    "type": "yn",
+    "text": "Do siblings get a fee discount?"
+   },
+   {
+    "code": "F16",
+    "type": "many",
+    "text": "What documents do you collect?",
+    "o": [
+     "Birth certificate",
+     "Passport photo",
+     "Transfer letter",
+     "Previous results",
+     "Medical report",
+     "Parent ID"
+    ]
+   },
+   {
+    "code": "F17",
+    "type": "yn",
+    "text": "Should documents be scanned into the system?"
+   },
+   {
+    "code": "F18",
+    "type": "one",
+    "text": "How is a pupil promoted?",
+    "o": [
+     "Automatically",
+     "By average score",
+     "By management decision",
+     "Mixed"
+    ]
+   },
+   {
+    "code": "F19",
+    "type": "num",
+    "text": "What is the pass mark for promotion (%)?"
+   },
+   {
+    "code": "F20",
+    "type": "many",
+    "text": "Which of these happen?",
+    "o": [
+     "Repeating a class",
+     "Double promotion",
+     "Class change mid-session"
+    ]
+   },
+   {
+    "code": "F21",
+    "type": "many",
+    "text": "Which of these do you record?",
+    "o": [
+     "Transfers out",
+     "Withdrawals",
+     "Suspensions",
+     "Expulsions"
+    ]
+   },
+   {
+    "code": "F22",
+    "type": "many",
+    "text": "What happens when a pupil graduates?",
+    "o": [
+     "Kept as alumni",
+     "Testimonial issued",
+     "Certificate issued"
+    ]
+   },
+   {
+    "code": "F23",
+    "type": "many",
+    "text": "Who can edit a pupil's record?",
+    "o": [
+     "Secretary",
+     "Form teacher",
+     "Head of section",
+     "Principal"
+    ]
+   },
+   {
+    "code": "F24",
+    "type": "many",
+    "text": "What documents do you print for pupils?",
+    "o": [
+     "ID card",
+     "Admission letter",
+     "Transfer letter",
+     "Testimonial",
+     "Clearance form"
+    ]
+   },
+   {
+    "code": "F25",
+    "type": "file",
+    "text": "Upload the admission form and a sample ID card."
+   }
+  ]
+ },
+ {
+  "id": "G",
+  "title": "Nursery & Primary",
+  "by": "Head teacher, Nursery & Primary",
+  "qs": [
+   {
+    "code": "G1",
+    "type": "text",
+    "text": "List the subjects for each class.",
+    "long": true
+   },
+   {
+    "code": "G2",
+    "type": "one",
+    "text": "How are subjects taught?",
+    "o": [
+     "One teacher for all subjects",
+     "Subject teachers for all",
+     "Mix of both"
+    ]
+   },
+   {
+    "code": "G3",
+    "type": "one",
+    "text": "From which class do subject teachers start?",
+    "o": [
+     "Primary 1",
+     "Primary 2",
+     "Primary 3",
+     "Primary 4",
+     "Primary 5",
+     "Primary 6",
+     "Not used"
+    ]
+   },
+   {
+    "code": "G4",
+    "type": "one",
+    "text": "How do you assess nursery pupils?",
+    "o": [
+     "Scores",
+     "Grades",
+     "Skills checklist",
+     "Mix"
+    ]
+   },
+   {
+    "code": "G5",
+    "type": "many",
+    "text": "Which skills do you rate in nursery?",
+    "o": [
+     "Social",
+     "Motor",
+     "Language",
+     "Behaviour",
+     "Numeracy",
+     "Literacy"
+    ]
+   },
+   {
+    "code": "G6",
+    "type": "one",
+    "text": "What scale do you use for skills?",
+    "o": [
+     "1–5",
+     "A–E",
+     "Excellent / Good / Fair / Poor",
+     "Yes / No"
+    ]
+   },
+   {
+    "code": "G7",
+    "type": "one",
+    "text": "How are primary scores split?",
+    "o": [
+     "CA1 20, CA2 20, Exam 60",
+     "CA 30, Exam 70",
+     "CA 40, Exam 60",
+     "CA1 10, CA2 10, CA3 20, Exam 60"
+    ]
+   },
+   {
+    "code": "G8",
+    "type": "many",
+    "text": "Where do you give class positions?",
+    "o": [
+     "Primary",
+     "Nursery",
+     "Neither"
+    ],
+    "noOther": true
+   },
+   {
+    "code": "G9",
+    "type": "yn",
+    "text": "Should common entrance preparation be tracked?"
+   },
+   {
+    "code": "G10",
+    "type": "many",
+    "text": "Which of these do you track?",
+    "o": [
+     "Reading level",
+     "Phonics",
+     "Handwriting",
+     "None"
+    ]
+   },
+   {
+    "code": "G11",
+    "type": "yn",
+    "text": "Do nursery pupils have a daily report for parents?"
+   },
+   {
+    "code": "G12",
+    "type": "many",
+    "text": "What should the nursery daily diary include?",
+    "o": [
+     "Meals",
+     "Nap",
+     "Toilet",
+     "Activities",
+     "Photos"
+    ]
+   },
+   {
+    "code": "G13",
+    "type": "file",
+    "text": "Upload sample nursery and primary report cards."
+   }
+  ]
+ },
+ {
+  "id": "H",
+  "title": "Secondary",
+  "by": "Principal and vice principal (academics)",
+  "qs": [
+   {
+    "code": "H1",
+    "type": "text",
+    "text": "List the JSS subjects.",
+    "long": true
+   },
+   {
+    "code": "H2",
+    "type": "text",
+    "text": "List the SSS subjects for each stream.",
+    "long": true
+   },
+   {
+    "code": "H3",
+    "type": "one",
+    "text": "How are elective subjects chosen?",
+    "o": [
+     "Student chooses",
+     "School assigns",
+     "By stream only"
+    ]
+   },
+   {
+    "code": "H4",
+    "type": "yn",
+    "text": "Can students change subjects later?"
+   },
+   {
+    "code": "H5",
+    "type": "many",
+    "text": "Which departments do you have?",
+    "o": [
+     "Science",
+     "Arts",
+     "Commercial",
+     "Languages",
+     "Technical",
+     "Vocational"
+    ]
+   },
+   {
+    "code": "H6",
+    "type": "one",
+    "text": "Who gives teachers their subjects and classes?",
+    "o": [
+     "HOD",
+     "Principal",
+     "Vice principal (academics)"
+    ]
+   },
+   {
+    "code": "H7",
+    "type": "yn",
+    "text": "Can two teachers share one subject in a class?"
+   },
+   {
+    "code": "H8",
+    "type": "one",
+    "text": "How are scores split?",
+    "o": [
+     "CA1 20, CA2 20, Exam 60",
+     "CA 30, Exam 70",
+     "CA 40, Exam 60",
+     "CA1 10, CA2 10, CA3 20, Exam 60"
+    ]
+   },
+   {
+    "code": "H9",
+    "type": "yn",
+    "text": "Is the split the same for all subjects?"
+   },
+   {
+    "code": "H10",
+    "type": "many",
+    "text": "Where do you give positions?",
+    "o": [
+     "Per subject",
+     "Per class arm",
+     "Across all arms",
+     "None"
+    ],
+    "noOther": true
+   },
+   {
+    "code": "H11",
+    "type": "many",
+    "text": "Which external exams do you register students for?",
+    "o": [
+     "BECE",
+     "WAEC",
+     "NECO",
+     "NBAIS",
+     "NABTEB",
+     "JAMB"
+    ]
+   },
+   {
+    "code": "H12",
+    "type": "yn",
+    "text": "Does the school manage external exam registration and fees?"
+   },
+   {
+    "code": "H13",
+    "type": "yn",
+    "text": "Do you record external exam results after release?"
+   },
+   {
+    "code": "H14",
+    "type": "many",
+    "text": "Which of these do you record?",
+    "o": [
+     "Prefects",
+     "Houses",
+     "Clubs",
+     "None"
+    ]
+   },
+   {
+    "code": "H15",
+    "type": "one",
+    "text": "How are prefects or student leaders chosen?",
+    "o": [
+     "Election by students",
+     "Appointed by staff",
+     "Both"
+    ]
+   },
+   {
+    "code": "H16",
+    "type": "yn",
+    "text": "Should elections be held online in the system?"
+   },
+   {
+    "code": "H17",
+    "type": "yn",
+    "text": "Do you track students' career choices and university admissions?"
+   },
+   {
+    "code": "H18",
+    "type": "file",
+    "text": "Upload a sample secondary report card."
+   }
+  ]
+ },
+ {
+  "id": "I",
+  "title": "Islamic section",
+  "by": "Mudir / head of the Islamic section and Tahfiz teachers",
+  "qs": [
+   {
+    "code": "I1",
+    "type": "one",
+    "text": "How does a pupil move to the next level?",
+    "o": [
+     "By exam",
+     "By memorisation target",
+     "By age",
+     "By teacher's decision"
+    ]
+   },
+   {
+    "code": "I2",
+    "type": "many",
+    "text": "Which subjects are taught?",
+    "o": [
+     "Qur'an",
+     "Tajweed",
+     "Hadith",
+     "Fiqh",
+     "Tawheed",
+     "Seerah",
+     "Arabic language",
+     "Arabic writing",
+     "Adhkar / Du'a",
+     "Akhlaq"
+    ]
+   },
+   {
+    "code": "I3",
+    "type": "one",
+    "text": "Do you have a Tahfiz programme?",
+    "o": [
+     "No",
+     "Part-time",
+     "Full-time",
+     "Both"
+    ]
+   },
+   {
+    "code": "I4",
+    "type": "yn",
+    "text": "Are pupils grouped in halaqahs under one Qur'an teacher?"
+   },
+   {
+    "code": "I5",
+    "type": "one",
+    "text": "How do you track memorisation?",
+    "o": [
+     "By Juz",
+     "By Hizb",
+     "By Surah",
+     "By page",
+     "By Ayah"
+    ]
+   },
+   {
+    "code": "I6",
+    "type": "one",
+    "text": "How often is memorisation recorded?",
+    "o": [
+     "Daily",
+     "Weekly",
+     "Termly"
+    ]
+   },
+   {
+    "code": "I7",
+    "type": "many",
+    "text": "What is recorded at each recitation?",
+    "o": [
+     "New lesson (Sabaq)",
+     "Recent revision (Sabqi)",
+     "Old revision (Manzil)",
+     "Mistakes",
+     "Grade",
+     "Teacher comment"
+    ]
+   },
+   {
+    "code": "I8",
+    "type": "many",
+    "text": "How is memorisation tested?",
+    "o": [
+     "Weekly test",
+     "Termly test",
+     "When a Juz is finished",
+     "External examiner"
+    ]
+   },
+   {
+    "code": "I9",
+    "type": "yn",
+    "text": "Do you record completing the Qur'an (Khatm)?"
+   },
+   {
+    "code": "I10",
+    "type": "many",
+    "text": "What do you issue?",
+    "o": [
+     "Certificate",
+     "Ijazah",
+     "None"
+    ]
+   },
+   {
+    "code": "I11",
+    "type": "yn",
+    "text": "Should Tahfiz pupils send recitation recordings from home?"
+   },
+   {
+    "code": "I12",
+    "type": "one",
+    "text": "How often should parents get memorisation updates?",
+    "o": [
+     "Daily",
+     "Weekly",
+     "Termly",
+     "Not needed"
+    ]
+   },
+   {
+    "code": "I13",
+    "type": "one",
+    "text": "What report card does the Islamic section use?",
+    "o": [
+     "Same as regular school",
+     "Separate card"
+    ]
+   },
+   {
+    "code": "I14",
+    "type": "one",
+    "text": "In which language is the Islamic report card?",
+    "o": [
+     "Arabic",
+     "English",
+     "Both"
+    ]
+   },
+   {
+    "code": "I15",
+    "type": "yn",
+    "text": "Should the system show Arabic text on screens and printouts?"
+   },
+   {
+    "code": "I16",
+    "type": "many",
+    "text": "Which of these are graded?",
+    "o": [
+     "Prayer",
+     "Adhkar",
+     "Akhlaq",
+     "Neatness",
+     "None"
+    ]
+   },
+   {
+    "code": "I17",
+    "type": "yn",
+    "text": "Are Islamic section fees separate from school fees?"
+   },
+   {
+    "code": "I18",
+    "type": "yn",
+    "text": "Do some pupils attend only the Islamic section?"
+   },
+   {
+    "code": "I19",
+    "type": "many",
+    "text": "Which Islamic dates change the calendar?",
+    "o": [
+     "Ramadan timetable",
+     "Eid breaks",
+     "Maulud",
+     "Islamic New Year",
+     "Ashura"
+    ]
+   },
+   {
+    "code": "I20",
+    "type": "yn",
+    "text": "Should the Hijri date show in the system?"
+   },
+   {
+    "code": "I21",
+    "type": "file",
+    "text": "Upload a sample Islamic report card and memorisation record."
+   }
+  ]
+ },
+ {
+  "id": "J",
+  "title": "Labs and practical rooms",
+  "by": "Lab attendants / technicians, HOD Science and ICT coordinator",
+  "qs": [
+   {
+    "code": "J0",
+    "type": "grid",
+    "text": "Which labs and rooms do you have?",
+    "rows": [
+     "Physics lab",
+     "Chemistry lab",
+     "Biology lab",
+     "Basic Science lab (JSS / primary)",
+     "ICT / computer lab",
+     "Technical workshop / drawing room",
+     "Home economics room",
+     "Agric farm / school garden",
+     "Fine arts / music room",
+     "Language lab (Arabic / English)"
+    ],
+    "cols": [
+     {
+      "k": "have",
+      "label": "Do you have it?",
+      "type": "yn"
+     },
+     {
+      "k": "secs",
+      "label": "Sections that use it",
+      "type": "many",
+      "o": [
+       "Nursery & Primary",
+       "Secondary",
+       "Islamic"
+      ],
+      "noOther": true
+     },
+     {
+      "k": "who",
+      "label": "Person in charge",
+      "type": "text"
+     },
+     {
+      "k": "size",
+      "label": "Seats / computers",
+      "type": "num"
+     }
+    ]
+   },
+   {
+    "code": "J1",
+    "type": "one",
+    "text": "How are lab periods arranged?",
+    "o": [
+     "On the timetable",
+     "Booked when needed",
+     "Both"
+    ]
+   },
+   {
+    "code": "J2",
+    "type": "yn",
+    "text": "Do you keep a list of lab equipment?"
+   },
+   {
+    "code": "J3",
+    "type": "yn",
+    "text": "Should the equipment list be in the system?"
+   },
+   {
+    "code": "J4",
+    "type": "one",
+    "text": "How do you record chemicals and items that get used up?",
+    "o": [
+     "Logbook",
+     "Excel",
+     "Not recorded"
+    ]
+   },
+   {
+    "code": "J5",
+    "type": "many",
+    "text": "Who reorders lab items?",
+    "o": [
+     "Lab attendant",
+     "HOD Science",
+     "Bursar",
+     "Principal"
+    ]
+   },
+   {
+    "code": "J6",
+    "type": "one",
+    "text": "When a student breaks equipment, who pays?",
+    "o": [
+     "Student / parent pays",
+     "School pays",
+     "Depends on the case"
+    ]
+   },
+   {
+    "code": "J7",
+    "type": "yn",
+    "text": "Are breakages recorded?"
+   },
+   {
+    "code": "J8",
+    "type": "yn",
+    "text": "Are lab accidents recorded?"
+   },
+   {
+    "code": "J9",
+    "type": "yn",
+    "text": "Do you take attendance for practical classes?"
+   },
+   {
+    "code": "J10",
+    "type": "yn",
+    "text": "Are practical scores recorded separately from theory?"
+   },
+   {
+    "code": "J11",
+    "type": "yn",
+    "text": "Do you keep records for WAEC / NECO practicals?"
+   },
+   {
+    "code": "J12",
+    "type": "num",
+    "text": "How many computers are in the ICT lab?"
+   },
+   {
+    "code": "J13",
+    "type": "one",
+    "text": "Who repairs the computers?",
+    "o": [
+     "In-house ICT staff",
+     "Outside technician",
+     "Nobody"
+    ]
+   },
+   {
+    "code": "J14",
+    "type": "yn",
+    "text": "Is the ICT lab used for CBT?"
+   },
+   {
+    "code": "J15",
+    "type": "num",
+    "text": "How many students can sit a CBT at once?"
+   },
+   {
+    "code": "J16",
+    "type": "many",
+    "text": "Which labs do primary pupils use?",
+    "o": [
+     "Basic Science lab",
+     "ICT lab",
+     "Home economics room",
+     "Farm / garden",
+     "None"
+    ]
+   },
+   {
+    "code": "J17",
+    "type": "many",
+    "text": "Which lab reports do you want?",
+    "o": [
+     "Equipment list",
+     "Lab usage",
+     "Breakages",
+     "Chemical stock",
+     "Accidents"
+    ]
+   }
+  ]
+ },
+ {
+  "id": "K",
+  "title": "Exams, CBT and results",
+  "by": "Exam officer, with the heads of each section",
+  "qs": [
+   {
+    "code": "K1",
+    "type": "one",
+    "text": "What grading scale does each section use?",
+    "o": [
+     "A1–F9 (WAEC style)",
+     "A–F",
+     "Percentages only",
+     "Remarks (Excellent, Good…)"
+    ],
+    "per": true
+   },
+   {
+    "code": "K2",
+    "type": "many",
+    "text": "What is calculated on the result?",
+    "o": [
+     "Total",
+     "Average",
+     "Class average",
+     "Highest in class",
+     "Lowest in class",
+     "Subject position"
+    ]
+   },
+   {
+    "code": "K3",
+    "type": "one",
+    "text": "How do you handle ties in position?",
+    "o": [
+     "Same position, then skip (2nd, 2nd, 4th)",
+     "Same position, no skip (2nd, 2nd, 3rd)",
+     "Break the tie by another rule"
+    ]
+   },
+   {
+    "code": "K4",
+    "type": "one",
+    "text": "How is the yearly result made?",
+    "o": [
+     "Average of all terms",
+     "Third term only",
+     "Weighted terms",
+     "No yearly result"
+    ]
+   },
+   {
+    "code": "K5",
+    "type": "many",
+    "text": "Who writes comments on the report card?",
+    "o": [
+     "Class teacher",
+     "Head teacher / Principal",
+     "Mudir",
+     "Hostel master"
+    ]
+   },
+   {
+    "code": "K6",
+    "type": "one",
+    "text": "How are comments written?",
+    "o": [
+     "Typed",
+     "Picked from a list",
+     "Both"
+    ]
+   },
+   {
+    "code": "K7",
+    "type": "many",
+    "text": "Which behaviour and skills are rated?",
+    "o": [
+     "Punctuality",
+     "Neatness",
+     "Politeness",
+     "Attentiveness",
+     "Handwriting",
+     "Sports",
+     "Creativity"
+    ]
+   },
+   {
+    "code": "K8",
+    "type": "one",
+    "text": "What scale is used for behaviour and skills?",
+    "o": [
+     "1–5",
+     "A–E",
+     "Words (Excellent, Good…)"
+    ]
+   },
+   {
+    "code": "K9",
+    "type": "many",
+    "text": "What does the exam office prepare?",
+    "o": [
+     "Exam timetable",
+     "Seating plan",
+     "Invigilation list",
+     "Exam attendance"
+    ]
+   },
+   {
+    "code": "K10",
+    "type": "yn",
+    "text": "Should exam questions be stored in the system?"
+   },
+   {
+    "code": "K11",
+    "type": "one",
+    "text": "When must scores be entered?",
+    "o": [
+     "Within 1 week of exams",
+     "Within 2 weeks",
+     "By end of term"
+    ]
+   },
+   {
+    "code": "K12",
+    "type": "many",
+    "text": "Who checks scores before release?",
+    "o": [
+     "HOD",
+     "Exam officer",
+     "Vice principal",
+     "Principal"
+    ]
+   },
+   {
+    "code": "K13",
+    "type": "yn",
+    "text": "Do teachers want to upload scores from Excel?"
+   },
+   {
+    "code": "K14",
+    "type": "yn",
+    "text": "Do you print a broadsheet for each class?"
+   },
+   {
+    "code": "K15",
+    "type": "many",
+    "text": "How do parents get results?",
+    "o": [
+     "Printed",
+     "PDF",
+     "Online portal",
+     "Scratch card / PIN",
+     "WhatsApp"
+    ]
+   },
+   {
+    "code": "K16",
+    "type": "one",
+    "text": "Are results held back if fees are not paid?",
+    "o": [
+     "Fully held back",
+     "Partly shown",
+     "Not held back"
+    ]
+   },
+   {
+    "code": "K17",
+    "type": "yn",
+    "text": "Does the report card show next term's date and fees?"
+   },
+   {
+    "code": "K18",
+    "type": "yn",
+    "text": "Do you give mid-term reports?"
+   },
+   {
+    "code": "K19",
+    "type": "one",
+    "text": "How long should old results stay in the system?",
+    "o": [
+     "1 year",
+     "3 years",
+     "5 years",
+     "Forever"
+    ]
+   },
+   {
+    "code": "K20",
+    "type": "one",
+    "text": "Do you use CBT?",
+    "o": [
+     "Using it now",
+     "Want it",
+     "Not needed"
+    ]
+   },
+   {
+    "code": "K21",
+    "type": "many",
+    "text": "What would CBT be used for?",
+    "o": [
+     "Tests",
+     "Exams",
+     "Mock WAEC / NECO",
+     "Mock JAMB",
+     "Entrance exam"
+    ]
+   },
+   {
+    "code": "K22",
+    "type": "many",
+    "text": "Which CBT features matter?",
+    "o": [
+     "Question bank",
+     "Random question order",
+     "Timer",
+     "Auto-marking",
+     "Works on school network without internet"
+    ]
+   },
+   {
+    "code": "K23",
+    "type": "yn",
+    "text": "Do you record exam malpractice cases?"
+   },
+   {
+    "code": "K24",
+    "type": "yn",
+    "text": "Should printed results carry a QR code to prove they are genuine?"
+   },
+   {
+    "code": "K25",
+    "type": "yn",
+    "text": "Should the principal's signature and stamp be added automatically?"
+   },
+   {
+    "code": "K26",
+    "type": "file",
+    "text": "Upload a sample broadsheet."
+   }
+  ]
+ },
+ {
+  "id": "L",
+  "title": "Fees, payments and finance",
+  "by": "Bursar / accountant",
+  "qs": [
+   {
+    "code": "L1",
+    "type": "many",
+    "text": "Which fees do you charge?",
+    "o": [
+     "Tuition",
+     "Development levy",
+     "PTA",
+     "Uniform",
+     "Books",
+     "Exam fee",
+     "Bus",
+     "Feeding",
+     "Hostel",
+     "Islamiyya",
+     "ICT",
+     "Lab",
+     "Sports",
+     "Excursion",
+     "Graduation"
+    ]
+   },
+   {
+    "code": "L2",
+    "type": "many",
+    "text": "What makes fees change?",
+    "o": [
+     "Section",
+     "Class",
+     "Term",
+     "New vs old pupil",
+     "Day vs boarder"
+    ]
+   },
+   {
+    "code": "L3",
+    "type": "many",
+    "text": "Which discounts do you give?",
+    "o": [
+     "Sibling",
+     "Staff child",
+     "Scholarship",
+     "Early payment",
+     "Full-session payment",
+     "None"
+    ]
+   },
+   {
+    "code": "L4",
+    "type": "many",
+    "text": "Who approves discounts?",
+    "o": [
+     "Bursar",
+     "Principal",
+     "Proprietor"
+    ]
+   },
+   {
+    "code": "L5",
+    "type": "yn",
+    "text": "Can parents pay in parts?"
+   },
+   {
+    "code": "L6",
+    "type": "num",
+    "text": "What is the minimum first payment (%)?"
+   },
+   {
+    "code": "L7",
+    "type": "yn",
+    "text": "Do you want agreed payment plans with automatic reminders?"
+   },
+   {
+    "code": "L8",
+    "type": "many",
+    "text": "How do parents pay?",
+    "o": [
+     "Cash",
+     "Bank transfer",
+     "POS",
+     "Online (Paystack / Flutterwave)",
+     "Bank deposit"
+    ]
+   },
+   {
+    "code": "L9",
+    "type": "one",
+    "text": "How do you confirm a bank transfer?",
+    "o": [
+     "Bank alert",
+     "Bank statement",
+     "Parent shows receipt",
+     "Not confirmed"
+    ]
+   },
+   {
+    "code": "L10",
+    "type": "yn",
+    "text": "Should each pupil have their own bank account number for transfers?"
+   },
+   {
+    "code": "L11",
+    "type": "one",
+    "text": "How are receipts numbered?",
+    "o": [
+     "One series for the whole school",
+     "Separate for each section"
+    ]
+   },
+   {
+    "code": "L12",
+    "type": "yn",
+    "text": "Should parents see one combined bill for all their children?"
+   },
+   {
+    "code": "L13",
+    "type": "yn",
+    "text": "Are unpaid balances carried to the next term?"
+   },
+   {
+    "code": "L14",
+    "type": "many",
+    "text": "How do you follow up debtors?",
+    "o": [
+     "Reminder messages",
+     "Phone calls",
+     "Sent home",
+     "Results held back",
+     "Barred from exams"
+    ]
+   },
+   {
+    "code": "L15",
+    "type": "many",
+    "text": "What happens with overpayment?",
+    "o": [
+     "Money refunded",
+     "Kept as credit for next term"
+    ]
+   },
+   {
+    "code": "L16",
+    "type": "yn",
+    "text": "Should parents check balances by USSD or SMS?"
+   },
+   {
+    "code": "L17",
+    "type": "yn",
+    "text": "Do you want a cashless wallet for the canteen and shop?"
+   },
+   {
+    "code": "L18",
+    "type": "yn",
+    "text": "Should parents set daily spending limits for the wallet?"
+   },
+   {
+    "code": "L19",
+    "type": "yn",
+    "text": "Should parents order uniforms and books online?"
+   },
+   {
+    "code": "L20",
+    "type": "many",
+    "text": "Which other income do you record?",
+    "o": [
+     "Uniform sales",
+     "Book sales",
+     "Shop",
+     "Donations",
+     "Hall rental"
+    ]
+   },
+   {
+    "code": "L21",
+    "type": "yn",
+    "text": "Are expenses recorded?"
+   },
+   {
+    "code": "L22",
+    "type": "yn",
+    "text": "Do you use petty cash?"
+   },
+   {
+    "code": "L23",
+    "type": "yn",
+    "text": "Do you set budgets for sections or departments?"
+   },
+   {
+    "code": "L24",
+    "type": "yn",
+    "text": "Do you use purchase orders when buying?"
+   },
+   {
+    "code": "L25",
+    "type": "yn",
+    "text": "Should suppliers, quotes and invoices be recorded?"
+   },
+   {
+    "code": "L26",
+    "type": "one",
+    "text": "What do you need?",
+    "o": [
+     "Fee tracking only",
+     "Full accounting"
+    ]
+   },
+   {
+    "code": "L27",
+    "type": "text",
+    "text": "What accounting software do you use now?"
+   },
+   {
+    "code": "L28",
+    "type": "many",
+    "text": "Which money reports do you need?",
+    "o": [
+     "Daily collections",
+     "Per class",
+     "Per section",
+     "Debtors list",
+     "Termly summary",
+     "Expenses",
+     "Bank reconciliation"
+    ]
+   },
+   {
+    "code": "L29",
+    "type": "yn",
+    "text": "Should each section's money be reported separately?"
+   },
+   {
+    "code": "L30",
+    "type": "file",
+    "text": "Upload the fee schedule and a sample receipt."
+   }
+  ]
+ },
+ {
+  "id": "M",
+  "title": "Staff, HR and payroll",
+  "by": "Admin officer / HR, with the bursar for payroll",
+  "qs": [
+   {
+    "code": "M1",
+    "type": "many",
+    "text": "What types of staff do you have?",
+    "o": [
+     "Teaching",
+     "Non-teaching",
+     "Part-time",
+     "Contract",
+     "Volunteer",
+     "NYSC corps members"
+    ]
+   },
+   {
+    "code": "M2",
+    "type": "many",
+    "text": "What details do you keep for each staff member?",
+    "o": [
+     "Bio data",
+     "Qualifications",
+     "TRCN number",
+     "Next of kin",
+     "Bank details",
+     "Date employed",
+     "Documents"
+    ]
+   },
+   {
+    "code": "M3",
+    "type": "yn",
+    "text": "Should staff documents be scanned into the system?"
+   },
+   {
+    "code": "M4",
+    "type": "yn",
+    "text": "Should job adverts, applicants and interviews be tracked?"
+   },
+   {
+    "code": "M5",
+    "type": "yn",
+    "text": "Do you use checklists when staff join or leave?"
+   },
+   {
+    "code": "M6",
+    "type": "many",
+    "text": "Which leave types exist?",
+    "o": [
+     "Annual",
+     "Sick",
+     "Maternity",
+     "Casual",
+     "Study"
+    ]
+   },
+   {
+    "code": "M7",
+    "type": "many",
+    "text": "Who approves leave?",
+    "o": [
+     "Head of section",
+     "Principal",
+     "Admin officer",
+     "Proprietor"
+    ]
+   },
+   {
+    "code": "M8",
+    "type": "many",
+    "text": "What makes up salary?",
+    "o": [
+     "Basic",
+     "Allowances",
+     "Deductions",
+     "Pension",
+     "Tax (PAYE)",
+     "Loans"
+    ]
+   },
+   {
+    "code": "M9",
+    "type": "many",
+    "text": "What reduces salary?",
+    "o": [
+     "Absence",
+     "Lateness",
+     "Neither"
+    ],
+    "noOther": true
+   },
+   {
+    "code": "M10",
+    "type": "one",
+    "text": "How are salaries paid?",
+    "o": [
+     "Bank upload file",
+     "Manual transfers",
+     "Cash"
+    ]
+   },
+   {
+    "code": "M11",
+    "type": "yn",
+    "text": "Do you give payslips?"
+   },
+   {
+    "code": "M12",
+    "type": "one",
+    "text": "How often are staff appraised?",
+    "o": [
+     "Termly",
+     "Yearly",
+     "Not done"
+    ]
+   },
+   {
+    "code": "M13",
+    "type": "many",
+    "text": "Which of these do you record?",
+    "o": [
+     "Queries",
+     "Warnings",
+     "Promotions",
+     "Awards"
+    ]
+   },
+   {
+    "code": "M14",
+    "type": "yn",
+    "text": "Do you record staff training and certificates?"
+   },
+   {
+    "code": "M15",
+    "type": "yn",
+    "text": "Should staff meeting minutes and action points be recorded?"
+   },
+   {
+    "code": "M16",
+    "type": "yn",
+    "text": "Should admin tasks be assigned and tracked in the system?"
+   },
+   {
+    "code": "M17",
+    "type": "yn",
+    "text": "Should staff log in to see payslips, leave and timetable?"
+   },
+   {
+    "code": "M18",
+    "type": "file",
+    "text": "Upload a sample payslip."
+   }
+  ]
+ },
+ {
+  "id": "N",
+  "title": "School services",
+  "by": "The person named on each question",
+  "qs": [
+   {
+    "code": "N1",
+    "type": "num",
+    "text": "Library: How many books do you have?",
+    "who": "Librarian"
+   },
+   {
+    "code": "N2",
+    "type": "yn",
+    "text": "Library: Is borrowing and returning recorded?",
+    "who": "Librarian"
+   },
+   {
+    "code": "N3",
+    "type": "yn",
+    "text": "Library: Do you charge fines for late returns?",
+    "who": "Librarian"
+   },
+   {
+    "code": "N4",
+    "type": "yn",
+    "text": "Library: Are Arabic and Islamic books kept separately?",
+    "who": "Librarian"
+   },
+   {
+    "code": "N5",
+    "type": "yn",
+    "text": "Textbooks: Are textbooks lent or rented to pupils each session?",
+    "who": "Store keeper / Librarian"
+   },
+   {
+    "code": "N6",
+    "type": "num",
+    "text": "Hostel: How many beds in total?",
+    "who": "Hostel master / mistress"
+   },
+   {
+    "code": "N7",
+    "type": "many",
+    "text": "Hostel: What do you record?",
+    "o": [
+     "Bed allocation",
+     "Exeat",
+     "Visiting days",
+     "Roll call",
+     "Items brought"
+    ],
+    "who": "Hostel master / mistress"
+   },
+   {
+    "code": "N8",
+    "type": "num",
+    "text": "Transport: How many buses do you have?",
+    "who": "Transport officer"
+   },
+   {
+    "code": "N9",
+    "type": "yn",
+    "text": "Transport: Do you record when pupils get on and off?",
+    "who": "Transport officer"
+   },
+   {
+    "code": "N10",
+    "type": "yn",
+    "text": "Transport: Do you track fuel, repairs and vehicle papers?",
+    "who": "Transport officer"
+   },
+   {
+    "code": "N11",
+    "type": "one",
+    "text": "Clinic: What health care do you have?",
+    "o": [
+     "Nurse and sick bay",
+     "First aid only",
+     "None"
+    ],
+    "who": "School nurse"
+   },
+   {
+    "code": "N12",
+    "type": "many",
+    "text": "Clinic: What do you record?",
+    "o": [
+     "Reason for visit",
+     "Treatment",
+     "Allergies",
+     "Health history",
+     "Parent informed"
+    ],
+    "who": "School nurse"
+   },
+   {
+    "code": "N13",
+    "type": "many",
+    "text": "Store: What items do you keep?",
+    "o": [
+     "Uniforms",
+     "Books",
+     "Stationery",
+     "Cleaning items",
+     "Food"
+    ],
+    "who": "Store keeper"
+   },
+   {
+    "code": "N14",
+    "type": "yn",
+    "text": "Store: Are sales and issues recorded?",
+    "who": "Store keeper"
+   },
+   {
+    "code": "N15",
+    "type": "yn",
+    "text": "Assets: Do you record furniture and equipment by location?",
+    "who": "Admin officer"
+   },
+   {
+    "code": "N16",
+    "type": "yn",
+    "text": "Feeding: Do pupils have meal plans?",
+    "who": "Catering officer"
+   },
+   {
+    "code": "N17",
+    "type": "one",
+    "text": "Discipline: Do you record discipline cases?",
+    "o": [
+     "Yes, and parents are told",
+     "Yes, parents not told",
+     "No"
+    ],
+    "who": "Discipline master / VP admin"
+   },
+   {
+    "code": "N18",
+    "type": "yn",
+    "text": "Discipline: Do you use merit and demerit points?",
+    "who": "Discipline master / VP admin"
+   },
+   {
+    "code": "N19",
+    "type": "yn",
+    "text": "Counselling: Do you record counselling sessions?",
+    "who": "School counsellor"
+   },
+   {
+    "code": "N20",
+    "type": "many",
+    "text": "Sports: Which of these do you have?",
+    "o": [
+     "Houses",
+     "Inter-house sports",
+     "Competitions",
+     "Results recorded"
+    ],
+    "who": "Games master"
+   },
+   {
+    "code": "N21",
+    "type": "many",
+    "text": "Clubs: What do you record?",
+    "o": [
+     "Membership",
+     "Meetings",
+     "Attendance",
+     "None"
+    ],
+    "who": "Club patrons"
+   },
+   {
+    "code": "N22",
+    "type": "yn",
+    "text": "PTA: Should PTA members, dues and meetings be recorded?",
+    "who": "PTA secretary"
+   },
+   {
+    "code": "N23",
+    "type": "yn",
+    "text": "Lost and found: Should found items be logged?",
+    "who": "Admin officer"
+   },
+   {
+    "code": "N24",
+    "type": "one",
+    "text": "Maintenance: How are repairs reported?",
+    "o": [
+     "Repair request book",
+     "Verbally",
+     "Not tracked"
+    ],
+    "who": "Admin officer / works"
+   }
+  ]
+ },
+ {
+  "id": "O",
+  "title": "Communication and portals",
+  "by": "Admin officer / secretary and ICT coordinator",
+  "qs": [
+   {
+    "code": "O1",
+    "type": "many",
+    "text": "How do you talk to parents now?",
+    "o": [
+     "SMS",
+     "WhatsApp groups",
+     "Letters",
+     "Phone calls",
+     "Email",
+     "App"
+    ]
+   },
+   {
+    "code": "O2",
+    "type": "many",
+    "text": "Which events should send parents a message automatically?",
+    "o": [
+     "Arrival / departure",
+     "Absence",
+     "Fee payment",
+     "Fee reminder",
+     "Results",
+     "Incidents",
+     "Events",
+     "Birthday"
+    ]
+   },
+   {
+    "code": "O3",
+    "type": "yn",
+    "text": "Do you use an SMS company?"
+   },
+   {
+    "code": "O4",
+    "type": "one",
+    "text": "Who pays for SMS?",
+    "o": [
+     "School",
+     "Parents",
+     "Included in fees"
+    ]
+   },
+   {
+    "code": "O5",
+    "type": "many",
+    "text": "What should parents do on the portal?",
+    "o": [
+     "See results",
+     "Pay fees",
+     "See fee balance",
+     "See attendance",
+     "See homework",
+     "Message teachers",
+     "See timetable"
+    ]
+   },
+   {
+    "code": "O6",
+    "type": "many",
+    "text": "What should students do on the portal?",
+    "o": [
+     "Results",
+     "Assignments",
+     "CBT",
+     "Timetable",
+     "Library"
+    ]
+   },
+   {
+    "code": "O7",
+    "type": "one",
+    "text": "What do you want?",
+    "o": [
+     "Mobile app",
+     "Phone-friendly website",
+     "Both"
+    ]
+   },
+   {
+    "code": "O8",
+    "type": "one",
+    "text": "Can parents message teachers?",
+    "o": [
+     "Yes, freely",
+     "Yes, but checked by admin",
+     "No"
+    ]
+   },
+   {
+    "code": "O9",
+    "type": "yn",
+    "text": "Should staff receive circulars with read receipts?"
+   },
+   {
+    "code": "O10",
+    "type": "yn",
+    "text": "Should parents book PTA meeting slots with teachers online?"
+   },
+   {
+    "code": "O11",
+    "type": "yn",
+    "text": "Should parent complaints be logged and tracked until solved?"
+   },
+   {
+    "code": "O12",
+    "type": "yn",
+    "text": "Do you want to run parent and staff surveys?"
+   },
+   {
+    "code": "O13",
+    "type": "many",
+    "text": "Which languages should the system use?",
+    "o": [
+     "English",
+     "Arabic",
+     "Hausa"
+    ]
+   },
+   {
+    "code": "O14",
+    "type": "yn",
+    "text": "Do you want a public school website linked to the system?"
+   }
+  ]
+ },
+ {
+  "id": "P",
+  "title": "Online learning",
+  "by": "Vice principal (academics) and ICT coordinator",
+  "qs": [
+   {
+    "code": "P1",
+    "type": "one",
+    "text": "Do you teach online?",
+    "o": [
+     "Never",
+     "Only in emergencies",
+     "Regularly"
+    ]
+   },
+   {
+    "code": "P2",
+    "type": "many",
+    "text": "Which tools do teachers use now?",
+    "o": [
+     "Zoom",
+     "Google Meet",
+     "Google Classroom",
+     "Microsoft Teams",
+     "WhatsApp",
+     "None"
+    ]
+   },
+   {
+    "code": "P3",
+    "type": "yn",
+    "text": "Should live lessons be recorded for pupils to watch again?"
+   },
+   {
+    "code": "P4",
+    "type": "yn",
+    "text": "Do you want online courses with lessons and quizzes?"
+   },
+   {
+    "code": "P5",
+    "type": "yn",
+    "text": "Do you want an e-library of digital books and past questions?"
+   },
+   {
+    "code": "P6",
+    "type": "yn",
+    "text": "Should pupils upload photos of their homework?"
+   },
+   {
+    "code": "P7",
+    "type": "yn",
+    "text": "Should pupils earn badges or rewards for completed work?"
+   },
+   {
+    "code": "P8",
+    "type": "one",
+    "text": "Do most pupils have a device and internet at home?",
+    "o": [
+     "Most do",
+     "About half",
+     "Few do"
+    ]
+   }
+  ]
+ },
+ {
+  "id": "Q",
+  "title": "Safety and smart campus",
+  "by": "Chief security officer, admin officer and transport officer",
+  "qs": [
+   {
+    "code": "Q1",
+    "type": "yn",
+    "text": "Do you have CCTV cameras?"
+   },
+   {
+    "code": "Q2",
+    "type": "yn",
+    "text": "Should camera footage be linked to incident records?"
+   },
+   {
+    "code": "Q3",
+    "type": "yn",
+    "text": "Should parents see the school bus on a map?"
+   },
+   {
+    "code": "Q4",
+    "type": "yn",
+    "text": "Should drivers use an app to mark pupils on and off?"
+   },
+   {
+    "code": "Q5",
+    "type": "one",
+    "text": "How do you reach all parents in an emergency now?",
+    "o": [
+     "SMS",
+     "WhatsApp",
+     "Phone calls",
+     "No quick way"
+    ]
+   },
+   {
+    "code": "Q6",
+    "type": "yn",
+    "text": "Do you want a one-tap emergency alert to all parents and staff?"
+   },
+   {
+    "code": "Q7",
+    "type": "yn",
+    "text": "Should the system show who is on campus during an emergency?"
+   },
+   {
+    "code": "Q8",
+    "type": "yn",
+    "text": "Do you hold fire drills? Should they be recorded?"
+   },
+   {
+    "code": "Q9",
+    "type": "many",
+    "text": "Which safety checks are done?",
+    "o": [
+     "Fire extinguishers",
+     "First aid boxes",
+     "Electrical",
+     "Building",
+     "Playground",
+     "None"
+    ]
+   },
+   {
+    "code": "Q10",
+    "type": "yn",
+    "text": "Should generator fuel and power hours be recorded?"
+   }
+  ]
+ },
+ {
+  "id": "R",
+  "title": "Student welfare and growth",
+  "by": "Counsellor, school nurse and vice principal (admin)",
+  "qs": [
+   {
+    "code": "R1",
+    "type": "yn",
+    "text": "Should each pupil have a portfolio of their best work and awards?"
+   },
+   {
+    "code": "R2",
+    "type": "yn",
+    "text": "Do you have pupils with special learning needs?"
+   },
+   {
+    "code": "R3",
+    "type": "yn",
+    "text": "Should their support plans be recorded?"
+   },
+   {
+    "code": "R4",
+    "type": "yn",
+    "text": "Do you want anonymous pupil surveys on safety and bullying?"
+   },
+   {
+    "code": "R5",
+    "type": "many",
+    "text": "Which health checks do you do?",
+    "o": [
+     "Height and weight",
+     "Eyesight",
+     "Hearing",
+     "Dental",
+     "Vaccinations",
+     "None"
+    ]
+   },
+   {
+    "code": "R6",
+    "type": "yn",
+    "text": "Do you hold prize-giving?"
+   },
+   {
+    "code": "R7",
+    "type": "one",
+    "text": "How are prize winners chosen?",
+    "o": [
+     "From results",
+     "By staff vote",
+     "Both"
+    ]
+   },
+   {
+    "code": "R8",
+    "type": "yn",
+    "text": "Do you have an alumni association?"
+   },
+   {
+    "code": "R9",
+    "type": "yn",
+    "text": "Do you run donations or scholarship funds?"
+   }
+  ]
+ },
+ {
+  "id": "S",
+  "title": "Calendar, events and reports",
+  "by": "Principal and head teachers, with the proprietor for reports",
+  "qs": [
+   {
+    "code": "S1",
+    "type": "file",
+    "text": "Upload the school calendar for each section."
+   },
+   {
+    "code": "S2",
+    "type": "many",
+    "text": "Which events do you hold every year?",
+    "o": [
+     "PTA meetings",
+     "Open day",
+     "Inter-house sports",
+     "Prize giving",
+     "Graduation",
+     "Qur'an competition",
+     "Excursions",
+     "Cultural day"
+    ]
+   },
+   {
+    "code": "S3",
+    "type": "many",
+    "text": "What do events need?",
+    "o": [
+     "Permission slips",
+     "Payment",
+     "Attendance"
+    ]
+   },
+   {
+    "code": "S4",
+    "type": "many",
+    "text": "Who should see the calendar?",
+    "o": [
+     "Staff",
+     "Parents",
+     "Students"
+    ]
+   },
+   {
+    "code": "S5",
+    "type": "yn",
+    "text": "Should school events appear on parents' phone calendars?"
+   },
+   {
+    "code": "S6",
+    "type": "yn",
+    "text": "Should event photos be shared with parents?"
+   },
+   {
+    "code": "S7",
+    "type": "many",
+    "text": "Which dashboards do you want?",
+    "o": [
+     "Proprietor",
+     "Each section head",
+     "Teachers",
+     "Bursar",
+     "Parents"
+    ]
+   },
+   {
+    "code": "S8",
+    "type": "many",
+    "text": "Which reports do you want?",
+    "o": [
+     "Enrolment by class",
+     "Attendance rates",
+     "Results analysis",
+     "Fees collected",
+     "Debtors",
+     "Staff attendance",
+     "Memorisation progress"
+    ]
+   },
+   {
+    "code": "S9",
+    "type": "one",
+    "text": "How often do you need reports?",
+    "o": [
+     "Daily",
+     "Weekly",
+     "Termly"
+    ]
+   },
+   {
+    "code": "S10",
+    "type": "many",
+    "text": "Which reports go to government or exam bodies?",
+    "o": [
+     "Annual school census",
+     "WAEC / NECO registration list",
+     "Staff list",
+     "None"
+    ]
+   },
+   {
+    "code": "S11",
+    "type": "many",
+    "text": "What should the proprietor see every morning?",
+    "o": [
+     "Pupils present today",
+     "Staff present today",
+     "Fees collected today",
+     "Debtors",
+     "Incidents",
+     "Upcoming events"
+    ]
+   },
+   {
+    "code": "S12",
+    "type": "yn",
+    "text": "Should the system warn you about pupils with falling scores or attendance?"
+   },
+   {
+    "code": "S13",
+    "type": "yn",
+    "text": "Should admins be able to build their own reports?"
+   },
+   {
+    "code": "S14",
+    "type": "yn",
+    "text": "Do you want a forecast of next session's pupils, arms and teachers?"
+   },
+   {
+    "code": "S15",
+    "type": "yn",
+    "text": "Should the system prepare records for Ministry inspections?"
+   }
+  ]
+ },
+ {
+  "id": "T",
+  "title": "AI and automation",
+  "by": "Proprietor and principal",
+  "qs": [
+   {
+    "code": "T1",
+    "type": "one",
+    "text": "How comfortable is the school with AI tools?",
+    "o": [
+     "Very comfortable",
+     "Use with staff checking",
+     "Not yet"
+    ]
+   },
+   {
+    "code": "T2",
+    "type": "yn",
+    "text": "Should AI draft report card comments for teachers to edit?"
+   },
+   {
+    "code": "T3",
+    "type": "yn",
+    "text": "Should AI draft lesson notes from the scheme of work?"
+   },
+   {
+    "code": "T4",
+    "type": "yn",
+    "text": "Should AI create test and CBT questions?"
+   },
+   {
+    "code": "T5",
+    "type": "yn",
+    "text": "Should the timetable be built automatically?"
+   },
+   {
+    "code": "T6",
+    "type": "yn",
+    "text": "Should the system suggest a substitute when a teacher is absent?"
+   },
+   {
+    "code": "T7",
+    "type": "yn",
+    "text": "Should the system predict pupils at risk of failing?"
+   },
+   {
+    "code": "T8",
+    "type": "yn",
+    "text": "Should the system flag families likely to fall behind on fees?"
+   },
+   {
+    "code": "T9",
+    "type": "yn",
+    "text": "Should a chatbot answer parents' common questions on WhatsApp?"
+   },
+   {
+    "code": "T10",
+    "type": "yn",
+    "text": "Should management get reports by typing a question?"
+   },
+   {
+    "code": "T11",
+    "type": "yn",
+    "text": "Should admins change approval steps without a developer?"
+   }
+  ]
+ },
+ {
+  "id": "U",
+  "title": "Data protection and documents",
+  "by": "Proprietor and admin officer",
+  "qs": [
+   {
+    "code": "U1",
+    "type": "many",
+    "text": "Which parent consents do you collect?",
+    "o": [
+     "Photos",
+     "Trips",
+     "Medical care",
+     "Data use",
+     "Messages",
+     "None"
+    ]
+   },
+   {
+    "code": "U2",
+    "type": "yn",
+    "text": "Should consents be recorded in the system?"
+   },
+   {
+    "code": "U3",
+    "type": "yn",
+    "text": "Should other schools and employers verify certificates online?"
+   },
+   {
+    "code": "U4",
+    "type": "one",
+    "text": "How long should records of pupils who left be kept?",
+    "o": [
+     "5 years",
+     "10 years",
+     "Forever"
+    ]
+   },
+   {
+    "code": "U5",
+    "type": "yn",
+    "text": "Should health, counselling and salary data be hidden from staff who do not need it?"
+   },
+   {
+    "code": "U6",
+    "type": "yn",
+    "text": "Can parents request a copy of their child's data?"
+   },
+   {
+    "code": "U7",
+    "type": "yn",
+    "text": "Has the school named someone responsible for data protection?"
+   }
+  ]
+ },
+ {
+  "id": "V",
+  "title": "Old records and moving data",
+  "by": "Secretary, bursar and exam officer",
+  "qs": [
+   {
+    "code": "V0",
+    "type": "grid",
+    "text": "Where are your records now?",
+    "rows": [
+     "Pupil records",
+     "Parent details",
+     "Staff records",
+     "Past results",
+     "Fee payments and balances",
+     "Qur'an memorisation records",
+     "Lab equipment list",
+     "Library books",
+     "Store items and assets"
+    ],
+    "cols": [
+     {
+      "k": "where",
+      "label": "Kept where now?",
+      "type": "one",
+      "o": [
+       "Paper",
+       "Excel",
+       "Software",
+       "None"
+      ],
+      "noOther": true
+     },
+     {
+      "k": "years",
+      "label": "How many years",
+      "type": "num"
+     },
+     {
+      "k": "cond",
+      "label": "Condition",
+      "type": "one",
+      "o": [
+       "Good",
+       "Fair",
+       "Poor"
+      ],
+      "noOther": true
+     },
+     {
+      "k": "move",
+      "label": "Move to new system?",
+      "type": "yn"
+     }
+    ]
+   },
+   {
+    "code": "V1",
+    "type": "yn",
+    "text": "Do you use any software now?"
+   },
+   {
+    "code": "V2",
+    "type": "yn",
+    "text": "Can data be exported from it?"
+   },
+   {
+    "code": "V3",
+    "type": "many",
+    "text": "Who will check and clean the data?",
+    "o": [
+     "Secretary",
+     "Bursar",
+     "Exam officer",
+     "Form teachers",
+     "Developer"
+    ]
+   },
+   {
+    "code": "V4",
+    "type": "yn",
+    "text": "Must fee balances be correct on the first day?"
+   },
+   {
+    "code": "V5",
+    "type": "one",
+    "text": "When should you start using the new system?",
+    "o": [
+     "Start of next term",
+     "Start of next session",
+     "As soon as it is ready"
+    ]
+   },
+   {
+    "code": "V6",
+    "type": "yn",
+    "text": "Will you use old and new systems together for a while?"
+   }
+  ]
+ },
+ {
+  "id": "W",
+  "title": "Internet, devices and platform",
+  "by": "ICT coordinator and proprietor",
+  "qs": [
+   {
+    "code": "W1",
+    "type": "one",
+    "text": "How is the internet in the school?",
+    "o": [
+     "Good",
+     "Unreliable",
+     "None"
+    ]
+   },
+   {
+    "code": "W2",
+    "type": "many",
+    "text": "What power backup do you have?",
+    "o": [
+     "Generator",
+     "Solar",
+     "Inverter",
+     "None"
+    ]
+   },
+   {
+    "code": "W3",
+    "type": "num",
+    "text": "How many computers are there?"
+   },
+   {
+    "code": "W4",
+    "type": "many",
+    "text": "Where are the computers?",
+    "o": [
+     "Offices",
+     "ICT lab",
+     "Staff room",
+     "Library"
+    ]
+   },
+   {
+    "code": "W5",
+    "type": "one",
+    "text": "What will teachers use?",
+    "o": [
+     "Phones",
+     "Laptops",
+     "Both"
+    ]
+   },
+   {
+    "code": "W6",
+    "type": "many",
+    "text": "What must work without internet?",
+    "o": [
+     "Attendance",
+     "Score entry",
+     "CBT",
+     "None"
+    ]
+   },
+   {
+    "code": "W7",
+    "type": "one",
+    "text": "Where should the system run?",
+    "o": [
+     "Online (cloud)",
+     "Server in the school",
+     "Not sure"
+    ]
+   },
+   {
+    "code": "W8",
+    "type": "one",
+    "text": "Who pays for hosting and domain?",
+    "o": [
+     "School",
+     "Developer",
+     "Shared"
+    ]
+   },
+   {
+    "code": "W9",
+    "type": "one",
+    "text": "At the busiest time, how many users at once?",
+    "o": [
+     "Under 50",
+     "50–200",
+     "200–500",
+     "Over 500"
+    ]
+   },
+   {
+    "code": "W10",
+    "type": "text",
+    "text": "Who will manage the system in the school?"
+   },
+   {
+    "code": "W11",
+    "type": "one",
+    "text": "How often should data be backed up?",
+    "o": [
+     "Daily",
+     "Weekly"
+    ]
+   },
+   {
+    "code": "W12",
+    "type": "many",
+    "text": "Which devices should connect to the system?",
+    "o": [
+     "Biometric device",
+     "ID card printer",
+     "Receipt printer",
+     "CCTV",
+     "RFID card readers",
+     "SMS gateway"
+    ]
+   },
+   {
+    "code": "W13",
+    "type": "many",
+    "text": "Which other software should it connect to?",
+    "o": [
+     "Accounting software",
+     "Google Classroom",
+     "Microsoft Teams",
+     "Payment gateway",
+     "None"
+    ]
+   },
+   {
+    "code": "W14",
+    "type": "yn",
+    "text": "Should staff log in with Google or Microsoft school accounts?"
+   },
+   {
+    "code": "W15",
+    "type": "yn",
+    "text": "Should the system install on phones like an app from the browser?"
+   },
+   {
+    "code": "W16",
+    "type": "yn",
+    "text": "Do you want a practice copy of the system for training?"
+   },
+   {
+    "code": "W17",
+    "type": "one",
+    "text": "How much training time is available?",
+    "o": [
+     "1 day",
+     "1 week",
+     "2 weeks or more"
+    ]
+   },
+   {
+    "code": "W18",
+    "type": "many",
+    "text": "What support do you expect after launch?",
+    "o": [
+     "Phone",
+     "WhatsApp",
+     "Helpdesk tickets",
+     "On-site visits",
+     "Monthly maintenance"
+    ]
+   }
+  ]
+ },
+ {
+  "id": "X",
+  "title": "Priorities and sign-off",
+  "by": "Proprietor / Director",
+  "qs": [
+   {
+    "code": "X0",
+    "type": "grid",
+    "text": "When should each part be built?",
+    "rows": [
+     "Admissions and enrolment",
+     "Student records",
+     "Attendance, gate and ID cards",
+     "Academics, timetable and lessons",
+     "Exams, CBT and results",
+     "Islamic section and Tahfiz",
+     "Labs and practical rooms",
+     "Fees, payments and accounting",
+     "Staff, HR and payroll",
+     "Communication and portals",
+     "School services",
+     "Calendar and events",
+     "Reports and dashboards",
+     "Security and platform",
+     "AI and smart automation",
+     "Online learning",
+     "Smart campus and safety",
+     "Cashless payments and commerce",
+     "Student growth and welfare",
+     "Trust, compliance and documents",
+     "Platform, integrations and support",
+     "Daily operations and governance"
+    ],
+    "cols": [
+     {
+      "k": "phase",
+      "label": "Phase",
+      "type": "one",
+      "o": [
+       "Phase 1",
+       "Phase 2",
+       "Phase 3",
+       "Not needed"
+      ],
+      "noOther": true
+     },
+     {
+      "k": "by",
+      "label": "Needed by",
+      "type": "text"
+     }
+    ]
+   },
+   {
+    "code": "X1",
+    "type": "text",
+    "text": "What are the three biggest problems this system must solve?",
+    "long": true
+   },
+   {
+    "code": "X2",
+    "type": "text",
+    "text": "When do you want to start using it, and why?"
+   },
+   {
+    "code": "X3",
+    "type": "one",
+    "text": "How will the system be paid for?",
+    "o": [
+     "One-time payment",
+     "Yearly subscription",
+     "One-time plus yearly support"
+    ]
+   },
+   {
+    "code": "X4",
+    "type": "text",
+    "text": "Who has the final say on what is built?"
+   },
+   {
+    "code": "X5",
+    "type": "one",
+    "text": "How will new requests after sign-off be handled?",
+    "o": [
+     "Extra cost",
+     "Next phase",
+     "Included"
+    ]
+   }
+  ]
+ }
+]

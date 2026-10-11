@@ -28,6 +28,10 @@ COMPANY_ADMIN_PERMISSIONS = [
     # Setting prices is a company admin's job; retiring an item is done by
     # unticking Active, so delete is not granted.
     ("proposals", "pricelistitem", ["add", "change", "view"]),
+    ("questionnaires", "questionnaireresponse", ["add", "change", "delete", "view"]),
+    ("questionnaires", "responsefile", ["add", "change", "delete", "view"]),
+    ("questionnaires", "questionsection", ["add", "change", "delete", "view"]),
+    ("questionnaires", "question", ["add", "change", "delete", "view"]),
     # The company's own profile: name, contact details, logo, favicon. These
     # feed the public site and every proposal letterhead, so a company admin
     # needs them. Content models (solutions, blog, team) stay excluded.

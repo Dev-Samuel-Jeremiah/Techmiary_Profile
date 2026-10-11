@@ -11,6 +11,12 @@
     The school's details below came from {{ source.contact_name }}'s request on {{ source.created_at|date:"j M Y" }}.
   </div>
 {% endif %}
+{% if questionnaire %}
+  <div class="dash-note">
+    <strong>From the questionnaire for {{ questionnaire.display_name }}</strong>
+    The school's name, address, contact and pupil count below came from its answers{% if questionnaire.students_by_section %} ({% for label, n in questionnaire.students_by_section.items %}{{ label }}: {{ n }}{% if not forloop.last %}, {% endif %}{% endfor %}){% endif %}. Check them before creating the quotation.
+  </div>
+{% endif %}
 {% if unpriced_count %}
   <div class="dash-note dash-note--warn">
     <strong>{{ unpriced_count }} item{{ unpriced_count|pluralize }} in the price list {{ unpriced_count|pluralize:"has,have" }} no price.</strong>
@@ -21,6 +27,7 @@
 <form method="post" novalidate>
   {% csrf_token %}
   {% if source %}<input type="hidden" name="from_request" value="{{ source.pk }}">{% endif %}
+  {% if questionnaire %}<input type="hidden" name="from_questionnaire" value="{{ questionnaire.pk }}">{% endif %}
 
   <section class="dash-card">
     <h2>The school</h2>

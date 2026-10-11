@@ -1,0 +1,18 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Delete questionnaire{% endblock %}
+{% block heading %}Delete the questionnaire for {{ response_obj.display_name }}?{% endblock %}
+{% block content %}
+<section class="dash-card dash-card--narrow">
+  <p>This permanently removes every answer and note, and the {{ response_obj.file_count }} uploaded file{{ response_obj.file_count|pluralize }} and voice note{{ response_obj.file_count|pluralize }}. It cannot be undone.</p>
+  <dl class="dash-kv">
+    <dt>Answered</dt><dd>{{ response_obj.answered_count }} of {{ response_obj.question_count }}</dd>
+    <dt>Last saved</dt><dd>{{ response_obj.updated_at|date:"j M Y, H:i" }}</dd>
+  </dl>
+  <p class="dash-help">To keep a copy first, open it and use Export.</p>
+  <form method="post" class="dash-actions">
+    {% csrf_token %}
+    <button class="dash-btn dash-btn--danger-solid" type="submit">Yes, delete it</button>
+    <a class="dash-link" href="{{ response_obj.get_absolute_url }}">Cancel</a>
+  </form>
+</section>
+{% endblock %}

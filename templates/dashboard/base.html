@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+  {% block extra_head %}{% endblock %}
 </head>
 <body class="dash">
 <div class="dash-shell">
@@ -27,6 +28,7 @@
       <a href="{% url 'dashboard:home' %}" class="{% if u == 'home' %}is-active{% endif %}">Overview</a>
 
       <span class="dash-nav__label">Sales</span>
+      <a href="{% url 'dashboard:questionnaire_list' %}" class="{% if u|slice:':13' == 'questionnaire' %}is-active{% endif %}">School questionnaires</a>
       <a href="{% url 'dashboard:quotation_list' %}" class="{% if u|slice:':9' == 'quotation' %}is-active{% endif %}">School quotations</a>
       <a href="{% url 'dashboard:proposal_list' %}" class="{% if u|slice:':8' == 'proposal' %}is-active{% endif %}">Proposals</a>
       <a href="{% url 'dashboard:quote_list' %}" class="{% if u|slice:':6' == 'quote_' %}is-active{% endif %}">Quote requests</a>
@@ -34,6 +36,7 @@
 
       <span class="dash-nav__label">Company</span>
       <a href="{% url 'dashboard:price_list' %}" class="{% if u == 'price_list' %}is-active{% endif %}">Price list</a>
+      <a href="{% url 'dashboard:question_bank' %}" class="{% if u|slice:':9' == 'question_' or u|slice:':8' == 'section_' %}is-active{% endif %}">Question bank</a>
       <a href="{% url 'dashboard:company_profile' %}" class="{% if u == 'company_profile' %}is-active{% endif %}">Company profile</a>
       <a href="/{{ admin_url }}" target="_blank" rel="noopener">Site content &#8599;</a>
       <a href="/" target="_blank" rel="noopener">View website &#8599;</a>
@@ -75,5 +78,6 @@
     {% block content %}{% endblock %}
   </main>
 </div>
+{% block extra_js %}{% endblock %}
 </body>
 </html>

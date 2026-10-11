@@ -1,0 +1,65 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Question bank{% endblock %}
+{% block heading %}Question bank{% endblock %}
+{% block subheading %}<p class="dash-sub">{{ active_count }} active question{{ active_count|pluralize }}{% if hidden_count %} · {{ hidden_count }} hidden{% endif %} · changes appear on every questionnaire straight away</p>{% endblock %}
+{% block actions %}
+  <a class="dash-btn" href="{% url 'dashboard:section_new' %}">Add section</a>
+  <a class="dash-btn dash-btn--primary" href="{% url 'dashboard:question_new' %}">Add question</a>
+{% endblock %}
+
+{% block content %}
+<div class="dash-note">
+  <strong>How removing works</strong>
+  Removing a question takes it off every questionnaire. Answers schools already gave to it stay in their saved responses. To take a question off for now, edit it and untick Active instead.
+</div>
+
+<nav class="dash-filters" aria-label="Jump to section">
+  {% for s in sections %}<a class="dash-btn dash-btn--sm" href="#section-{{ s.code }}">{{ s.code }}</a>{% endfor %}
+</nav>
+
+{% for s in sections %}
+  <section class="dash-card dash-qsec" id="section-{{ s.code }}">
+    <div class="dash-qsec__head">
+      <div>
+        <h2><span class="dash-qsec__code">{{ s.code }}</span>{{ s.title }}{% if not s.is_active %} <span class="dash-badge">Hidden</span>{% endif %}</h2>
+        {% if s.handled_by %}<p class="dash-help">Handled by: {{ s.handled_by }}</p>{% endif %}
+      </div>
+      <div class="dash-row-actions">
+        <a class="dash-btn dash-btn--sm dash-btn--primary" href="{% url 'dashboard:question_new' %}?section={{ s.pk }}">Add question here</a>
+        <a class="dash-btn dash-btn--sm" href="{% url 'dashboard:section_edit' s.pk %}">Edit section</a>
+        <a class="dash-btn dash-btn--sm dash-btn--danger" href="{% url 'dashboard:section_delete' s.pk %}">Remove section</a>
+      </div>
+    </div>
+    {% if s.questions.all %}
+      <table class="dash-table dash-table--lined">
+        <thead><tr><th>Code</th><th>Question</th><th>Type</th><th></th></tr></thead>
+        <tbody>
+          {% for q in s.questions.all %}
+            <tr class="dash-qrow {% if not q.is_active %}is-off{% endif %}">
+              <td class="dash-qcode">{{ q.code }}</td>
+              <td>
+                {{ q.text }}{% if not q.is_active %} <span class="dash-badge">Hidden</span>{% endif %}
+                {% if q.options %}<div class="dash-qopts">{{ q.options|join:" · "|truncatechars:160 }}</div>{% endif %}
+                {% if q.grid_rows %}<div class="dash-qopts">{{ q.grid_rows|length }} row{{ q.grid_rows|length|pluralize }} × {{ q.grid_columns|length }} column{{ q.grid_columns|length|pluralize }}</div>{% endif %}
+                {% if q.per_section %}<div class="dash-qopts">Asked for each section</div>{% endif %}
+                {% if q.ask_who %}<div class="dash-qopts">Ask: {{ q.ask_who }}</div>{% endif %}
+              </td>
+              <td class="dash-qtype">{{ q.get_qtype_display }}</td>
+              <td class="dash-num">
+                <div class="dash-row-actions">
+                  <a class="dash-btn dash-btn--sm" href="{% url 'dashboard:question_edit' q.pk %}">Edit</a>
+                  <a class="dash-btn dash-btn--sm dash-btn--danger" href="{% url 'dashboard:question_delete' q.pk %}">Remove</a>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="dash-empty">No questions in this section yet.</p>
+    {% endif %}
+  </section>
+{% empty %}
+  <section class="dash-card"><p class="dash-empty">The bank is empty. Run <code>python manage.py seed_questionnaire</code> to load the standard questionnaire, or add a section.</p></section>
+{% endfor %}
+{% endblock %}

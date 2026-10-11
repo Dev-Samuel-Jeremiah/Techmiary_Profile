@@ -1,0 +1,26 @@
+{% extends "dashboard/base.html" %}
+{% block title %}{% if section %}Edit section {{ section.code }}{% else %}Add section{% endif %}{% endblock %}
+{% block heading %}{% if section %}Edit section {{ section.code }}{% else %}Add a section{% endif %}{% endblock %}
+{% block content %}
+<form method="post" novalidate>
+  {% csrf_token %}
+  <section class="dash-card dash-card--narrow">
+    {% for field in form %}
+      {% if field.name == "is_active" %}
+        <div class="dash-check-row"><label>{{ field }} {{ field.label }}</label></div>
+      {% else %}
+        <div class="dash-field">
+          <label class="dash-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% if field.help_text %}<p class="dash-help">{{ field.help_text }}</p>{% endif %}
+          {% if field.errors %}<p class="dash-field-error">{{ field.errors|first }}</p>{% endif %}
+        </div>
+      {% endif %}
+    {% endfor %}
+    <div class="dash-actions">
+      <button class="dash-btn dash-btn--primary" type="submit">Save section</button>
+      <a class="dash-link" href="{% url 'dashboard:question_bank' %}">Cancel</a>
+    </div>
+  </section>
+</form>
+{% endblock %}

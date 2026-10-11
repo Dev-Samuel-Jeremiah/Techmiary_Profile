@@ -1,0 +1,14 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Remove section {{ section.code }}{% endblock %}
+{% block heading %}Remove section {{ section.code }}?{% endblock %}
+{% block content %}
+<section class="dash-card dash-card--narrow">
+  <p><strong>{{ section.code }}. {{ section.title }}</strong> and its {{ section.n }} question{{ section.n|pluralize }} will disappear from every questionnaire. Answers already given stay in the saved responses.</p>
+  <p class="dash-help">To hide the section for now instead, <a href="{% url 'dashboard:section_edit' section.pk %}">edit it</a> and untick Active.</p>
+  <form method="post" class="dash-actions">
+    {% csrf_token %}
+    <button class="dash-btn dash-btn--danger-solid" type="submit">Yes, remove section {{ section.code }}</button>
+    <a class="dash-link" href="{% url 'dashboard:question_bank' %}">Cancel</a>
+  </form>
+</section>
+{% endblock %}

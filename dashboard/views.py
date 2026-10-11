@@ -412,13 +412,21 @@ class QuotationCreateView(DashboardAccessMixin, View):
             return QuoteRequest.objects.filter(pk=pk).first()
         return None
 
-    def render_form(self, request, form, source):
+    def render_form(self, request, form, source, questionnaire=None):
         return render(request, self.template_name, {
-            "form": form, "source": source,
+            "form": form, "source": source, "questionnaire": questionnaire,
             "unpriced_count": PriceListItem.objects.filter(
                 is_active=True, unit_price__lte=0
             ).count(),
         })
+
+    def source_questionnaire(self, request):
+        from questionnaires.models import QuestionnaireResponse
+
+        pk = request.GET.get("from_questionnaire") or request.POST.get("from_questionnaire")
+        if pk and str(pk).isdigit():
+            return QuestionnaireResponse.objects.filter(pk=pk).first()
+        return None
 
     def get(self, request):
         source = self.source_request(request)
@@ -430,18 +438,32 @@ class QuotationCreateView(DashboardAccessMixin, View):
                 "contact_email": source.email,
                 "contact_phone": source.phone,
             }
-        return self.render_form(request, QuotationStartForm(initial=initial), source)
+        questionnaire = self.source_questionnaire(request)
+        if questionnaire:
+            answers = (questionnaire.data or {}).get("answers") or {}
+            meta = (questionnaire.data or {}).get("meta") or {}
+            initial.update({
+                "school_name": questionnaire.school_name,
+                "school_address": answers.get("A2", ""),
+                "contact_name": (meta.get("A") or {}).get("by", ""),
+                "student_count": sum(questionnaire.students_by_section().values()) or None,
+            })
+        return self.render_form(request, QuotationStartForm(initial=initial), source, questionnaire)
 
     def post(self, request):
         source = self.source_request(request)
         form = QuotationStartForm(request.POST)
         if not form.is_valid():
             messages.error(request, "Please correct the highlighted fields.")
-            return self.render_form(request, form, source)
+            return self.render_form(request, form, source, self.source_questionnaire(request))
         quotation = form.save(commit=False)
         quotation.prepared_by = request.user
         quotation.source_request = source
         quotation.save()
+        questionnaire = self.source_questionnaire(request)
+        if questionnaire:
+            questionnaire.quotation = quotation
+            questionnaire.save(update_fields=["quotation", "updated_at"])
         quotation.add_price_items(form.cleaned_data["items"].order_by(
             "group", "display_order", "name"
         ))
@@ -460,7 +482,9 @@ class QuotationEditView(DashboardAccessMixin, View):
     template_name = "dashboard/quotation_edit.html"
 
     def get_object(self, pk):
-        return get_object_or_404(SchoolQuotation.objects.prefetch_related("lines"), pk=pk)
+        return get_object_or_404(
+            SchoolQuotation.objects.prefetch_related("lines__price_item"), pk=pk
+        )
 
     def render_form(self, request, quotation, form=None, lines=None):
         used = {l.price_item_id for l in quotation.lines.all() if l.price_item_id}
@@ -543,6 +567,53 @@ class QuotationStatusView(DashboardAccessMixin, View):
                 f"{quotation.reference} marked as {quotation.get_status_display().lower()}.",
             )
         return redirect(request.POST.get("next") or "dashboard:quotation_list")
+
+
+class QuotationSyncView(DashboardAccessMixin, View):
+    """Update a draft's price-list lines to the current price list."""
+
+    required_permission = "proposals.change_schoolquotation"
+
+    def post(self, request, pk):
+        quotation = get_object_or_404(SchoolQuotation, pk=pk)
+        if not quotation.can_sync:
+            messages.error(
+                request,
+                f"{quotation.reference} is {quotation.get_status_display().lower()}, so its "
+                "prices are not changed under the school. Duplicate it to send revised prices, "
+                "or set it back to Draft first.",
+            )
+            return redirect("dashboard:quotation_edit", pk=pk)
+        updated = quotation.sync_with_price_list()
+        if not updated:
+            messages.info(request, "Already up to date — every line matches the price list.")
+        else:
+            names = ", ".join(line.title for line, _ in updated[:5])
+            more = f" and {len(updated) - 5} more" if len(updated) > 5 else ""
+            messages.success(
+                request,
+                f"Synced {len(updated)} line{'s' if len(updated) != 1 else ''} with the price "
+                f"list: {names}{more}. Quantities and custom lines were left as they were.",
+            )
+        return redirect("dashboard:quotation_edit", pk=pk)
+
+
+class QuotationDeleteView(DashboardAccessMixin, View):
+    """Confirm, then delete. GET shows what will be removed; only POST deletes."""
+
+    required_permission = "proposals.delete_schoolquotation"
+    template_name = "dashboard/quotation_delete.html"
+
+    def get(self, request, pk):
+        quotation = get_object_or_404(SchoolQuotation.objects.prefetch_related("lines"), pk=pk)
+        return render(request, self.template_name, {"q": quotation})
+
+    def post(self, request, pk):
+        quotation = get_object_or_404(SchoolQuotation, pk=pk)
+        reference, school = quotation.reference, quotation.school_name
+        quotation.delete()
+        messages.success(request, f"{reference} for {school} was deleted.")
+        return redirect("dashboard:quotation_list")
 
 
 class QuotationDuplicateView(DashboardAccessMixin, View):

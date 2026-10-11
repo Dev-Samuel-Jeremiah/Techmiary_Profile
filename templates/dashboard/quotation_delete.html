@@ -1,0 +1,28 @@
+{% extends "dashboard/base.html" %}
+{% load humanize %}
+{% block title %}Delete {{ q.reference }}{% endblock %}
+{% block heading %}Delete {{ q.reference }}?{% endblock %}
+{% block subheading %}<p class="dash-sub">{{ q.school_name }} · <span class="dash-badge dash-badge--{{ q.status }}">{{ q.get_status_display }}</span></p>{% endblock %}
+
+{% block content %}
+<section class="dash-card dash-card--narrow">
+  <p>This permanently removes the quotation and its {{ q.lines.count }} line{{ q.lines.count|pluralize }}. It cannot be undone.</p>
+  <dl class="dash-kv">
+    <dt>School</dt><dd>{{ q.school_name }}</dd>
+    <dt>Contact</dt><dd>{{ q.contact_name }}</dd>
+    <dt>One-off total</dt><dd>{{ q.currency_symbol }}{{ q.one_off_total|floatformat:2|intcomma }}</dd>
+    <dt>Created</dt><dd>{{ q.created_at|date:"j M Y" }}</dd>
+  </dl>
+  {% if q.status == "sent" or q.status == "accepted" %}
+    <div class="dash-alert">
+      <strong>This quotation has been {{ q.get_status_display|lower }}.</strong>
+      The school may still refer to {{ q.reference }}. If it has been superseded, consider marking it Declined instead, so the record is kept.
+    </div>
+  {% endif %}
+  <form method="post" class="dash-actions">
+    {% csrf_token %}
+    <button class="dash-btn dash-btn--danger-solid" type="submit">Yes, delete {{ q.reference }}</button>
+    <a class="dash-link" href="{% url 'dashboard:quotation_edit' q.pk %}">Cancel</a>
+  </form>
+</section>
+{% endblock %}

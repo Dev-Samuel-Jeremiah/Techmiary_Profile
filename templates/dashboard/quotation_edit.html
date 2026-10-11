@@ -7,10 +7,17 @@
 {% endblock %}
 {% block actions %}
   <a class="dash-btn" href="{% url 'proposals:quotation_pdf' q.pk %}" target="_blank" rel="noopener">Preview PDF</a>
+  {% if q.can_sync %}
+    <form method="post" action="{% url 'dashboard:quotation_sync' q.pk %}" class="dash-inline-form">
+      {% csrf_token %}
+      <button class="dash-btn" type="submit" title="Update price-list lines to the current price list">Sync with price list</button>
+    </form>
+  {% endif %}
   <form method="post" action="{% url 'dashboard:quotation_duplicate' q.pk %}" class="dash-inline-form">
     {% csrf_token %}
     <button class="dash-btn" type="submit">Duplicate</button>
   </form>
+  <a class="dash-btn dash-btn--danger" href="{% url 'dashboard:quotation_delete' q.pk %}">Delete</a>
   <form method="post" action="{% url 'dashboard:quotation_status' q.pk %}" class="dash-inline-form">
     {% csrf_token %}
     <input type="hidden" name="next" value="{{ request.path }}">
@@ -24,6 +31,29 @@
 {% endblock %}
 
 {% block content %}
+{% with stale=q.stale_lines %}
+  {% if stale %}
+    <div class="dash-note dash-note--warn dash-sync-note">
+      <div>
+        <strong>{{ stale|length }} line{{ stale|length|pluralize }} {{ stale|length|pluralize:"differs,differ" }} from the current price list.</strong>
+        <ul class="dash-sync-list">
+          {% for line in stale|slice:":6" %}
+            <li>{{ line.title }}{% with c=line.price_list_changes %}{% if c.unit_price %} — ₦{{ c.unit_price.0|floatformat:2|intcomma }} → <strong>₦{{ c.unit_price.1|floatformat:2|intcomma }}</strong>{% else %} — wording changed{% endif %}{% endwith %}</li>
+          {% endfor %}
+          {% if stale|length > 6 %}<li>and {{ stale|length|add:"-6" }} more</li>{% endif %}
+        </ul>
+      </div>
+      {% if q.can_sync %}
+        <form method="post" action="{% url 'dashboard:quotation_sync' q.pk %}">
+          {% csrf_token %}
+          <button class="dash-btn dash-btn--primary" type="submit">Sync now</button>
+        </form>
+      {% else %}
+        <p class="dash-help">This quotation is {{ q.get_status_display|lower }}, so it keeps the prices the school was given. Duplicate it to send revised prices.</p>
+      {% endif %}
+    </div>
+  {% endif %}
+{% endwith %}
 {% with problems=q.issue_problems %}
   {% if problems %}
     <div class="dash-alert dash-alert--top">

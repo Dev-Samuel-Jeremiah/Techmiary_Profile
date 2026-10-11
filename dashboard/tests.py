@@ -581,3 +581,77 @@ class SchoolQuotationTests(TestCase):
         self.client.logout()
         response = self.client.get(reverse("proposals:quotation_pdf", args=[q.pk]))
         self.assertEqual(response.status_code, 302)
+
+    # -- Sync with price list ------------------------------------------------
+    def test_editor_flags_lines_that_differ_from_the_price_list(self):
+        q = self.start([self.setup, self.licence])
+        PriceListItem.objects.filter(pk=self.setup.pk).update(unit_price=Decimal("650000"))
+        response = self.client.get(reverse("dashboard:quotation_edit", args=[q.pk]))
+        self.assertContains(response, "1 line differs from the current price list")
+        self.assertContains(response, "₦650,000.00")
+
+    def test_sync_updates_prices_and_keeps_quantities_and_custom_lines(self):
+        q = self.start([self.setup, self.training])
+        training = q.lines.get(title="Training")
+        training.quantity = Decimal("3")  # edited on the quotation
+        training.save()
+        q.lines.create(title="Custom extra", unit_price=Decimal("40000"))
+        PriceListItem.objects.filter(pk=self.setup.pk).update(unit_price=Decimal("650000"))
+        PriceListItem.objects.filter(pk=self.training.pk).update(
+            unit_price=Decimal("120000"), name="Staff training"
+        )
+
+        response = self.client.post(reverse("dashboard:quotation_sync", args=[q.pk]), follow=True)
+        self.assertContains(response, "Synced 2 lines")
+        self.assertEqual(q.lines.get(price_item=self.setup).unit_price, Decimal("650000"))
+        training = q.lines.get(price_item=self.training)
+        self.assertEqual((training.title, training.unit_price, training.quantity),
+                         ("Staff training", Decimal("120000"), Decimal("3")))
+        self.assertEqual(q.lines.get(title="Custom extra").unit_price, Decimal("40000"))
+        q = SchoolQuotation.objects.prefetch_related("lines__price_item").get(pk=q.pk)
+        self.assertEqual(q.stale_lines, [])
+
+    def test_sync_reports_when_already_up_to_date(self):
+        q = self.start([self.setup])
+        response = self.client.post(reverse("dashboard:quotation_sync", args=[q.pk]), follow=True)
+        self.assertContains(response, "Already up to date")
+
+    def test_sync_refuses_a_quotation_the_school_already_has(self):
+        q = self.start([self.setup])
+        q.status = SchoolQuotation.STATUS_SENT
+        q.save()
+        PriceListItem.objects.filter(pk=self.setup.pk).update(unit_price=Decimal("650000"))
+        response = self.client.post(reverse("dashboard:quotation_sync", args=[q.pk]), follow=True)
+        self.assertContains(response, "Duplicate it to send revised prices")
+        self.assertEqual(q.lines.get().unit_price, Decimal("500000"))
+
+    # -- Delete ----------------------------------------------------------------
+    def test_delete_asks_for_confirmation_first(self):
+        q = self.start([self.setup])
+        response = self.client.get(reverse("dashboard:quotation_delete", args=[q.pk]))
+        self.assertContains(response, f"Yes, delete {q.reference}")
+        self.assertTrue(SchoolQuotation.objects.filter(pk=q.pk).exists())
+
+    def test_delete_removes_the_quotation_and_its_lines(self):
+        from proposals.models import SchoolQuotationLine
+        q = self.start([self.setup, self.licence])
+        response = self.client.post(reverse("dashboard:quotation_delete", args=[q.pk]), follow=True)
+        self.assertContains(response, f"{q.reference} for Hillside Academy was deleted")
+        self.assertFalse(SchoolQuotation.objects.filter(pk=q.pk).exists())
+        self.assertFalse(SchoolQuotationLine.objects.filter(quotation_id=q.pk).exists())
+
+    def test_delete_needs_the_delete_permission(self):
+        q = self.start([self.setup])
+        staff = make_user("viewer", is_staff=True)
+        self.client.force_login(staff)
+        response = self.client.post(reverse("dashboard:quotation_delete", args=[q.pk]))
+        self.assertEqual(response.status_code, 403)
+        self.assertTrue(SchoolQuotation.objects.filter(pk=q.pk).exists())
+
+    def test_list_and_editor_show_the_new_buttons(self):
+        q = self.start([self.setup])
+        listing = self.client.get(reverse("dashboard:quotation_list"))
+        self.assertContains(listing, reverse("dashboard:quotation_delete", args=[q.pk]))
+        editor = self.client.get(reverse("dashboard:quotation_edit", args=[q.pk]))
+        self.assertContains(editor, reverse("dashboard:quotation_sync", args=[q.pk]))
+        self.assertContains(editor, reverse("dashboard:quotation_delete", args=[q.pk]))
